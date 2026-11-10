@@ -32,6 +32,7 @@ decide what the prosecutor has left to work with in chapter 4.
 ## Godot prototype (3D)
 
 `godot/` is an experimental Godot 4 version of the chapter 1 apartment search: a first-person room you
-walk around, built from simple shapes with real-time lighting. Run it with `godot --path godot`
+walk around, with real-time lighting. Furniture, surfaces, the night sky and the UI font are free
+assets (Poly Haven, CC0; Special Elite, Apache 2.0) listed in `godot/assets/MANIFEST.md`. Run it with `godot --path godot`
 (click to look, WASD to walk, E to examine, Esc to release the mouse). It is a look-and-feel test
 only; the full story still lives in the browser version.

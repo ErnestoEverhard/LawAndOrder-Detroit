@@ -1,17 +1,18 @@
 extends Node3D
 ## Chapter 1 prototype: walk around Tessa Brandt's apartment and examine four of six things.
-## The room is built in code from simple shapes; lighting does most of the work.
+## The room shell is built in code; furniture, surfaces and sky are Poly Haven assets (see assets/MANIFEST.md).
 ## Run with `-- --shot <file.png>` to save one frame and quit (used for checking the look).
 
 const AMBER := Color(0.95, 0.71, 0.27)
 const BUDGET := 4
+var FONT: Font = load("res://assets/fonts/SpecialElite-Regular.ttf")
 
 const CLUES := [
-	{"name": "Tablet", "pts": 5, "pos": Vector3(-2.2, 0.82, -2.45), "size": Vector3(0.5, 0.3, 0.5),
+	{"name": "Tablet", "pts": 5, "pos": Vector3(-2.1, 0.8, -2.6), "size": Vector3(0.5, 0.3, 0.5),
 		"text": "Her tablet, showing her text messages. 73 unread, all from the unknown number in her complaint. It was a few dozen when she came to you. The most recent, 8:51 PM: \"You looked tired today. I can help with that.\""},
-	{"name": "Bookshelf", "pts": 5, "pos": Vector3(-3.7, 1.15, 0.2), "size": Vector3(0.5, 0.5, 0.9),
+	{"name": "Bookshelf", "pts": 5, "pos": Vector3(-3.8, 0.85, 0.4), "size": Vector3(0.5, 0.5, 0.9),
 		"text": "A coffee can of dried flowers. Under it, a stack of index cards in careful block capitals. \"I SAW YOU ON THE THIRD FLOOR.\" \"SIT BY THE WINDOW AGAIN.\" She kept every one, the way you keep things you might need as proof."},
-	{"name": "Laptop", "pts": 5, "pos": Vector3(2.3, 0.7, -1.9), "size": Vector3(0.6, 0.4, 0.5),
+	{"name": "Laptop", "pts": 5, "pos": Vector3(2.5, 0.72, -2.45), "size": Vector3(0.6, 0.45, 0.5),
 		"text": "Open to a rideshare receipt. She ordered a ride home at 9:14 PM from the Hollis University Library service entrance. The ride was cancelled at 9:16, two minutes later. She never got home."},
 	{"name": "Window", "pts": 5, "pos": Vector3(3.8, 1.4, 0.8), "size": Vector3(0.4, 1.4, 1.8),
 		"text": "The fire-escape window. The latch is intact. Outside, behind a dead plant on the fire escape, two cut zip ties hang from the railing around a clean patch in the rust. Something small was strapped there, aimed at her window."},
@@ -36,13 +37,16 @@ func _ready() -> void:
 	_room()
 	_furniture()
 	_lights()
-	_city()
 	_clues()
 	_player()
 	_ui()
 	_say("You are Detective Nadia Okonkwo. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E.")
 	var args := OS.get_cmdline_user_args()
 	if args.size() >= 2 and args[0] == "--shot":
+		if args.size() >= 6:
+			player.position = Vector3(float(args[2]), 0.0, float(args[3]))
+			player.rotation.y = deg_to_rad(float(args[4]))
+			player.cam.rotation.x = deg_to_rad(float(args[5]))
 		_screenshot(args[1])
 
 # ── building blocks ──────────────────────────────────────────────
@@ -90,13 +94,53 @@ func _omni(pos: Vector3, color: Color, energy: float, rng: float, shadows := fal
 
 # ── scene ────────────────────────────────────────────────────────
 
+func _tex(id: String, diff := "diff", scale := 0.5, tint := Color.WHITE) -> StandardMaterial3D:
+	# A Poly Haven surface, mapped in world space so it tiles the same on every box.
+	var base := "res://assets/textures/%s/%s_" % [id, id]
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = load(base + diff + "_1k.jpg")
+	m.albedo_color = tint
+	m.normal_enabled = true
+	m.normal_texture = load(base + "nor_gl_1k.jpg")
+	m.roughness_texture = load(base + "rough_1k.jpg")
+	m.uv1_triplanar = true
+	m.uv1_world_triplanar = true
+	m.uv1_scale = Vector3.ONE * scale
+	return m
+
+func _model(id: String, pos: Vector3, rot_y := 0.0, scale := 1.0, solid := Vector3.ZERO) -> Node3D:
+	# A Poly Haven model. Its front faces +Z and its origin is on the floor.
+	var n: Node3D = (load("res://assets/models/%s/%s_1k.gltf" % [id, id]) as PackedScene).instantiate()
+	n.position = pos
+	n.rotation.y = rot_y
+	n.scale = Vector3.ONE * scale
+	add_child(n)
+	if solid != Vector3.ZERO:
+		var body := StaticBody3D.new()
+		var cs := CollisionShape3D.new()
+		var shape := BoxShape3D.new()
+		shape.size = solid
+		cs.shape = shape
+		cs.position.y = solid.y / 2.0
+		body.add_child(cs)
+		body.position = pos
+		body.rotation.y = rot_y
+		add_child(body)
+	return n
+
 func _environment() -> void:
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.02, 0.03, 0.06)
+	var sky := Sky.new()
+	var pm := PanoramaSkyMaterial.new()
+	pm.panorama = load("res://assets/hdri/cobblestone_street_night_2k.hdr")
+	pm.energy_multiplier = 0.7
+	sky.sky_material = pm
+	env.background_mode = Environment.BG_SKY
+	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.20, 0.24, 0.38)
-	env.ambient_light_energy = 0.6
+	env.ambient_light_energy = 0.8
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
 	env.glow_enabled = true
 	env.glow_intensity = 0.9
@@ -110,57 +154,65 @@ func _environment() -> void:
 	add_child(we)
 
 func _room() -> void:
-	var wall := Color(0.36, 0.33, 0.40)
-	_box(Vector3(0, -0.05, 0), Vector3(8, 0.1, 6), Color(0.23, 0.17, 0.13))            # floor
-	_box(Vector3(0, 2.85, 0), Vector3(8, 0.1, 6), Color(0.30, 0.29, 0.33))             # ceiling
-	_box(Vector3(0, 1.4, -3.05), Vector3(8, 2.8, 0.1), wall)                            # north
-	_box(Vector3(-4.05, 1.4, 0), Vector3(0.1, 2.8, 6), wall)                            # west
-	_box(Vector3(-2.25, 1.4, 3.05), Vector3(3.5, 2.8, 0.1), wall)                       # south, left of door
-	_box(Vector3(2.25, 1.4, 3.05), Vector3(3.5, 2.8, 0.1), wall)                        # south, right of door
-	_box(Vector3(0, 2.45, 3.05), Vector3(1.0, 0.7, 0.1), wall)                          # above door
+	var plaster := _tex("beige_wall_001", "diff", 0.5, Color(0.62, 0.60, 0.70))
+	var brick := _tex("brick_wall_001", "diffuse", 0.5, Color(0.75, 0.68, 0.68))
+	var boards := _tex("old_wooden_floor_01", "diff", 0.5, Color(0.80, 0.72, 0.66))
+	_box(Vector3(0, -0.05, 0), Vector3(8, 0.1, 6), Color.WHITE).material_override = boards       # floor
+	_box(Vector3(0, 2.85, 0), Vector3(8, 0.1, 6), Color(0.30, 0.29, 0.33))                        # ceiling
+	_box(Vector3(0, 1.4, -3.05), Vector3(8, 2.8, 0.1), Color.WHITE).material_override = brick    # north, bare brick
+	for w in [
+		[Vector3(-4.05, 1.4, 0), Vector3(0.1, 2.8, 6)],          # west
+		[Vector3(-2.25, 1.4, 3.05), Vector3(3.5, 2.8, 0.1)],     # south, left of door
+		[Vector3(2.25, 1.4, 3.05), Vector3(3.5, 2.8, 0.1)],      # south, right of door
+		[Vector3(0, 2.45, 3.05), Vector3(1.0, 0.7, 0.1)],        # above door
+		# east wall with a window opening (z 0..1.6, y 0.9..2.2)
+		[Vector3(4.05, 1.4, -1.5), Vector3(0.1, 2.8, 3.0)],
+		[Vector3(4.05, 1.4, 2.3), Vector3(0.1, 2.8, 1.4)],
+		[Vector3(4.05, 0.45, 0.8), Vector3(0.1, 0.9, 1.6)],
+		[Vector3(4.05, 2.5, 0.8), Vector3(0.1, 0.6, 1.6)],
+	]:
+		_box(w[0], w[1], Color.WHITE).material_override = plaster
 	_box(Vector3(-0.35, 1.05, 3.4), Vector3(0.9, 2.1, 0.06), Color(0.30, 0.22, 0.16), false, 0.0, 1.0)  # door, ajar
-	# east wall with a window opening (z 0..1.6, y 0.9..2.2)
-	_box(Vector3(4.05, 1.4, -1.5), Vector3(0.1, 2.8, 3.0), wall)
-	_box(Vector3(4.05, 1.4, 2.3), Vector3(0.1, 2.8, 1.4), wall)
-	_box(Vector3(4.05, 0.45, 0.8), Vector3(0.1, 0.9, 1.6), wall)
-	_box(Vector3(4.05, 2.5, 0.8), Vector3(0.1, 0.6, 1.6), wall)
-	for i in 9:                                                                          # blinds
+	_box(Vector3(0, 0.05, -2.98), Vector3(8, 0.1, 0.03), Color(0.16, 0.14, 0.15), false)          # skirting
+	_box(Vector3(-3.98, 0.05, 0), Vector3(0.03, 0.1, 6), Color(0.16, 0.14, 0.15), false)
+	for i in 9:                                                                                    # blinds
 		_box(Vector3(4.0, 0.98 + i * 0.145, 0.8), Vector3(0.03, 0.075, 1.6), Color(0.78, 0.76, 0.70), false)
-	_box(Vector3(0, 0.005, 0.4), Vector3(2.6, 0.01, 1.8), Color(0.33, 0.16, 0.14), false)  # rug
+	_box(Vector3(0, 0.006, 0.4), Vector3(2.6, 0.012, 1.8), Color.WHITE, false).material_override = _tex("dirty_carpet", "diff", 0.7, Color(0.75, 0.42, 0.38))  # rug
+	# fire escape outside the window
+	var iron := Color(0.07, 0.07, 0.08)
+	_box(Vector3(4.6, 0.82, 0.8), Vector3(1.0, 0.04, 2.4), iron, false)
+	_box(Vector3(5.08, 1.75, 0.8), Vector3(0.04, 0.04, 2.4), iron, false)
+	for i in 9:
+		_box(Vector3(5.08, 1.3, -0.4 + i * 0.3), Vector3(0.025, 0.9, 0.025), iron, false)
+	_model("potted_plant_02", Vector3(4.75, 0.94, 0.2), 0.6, 0.8)
 
 func _furniture() -> void:
-	var wood := Color(0.33, 0.23, 0.16)
-	# desk + chair
-	_box(Vector3(-2.3, 0.74, -2.55), Vector3(1.7, 0.06, 0.75), wood)
-	for x in [-3.05, -1.55]:
-		_box(Vector3(x, 0.36, -2.55), Vector3(0.06, 0.72, 0.65), wood, false)
-	_box(Vector3(-2.3, 0.45, -1.8), Vector3(0.45, 0.06, 0.45), Color(0.15, 0.15, 0.17))
-	_box(Vector3(-2.3, 0.75, -1.6), Vector3(0.45, 0.6, 0.05), Color(0.15, 0.15, 0.17), false)
-	# desk lamp
-	_box(Vector3(-2.9, 0.79, -2.7), Vector3(0.16, 0.03, 0.16), Color(0.1, 0.1, 0.1), false)
-	_box(Vector3(-2.9, 1.0, -2.7), Vector3(0.03, 0.42, 0.03), Color(0.1, 0.1, 0.1), false)
-	_box(Vector3(-2.8, 1.22, -2.65), Vector3(0.26, 0.1, 0.18), AMBER, false, 2.5)
+	# desk: two school desks pushed together, chair pulled out
+	_model("SchoolDesk_01", Vector3(-2.61, 0, -2.68), 0.0, 0.85, Vector3(0.62, 0.75, 0.48))
+	_model("SchoolDesk_01", Vector3(-1.99, 0, -2.68), 0.0, 0.85, Vector3(0.62, 0.75, 0.48))
+	_model("SchoolChair_01", Vector3(-2.2, 0, -1.9), 2.75, 0.9, Vector3(0.5, 0.5, 0.5))
+	_model("desk_lamp_arm_01", Vector3(-2.75, 0.75, -2.72), 1.2)
 	# tablet
-	_box(Vector3(-2.2, 0.785, -2.45), Vector3(0.28, 0.015, 0.2), Color(0.55, 0.75, 1.0), false, 2.0)
+	_box(Vector3(-2.1, 0.76, -2.6), Vector3(0.28, 0.015, 0.2), Color(0.55, 0.75, 1.0), false, 2.0, 0.2)
 	# wastebasket
 	_box(Vector3(-0.9, 0.2, -2.6), Vector3(0.3, 0.4, 0.3), Color(0.22, 0.24, 0.27))
-	# bed
-	_box(Vector3(2.5, 0.25, -1.9), Vector3(2.8, 0.5, 2.0), Color(0.27, 0.23, 0.36))
-	_box(Vector3(2.5, 0.53, -1.9), Vector3(2.8, 0.08, 2.0), Color(0.42, 0.37, 0.52), false)
-	_box(Vector3(3.4, 0.64, -2.5), Vector3(0.8, 0.14, 0.5), Color(0.85, 0.84, 0.88), false)
-	_box(Vector3(2.5, 0.9, -2.95), Vector3(2.8, 1.0, 0.1), Color(0.22, 0.18, 0.28), false)
-	# laptop on the bed
-	_box(Vector3(2.3, 0.585, -1.9), Vector3(0.36, 0.02, 0.26), Color(0.12, 0.12, 0.13), false)
-	_box(Vector3(2.3, 0.72, -2.04), Vector3(0.36, 0.25, 0.015), Color(0.65, 0.8, 1.0), false, 0.9)
-	# bookshelf
-	_box(Vector3(-3.8, 1.0, 0.2), Vector3(0.35, 2.0, 1.2), Color(0.20, 0.16, 0.22))
-	var spines := [Color(0.45, 0.25, 0.25), Color(0.25, 0.32, 0.42), Color(0.42, 0.38, 0.24), Color(0.24, 0.36, 0.30)]
-	for row in 3:
-		for i in 8:
-			_box(Vector3(-3.6, 0.42 + row * 0.6, -0.3 + i * 0.1), Vector3(0.05, 0.28 + (i % 3) * 0.04, 0.07), spines[(i + row) % 4], false)
-	_box(Vector3(-3.6, 1.12, 0.6), Vector3(0.12, 0.14, 0.12), Color(0.6, 0.62, 0.65), false)   # coffee can
-	_box(Vector3(-3.6, 1.26, 0.6), Vector3(0.02, 0.18, 0.02), Color(0.7, 0.5, 0.4), false)
-	_box(Vector3(-3.6, 1.36, 0.6), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
+	# bed against the brick wall, laptop left open on it
+	_model("vintage_day_bed", Vector3(2.7, 0, -2.5), 0.0, 1.0, Vector3(2.0, 0.55, 0.9))
+	_model("classic_laptop", Vector3(2.5, 0.52, -2.45), 0.35, 0.8)
+	_model("side_table_01", Vector3(1.35, 0, -2.72), 0.0, 1.0, Vector3(0.56, 0.55, 0.46))
+	# bookshelf on the west wall
+	var shelf := _model("Shelf_01", Vector3(-3.98, 0, 0.2), PI / 2, 1.0, Vector3(1.0, 2.08, 0.3))
+	for y in [0.38, 0.94, 1.51]:
+		var books: Node3D = (load("res://assets/models/book_encyclopedia_set_01/book_encyclopedia_set_01_1k.gltf") as PackedScene).instantiate()
+		books.position = Vector3(-0.42 if y != 0.94 else -0.1, y + 0.01, 0.1)
+		shelf.add_child(books)
+	_box(Vector3(-3.82, 0.73, 0.5), Vector3(0.12, 0.14, 0.12), Color(0.6, 0.62, 0.65), false)   # coffee can
+	_box(Vector3(-3.82, 0.87, 0.5), Vector3(0.02, 0.18, 0.02), Color(0.7, 0.5, 0.4), false)
+	_box(Vector3(-3.82, 0.97, 0.5), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
+	# seating and the dead ceiling light
+	_model("modern_arm_chair_01", Vector3(-3.0, 0, 2.1), 2.3, 1.0, Vector3(0.8, 0.6, 0.9))
+	_model("sofa_02", Vector3(2.4, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85))
+	_model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
 	# corkboard
 	_box(Vector3(0.2, 1.55, -2.97), Vector3(1.3, 0.85, 0.04), Color(0.50, 0.35, 0.22), false)
 	_box(Vector3(-0.15, 1.65, -2.94), Vector3(0.3, 0.42, 0.01), Color(0.92, 0.9, 0.86), false)
@@ -168,10 +220,11 @@ func _furniture() -> void:
 	_box(Vector3(0.65, 1.38, -2.94), Vector3(0.16, 0.16, 0.01), Color(0.96, 0.9, 0.4), false, 0.3)
 
 func _lights() -> void:
-	_omni(Vector3(-2.7, 1.1, -2.4), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)     # desk lamp
-	_omni(Vector3(-2.2, 0.95, -2.4), Color(0.55, 0.75, 1.0), 0.25, 1.2)         # tablet glow
-	_omni(Vector3(2.3, 0.9, -1.6), Color(0.6, 0.78, 1.0), 0.3, 2.0)            # laptop glow
+	_omni(Vector3(-2.6, 1.15, -2.45), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)   # desk lamp
+	_omni(Vector3(-2.1, 0.95, -2.5), Color(0.55, 0.75, 1.0), 0.25, 1.2)         # tablet glow
+	_omni(Vector3(2.5, 0.85, -2.3), Color(0.6, 0.78, 1.0), 0.5, 2.2)            # laptop glow
 	_omni(Vector3(0.3, 2.1, 3.9), Color(1.0, 0.9, 0.72), 1.4, 5.0, true)        # hallway, through the door
+	_omni(Vector3(2.6, 2.0, 0.8), Color(0.45, 0.55, 0.9), 0.5, 5.0)            # cool fill, window side
 	# streetlight through the blinds
 	var s := SpotLight3D.new()
 	s.position = Vector3(6.4, 3.0, 1.1)
@@ -183,18 +236,6 @@ func _lights() -> void:
 	s.light_volumetric_fog_energy = 2.5
 	add_child(s)
 	s.look_at(Vector3(0.0, 0.2, 0.3))
-
-func _city() -> void:
-	# a few dark buildings with lit windows, seen through the blinds
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 7
-	for b in 5:
-		var z := -4.0 + b * 2.6
-		var h := 5.0 + rng.randf() * 5.0
-		_box(Vector3(14.0 + rng.randf() * 3.0, h / 2.0 - 3.0, z), Vector3(2.0, h, 2.2), Color(0.03, 0.04, 0.07), false)
-		for w in 9:
-			if rng.randf() < 0.5:
-				_box(Vector3(12.9, -2.0 + rng.randf() * (h - 1.0), z - 0.8 + rng.randf() * 1.6), Vector3(0.05, 0.22, 0.16), Color(1.0, 0.82, 0.5), false, 3.0)
 
 func _clues() -> void:
 	for c in CLUES:
@@ -238,6 +279,7 @@ func _player() -> void:
 func _label(text: String, size: int, color: Color) -> Label:
 	var l := Label.new()
 	l.text = text
+	l.add_theme_font_override("font", FONT)
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
 	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
@@ -291,6 +333,7 @@ func _ui() -> void:
 	col.add_child(ui_panel)
 	ui_info = Label.new()
 	ui_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ui_info.add_theme_font_override("font", FONT)
 	ui_info.add_theme_font_size_override("font_size", 18)
 	ui_info.add_theme_color_override("font_color", Color(0.91, 0.9, 0.87))
 	ui_panel.add_child(ui_info)
