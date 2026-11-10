@@ -4,7 +4,7 @@
   const N = {};
   const PRE_VAN = ['tablet', 'notes', 'receipt', 'window', 'report', 'name', 'witness'];
 
-  const newState = notify => ({ clues: {}, f: {}, seen: {}, strength: 10, trust: 0, late: 0, chapter: 1, notify: notify || (() => {}) });
+  const newState = notify => ({ clues: {}, f: {}, seen: {}, strength: 0, trust: 0, late: 0, chapter: 1, notify: notify || (() => {}) });
   const add = (s, n) => { s.strength = Math.max(0, Math.min(100, s.strength + n)); };
   const clue = (s, id, label, pts = 5) => {
     if (s.clues[id]) return;
@@ -24,22 +24,26 @@
 
   /* ───────────── CHAPTER 1 — THE EMPTY APARTMENT ───────────── */
   N.c1_card = { type: 'card', chapter: 1, bg: 'apartment', next: 'c1_arrive',
-    lines: ['APARTMENT OF TESSA BRANDT', '418 MERCER STREET, APT 3C', 'TUESDAY, OCTOBER 14 — 11:42 PM'] };
+    lines: ['APARTMENT OF TESSA BRANDT', '418 MERCER STREET, APT 3C', 'TUESDAY, OCTOBER 14 — 11:42 PM', '— YOU PLAY DETECTIVE NADIA OKONKWO —'] };
 
   scene('c1_arrive', 'apartment', [
-    ['', 'The door to 3C is open four inches. No forced entry. A lamp is still on inside.'],
-    ['REYES', 'Roommate called it in forty minutes ago. Tessa Brandt, nineteen, sophomore at Hollis University. She texts the roommate every night when she leaves work. Tonight she didn\'t.'],
+    ['', 'You are Detective Nadia Okonkwo of the Special Victims Division, 9th Precinct. Your partner, Detective Sam Reyes, is waiting for you outside apartment 3C.'],
+    ['REYES', 'The roommate called 911 around ten. Tessa Brandt, nineteen, a sophomore at Hollis University. She never came home from work and she isn\'t answering her phone.'],
+    ['REYES', 'Normally a missing adult waits until morning. But the patrol officer ran her name and it came back flagged: an open stalking complaint. That\'s why they called us.'],
+    ['OKONKWO', 'I know. I took that complaint myself. Three weeks ago she showed me dozens of texts from a number she didn\'t recognize.'],
+    ['OKONKWO', 'There were no threats and no name. I told her there was nothing we could do yet, and to keep a record of everything.'],
+    ['', 'The apartment door is open a few inches. No sign of forced entry. A lamp is still on inside.'],
     ['REYES', 'Crime scene unit is a few minutes out. Once they tape this room off, we\'re reading their reports instead of looking for ourselves.'],
     ['OKONKWO', 'Then we look now.'],
   ], 'c1_inv');
 
   N.c1_inv = { type: 'investigate', bg: 'apartment', plan: 'apartment', budget: 4, next: 'c1_priya',
     title: 'SEARCH THE APARTMENT',
-    intro: 'Six things in this room are worth your attention. You have time to examine four before the crime scene unit seals it. Click a marker to examine it.',
+    intro: 'Six things in this room are worth your attention. You have time to examine four before the crime scene unit seals it. Click a marker to examine it. Each piece of evidence you log raises Case Strength — how well this case will hold up in court.',
     outro: 'CRIME SCENE UNIT IS HERE — STEP OUT',
     hotspots: [
       { name: 'Tablet', x: 19, y: 17,
-        text: 'Her tablet, showing her text messages. 73 unread, all from one number she never saved as a contact. The most recent, 8:51 PM: "You looked tired today. I can help with that."',
+        text: 'Her tablet, showing her text messages. 73 unread, all from the unknown number in her complaint. It was a few dozen when she came to you. The most recent, 8:51 PM: "You looked tired today. I can help with that."',
         do: s => clue(s, 'tablet', '73 messages from an unsaved number') },
       { name: 'Bookshelf', x: 9, y: 58,
         text: 'A coffee can of dried flowers. Under it, a stack of index cards in careful block capitals. "I SAW YOU ON THE THIRD FLOOR." "SIT BY THE WINDOW AGAIN." She kept every one — the way you keep things you might need as proof.',
@@ -468,7 +472,7 @@
 
   scene('c3_after_safe', 'dawn', [
     ['', 'Tessa Brandt sits on the back step of an ambulance, wrapped in a foil blanket, holding a paper cup with both hands.'],
-    ['TESSA', 'I reported him. In September. I did everything you\'re supposed to do.'],
+    ['TESSA', 'I reported it. To the campus in September, and to you three weeks ago. I did everything you\'re supposed to do.'],
   ], 'c3_bond');
 
   choice('c3_bond', 'She is watching to see how you answer. What do you say to her?', 14, [
@@ -605,8 +609,8 @@
 
   scene('c4_plea', 'court', s => [
     ['PRUITT', 'My client will plead guilty to kidnapping and take fifteen years. No trial, and Tessa Brandt never has to testify.'],
-    ['', s.strength >= 60 ? 'Your case is strong. You would probably win at trial, and Pruitt knows it.'
-      : s.strength >= 40 ? 'Your case could go either way at trial.'
+    ['', s.strength >= 50 ? 'Your case is strong. You would probably win at trial, and Pruitt knows it.'
+      : s.strength >= 30 ? 'Your case could go either way at trial.'
         : 'Your case is weak. A trial would be a real risk.'],
   ], 'c4_plea_c');
   choice('c4_plea_c', 'Accept a guaranteed fifteen years, or risk a trial for a longer sentence?', 18, [
@@ -641,7 +645,7 @@
       { type: 'hold', key: 'E', act: 'PAUSE FOR EFFECT', hold: 1300, ms: 2200, text: 'Your closing argument. Take your time.' },
     ],
     do: (s, r) => add(s, (3 - r.fails) * 4 + (s.f.candor ? 5 : 0)),
-    next: s => s.strength >= 70 ? 'end_guilty' : s.strength >= 50 ? 'end_lesser' : 'end_acquit' };
+    next: s => s.strength >= 60 ? 'end_guilty' : s.strength >= 40 ? 'end_lesser' : 'end_acquit' };
 
   const tessaLine = s => s.f.tessa === 'safe'
     ? 'Tessa Brandt transfers to a university four hundred miles away. In March, a postcard arrives at the 9th Precinct with one word on it: "Leaving."'
