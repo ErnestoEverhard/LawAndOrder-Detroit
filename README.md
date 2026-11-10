@@ -28,3 +28,10 @@ Open `index.html?gallery` to see all the built-in stills, or `index.html?at=<nod
 
 Four chapters, six endings, and a second suspect you can wrongly charge. What you find in chapter 1 and how you cut corners in chapter 2
 decide what the prosecutor has left to work with in chapter 4.
+
+## Godot prototype (3D)
+
+`godot/` is an experimental Godot 4 version of the chapter 1 apartment search: a first-person room you
+walk around, built from simple shapes with real-time lighting. Run it with `godot --path godot`
+(click to look, WASD to walk, E to examine, Esc to release the mouse). It is a look-and-feel test
+only; the full story still lives in the browser version.
