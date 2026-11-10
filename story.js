@@ -52,8 +52,8 @@
         text: 'Open to a rideshare receipt. She ordered a ride home at 9:14 PM from the Hollis University Library service entrance. The ride was cancelled at 9:16, two minutes later. She never got home.',
         do: s => clue(s, 'receipt', 'Ride cancelled at library service entrance, 9:16 PM') },
       { name: 'Window', x: 96, y: 67,
-        text: 'The fire-escape window. The latch is intact, but outside on the dusty sill there is a clean rectangle the size of a phone. Something sat out there for a long time, facing into her room.',
-        do: s => clue(s, 'window', 'Mark on fire-escape sill — possible camera') },
+        text: 'The fire-escape window. The latch is intact. Outside, behind a dead plant on the fire escape, two cut zip ties hang from the railing around a clean patch in the rust. Something small was strapped there, low and out of sight from inside, aimed at her window.',
+        do: s => clue(s, 'window', 'Cut zip ties on the fire escape — a hidden camera was mounted there') },
       { name: 'Corkboard', x: 48, y: 5,
         text: 'Her class schedule and her work calendar. She works the closing shift at the library circulation desk on Tuesdays and Thursdays. Tonight is Tuesday. A sticky note in her handwriting: "ask Campus Safety AGAIN about my report."',
         do: s => clue(s, 'report', 'Worked closing shifts at the library; had filed a report') },
@@ -668,7 +668,7 @@
   /* ───────────── FLOWCHARTS ───────────── */
   const FLOW = {
     1: { title: 'CHAPTER 1 — THE EMPTY APARTMENT', rows: [
-      [['clue_tablet', 'The tablet'], ['clue_notes', 'The index cards'], ['clue_receipt', 'The receipt'], ['clue_window', 'The window sill'], ['clue_report', 'The corkboard'], ['clue_ex', 'The torn photo']],
+      [['clue_tablet', 'The tablet'], ['clue_notes', 'The index cards'], ['clue_receipt', 'The receipt'], ['clue_window', 'The fire escape'], ['clue_report', 'The corkboard'], ['clue_ex', 'The torn photo']],
       [['c1_priya_soft', 'Reassure Priya'], ['c1_priya_cards', 'Show her the cards'], ['c1_priya_hard', 'Press her'], ['c1_priya_silent', 'Say nothing']],
       [['c1_lead_good', 'Follow the library'], ['c1_lead_ex', 'Follow the ex'], ['c1_lead_slow', 'No lead — an hour lost']],
     ] },
