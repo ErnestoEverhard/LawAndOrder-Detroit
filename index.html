@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEAD SIGNAL</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game">
+  <div id="stage"></div>
+  <div id="grain"></div>
+
+  <header id="hud" hidden>
+    <div id="hudChapter"></div>
+    <div class="meter">
+      <span>CASE STRENGTH <b id="hudStrength">0%</b></span>
+      <div class="track"><i id="hudBar"></i></div>
+      <span class="small">EVIDENCE <b id="hudClues">0</b></span>
+    </div>
+  </header>
+  <div id="toasts"></div>
+
+  <section id="title">
+    <p class="kicker">AN INTERACTIVE PROCEDURAL</p>
+    <h1>DEAD SIGNAL</h1>
+    <p class="blurb">A student doesn't come home. You have one night to find her, and three months to make it stick.<br>
+      Every choice is timed. Every shortcut has a price in court.</p>
+    <button id="startBtn" class="big">OPEN THE CASE FILE</button>
+    <p class="keys"><kbd>SPACE</kbd> advance &nbsp; <kbd>1</kbd>–<kbd>3</kbd> choose &nbsp; <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><kbd>E</kbd><kbd>SPACE</kbd> action prompts (press, tap or hold — each prompt says which)</p>
+    <p class="note">Contains themes of stalking and abduction. Nothing graphic is depicted.</p>
+  </section>
+
+  <div id="card" hidden></div>
+
+  <section id="inv" hidden>
+    <div class="invHead"><h2 id="invTitle"></h2><span>TIME LEFT <b id="invBudget"></b></span></div>
+    <div id="invMap"></div>
+    <div class="invFoot"><p id="invInfo"></p><button id="invLeave" class="big"></button></div>
+  </section>
+
+  <section id="qte" hidden>
+    <h2 id="qteTitle"></h2>
+    <p id="qteText"></p>
+    <div id="qtePrompt" hidden>
+      <div class="keywrap"><i id="qteRing"></i><kbd id="qteKey"></kbd></div>
+      <div id="qteAct"></div>
+      <div id="qteHow"></div>
+      <div id="qteBar"><i id="qteFill"></i></div>
+    </div>
+    <div id="qteMarks"></div>
+  </section>
+
+  <div id="bottom">
+    <div id="timer" hidden><i id="timerFill"></i></div>
+    <div id="choices" hidden></div>
+    <div id="dialog" hidden>
+      <div id="who"></div>
+      <p id="text"></p>
+      <span class="adv">SPACE ▸</span>
+    </div>
+  </div>
+
+  <section id="flow" hidden></section>
+</div>
+<script src="art.js"></script>
+<script src="story.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
