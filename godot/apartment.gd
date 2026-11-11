@@ -256,6 +256,7 @@ func _clues() -> void:
 		sm.height = 0.09
 		mark.mesh = sm
 		mark.material_override = _mat(AMBER, 1.6)
+		mark.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mark.position = Vector3(0, c.size.y / 2.0 + 0.12, 0)
 		body.add_child(mark)
 		body.set_meta("mark", mark)
