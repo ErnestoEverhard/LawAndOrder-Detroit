@@ -321,7 +321,19 @@ func _label(text: String, size: int, color: Color) -> Label:
 	return l
 
 func _ui() -> void:
+	# film grade over the 3D view, under the interface
+	var film := CanvasLayer.new()
+	film.layer = 0
+	add_child(film)
+	var grade := ColorRect.new()
+	grade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	grade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sm := ShaderMaterial.new()
+	sm.shader = load("res://grade.gdshader")
+	grade.material = sm
+	film.add_child(grade)
 	var layer := CanvasLayer.new()
+	layer.layer = 1
 	add_child(layer)
 	var root := Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
