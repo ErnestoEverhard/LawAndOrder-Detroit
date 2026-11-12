@@ -33,12 +33,13 @@
     ['OKONKWO', 'I know. I took that complaint myself. Three weeks ago she showed me dozens of texts from a number she didn\'t recognize.'],
     ['OKONKWO', 'There were no threats and no name. I told her there was nothing we could do yet, and to keep a record of everything.'],
     ['', 'The apartment door is open a few inches. No sign of forced entry. A lamp is still on inside.'],
+    ['', 'Two bedrooms off a short hall. Priya\'s door is shut. Tessa\'s is the one with the lamp on, and that is the room you came for.'],
     ['REYES', 'Crime scene unit is a few minutes out. Once they tape this room off, we\'re reading their reports instead of looking for ourselves.'],
     ['OKONKWO', 'Then we look now.'],
   ], 'c1_inv');
 
   N.c1_inv = { type: 'investigate', bg: 'apartment', plan: 'apartment', budget: 4, next: 'c1_priya',
-    title: 'SEARCH THE APARTMENT',
+    title: 'SEARCH TESSA\'S ROOM',
     intro: 'Six things in this room are worth your attention. You have time to examine four before the crime scene unit seals it. Click a marker to examine it. Each piece of evidence you log raises Case Strength — how well this case will hold up in court.',
     outro: 'CRIME SCENE UNIT IS HERE — STEP OUT',
     hotspots: [

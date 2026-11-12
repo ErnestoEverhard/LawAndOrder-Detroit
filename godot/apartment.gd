@@ -42,7 +42,7 @@ func _ready() -> void:
 	_people()
 	_player()
 	_ui()
-	_say("You are Detective Nadia Okonkwo. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E. You can also talk to your partner.")
+	_say("You are Detective Nadia Okonkwo. This is Tessa Brandt's bedroom, in the apartment she shares with Priya Nair. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E. You can also talk to your partner.")
 	var args := OS.get_cmdline_user_args()
 	if args.size() >= 2 and args[0] == "--shot":
 		if args.size() >= 6:
@@ -211,6 +211,9 @@ func _room() -> void:
 	]:
 		_box(h[0], h[1], Color.WHITE, false).material_override = plaster
 	_box(Vector3(0, -0.05, 3.9), Vector3(3.2, 0.1, 1.7), Color.WHITE, false).material_override = _tex("concrete_floor_worn_001", "diff", 0.5)
+	# Priya's bedroom door, shut, across the hall
+	_box(Vector3(0.15, 1.05, 4.69), Vector3(0.9, 2.1, 0.04), Color(0.30, 0.22, 0.16), false)
+	_box(Vector3(0.5, 1.0, 4.66), Vector3(0.04, 0.04, 0.06), Color(0.65, 0.6, 0.45), false)
 	var gap := StaticBody3D.new()                     # unseen barrier: the doorway is not an exit yet
 	var gap_cs := CollisionShape3D.new()
 	var gap_shape := BoxShape3D.new()
@@ -257,7 +260,6 @@ func _furniture() -> void:
 	_box(Vector3(-3.82, 0.97, 0.5), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
 	# seating and the dead ceiling light
 	_model("modern_arm_chair_01", Vector3(-3.0, 0, 2.1), 2.3, 1.0, Vector3(0.8, 0.6, 0.9), -0.08)
-	_model("sofa_02", Vector3(2.4, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85), -0.1)
 	_model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
 	# corkboard
 	_box(Vector3(0.2, 1.55, -2.97), Vector3(1.3, 0.85, 0.04), Color(0.50, 0.35, 0.22), false)
@@ -443,7 +445,7 @@ func _reyes() -> String:
 		return "That's our time, Nadia. Crime scene has the room. Priya's still in the hall, and she's the one who called it in. Let's hear it from her."
 	if left == BUDGET:
 		return [
-			"Roommate's name is Priya Nair. She's out in the hall with a uniform. Says Tessa texts when she leaves work, every night, and tonight she didn't.",
+			"Roommate's name is Priya Nair. That's her room across the hall. She's out on the stairs with a uniform. Says Tessa texts when she leaves work, every night, and tonight she didn't.",
 			"Crime scene's ten minutes out and they'll seal the room. We get four good looks, not six. Pick the ones that tell us where she was tonight.",
 		][(talks - 1) % 2]
 	return [
