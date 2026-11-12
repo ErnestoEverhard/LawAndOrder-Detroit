@@ -1,7 +1,7 @@
 shader_type canvas_item;
 // Film look over the 3D view: muted colour, crushed shadows, cool shadows / warm highlights, grain, vignette.
 uniform sampler2D screen : hint_screen_texture, filter_linear;
-uniform float grain = 0.055;
+uniform float grain = 0.0;   // animated film grain; off because it reads as the walls crawling
 uniform float desaturate = 0.45;
 uniform float vignette = 0.4;
 
