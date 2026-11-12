@@ -64,3 +64,23 @@ simply absent.
 - characters/: louise, leonard, james, megan, kate, remy, the_boss (FBX, T-pose, with skin)
 - animations/: idle, walk (in place), run (in place), sit_idle, sit_talk, talk, argue, terrified
   (FBX, without skin, exported on Leonard)
+
+## Bedroom additions
+
+Poly Haven models, CC0, 1k glTF. Dresser and wardrobe candidates are listed first; the other entries are clutter props.
+
+| Id | What it is | Source | Licence | Size |
+|---|---|---|---|---|
+| `drawer_cabinet` | Tall modern 4-drawer unit, metal and wood (about 1.9 m high, so a tallboy rather than a low dresser) | https://polyhaven.com/a/drawer_cabinet | CC0 | 1.2 MB |
+| `modern_wooden_cabinet` | Low, wide modern wood sideboard with two doors (about 0.7 m high, 2.4 m wide) | https://polyhaven.com/a/modern_wooden_cabinet | CC0 | 2.8 MB |
+| `vintage_wooden_drawer_01` | Vintage wooden drawer cabinet with several front drawers, office or filing style | https://polyhaven.com/a/vintage_wooden_drawer_01 | CC0 | 2.0 MB |
+| `painted_wooden_cabinet_02` | Tall painted wooden cabinet, rustic, bookcase-like (about 2.6 m high) | https://polyhaven.com/a/painted_wooden_cabinet_02 | CC0 | 1.6 MB |
+| `rubber_boots` | Pair of rubber wellington boots | https://polyhaven.com/a/rubber_boots | CC0 | 2.0 MB |
+| `alarm_clock_01` | Small bedside alarm clock | https://polyhaven.com/a/alarm_clock_01 | CC0 | 1.6 MB |
+| `wall_clock` | Round analogue wall clock | https://polyhaven.com/a/wall_clock | CC0 | 1.6 MB |
+| `wicker_basket_02` | Woven wicker basket, open top (laundry basket stand-in) | https://polyhaven.com/a/wicker_basket_02 | CC0 | 3.0 MB |
+| `potted_plant_01` | Houseplant in a terracotta pot | https://polyhaven.com/a/potted_plant_01 | CC0 | 6.1 MB |
+| `hanging_picture_frame_01` | Framed wall picture, modern and minimal | https://polyhaven.com/a/hanging_picture_frame_01 | CC0 | 404 KB |
+| `metal_trash_can` | Metal waste bin with rust texture | https://polyhaven.com/a/metal_trash_can | CC0 | 4.8 MB |
+
+Not downloaded: `decorative_book_set_01` has no glTF at any resolution in the Poly Haven file listing (only FBX, USD and Blender), so it was skipped.

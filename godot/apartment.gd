@@ -265,7 +265,17 @@ func _furniture() -> void:
 	_box(Vector3(-3.82, 0.87, 0.5), Vector3(0.02, 0.18, 0.02), Color(0.7, 0.5, 0.4), false)
 	_box(Vector3(-3.82, 0.97, 0.5), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
 	# seating and the dead ceiling light
-	_model("modern_arm_chair_01", Vector3(-3.0, 0, 2.1), 2.3, 1.0, Vector3(0.8, 0.6, 0.9), -0.08)
+	_model("modern_arm_chair_01", Vector3(3.3, 0, -0.75), -1.9, 1.0, Vector3(0.8, 0.6, 0.9), -0.08)
+	_model("sofa_02", Vector3(2.5, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85), -0.1)
+	# chest of drawers on the west wall, with a framed picture above it
+	_model("drawer_cabinet", Vector3(-3.78, 0, -1.3), PI / 2, 0.7, Vector3(0.8, 1.32, 0.36))
+	_model("hanging_picture_frame_01", Vector3(-3.99, 1.95, -1.3), PI / 2, 0.8)
+	_model("alarm_clock_01", Vector3(1.3, 0.55, -2.7), 0.3)
+	_model("wall_clock", Vector3(2.5, 2.05, 2.99), PI)
+	_model("wicker_basket_02", Vector3(-0.75, 0, 1.95), 0.4, 1.7)
+	_model("rubber_boots", Vector3(1.05, 0, 2.78), 2.9, 0.75)
+	_model("potted_plant_01", Vector3(3.68, 0, 2.6), 1.0, 0.9)
+	_closet()
 	_model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
 	# corkboard
 	_box(Vector3(0.2, 1.55, -2.97), Vector3(1.3, 0.85, 0.04), Color(0.50, 0.35, 0.22), false)
@@ -293,6 +303,36 @@ func _people() -> void:
 	_talkable(_person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2), "Reyes")
 	# Priya Nair, the roommate, sitting on the stairs in the hall.
 	_talkable(_person("megan", "sit_idle", Vector3(2.52, -0.08, 3.9), -PI / 2), "Priya", 1.3)
+
+func _closet() -> void:
+	# built-in closet on the door wall, left of the door: one sliding door shut, the other pushed back
+	var white := Color(0.62, 0.60, 0.57)
+	var x0 := -3.95
+	var x1 := -0.9
+	_box(Vector3((x0 + x1) / 2.0, 2.5, 2.7), Vector3(x1 - x0, 0.6, 0.6), white, false)        # soffit
+	_box(Vector3(x1 + 0.04, 1.1, 2.7), Vector3(0.08, 2.2, 0.6), white, false)                 # end panel
+	_box(Vector3(-3.2, 1.1, 2.42), Vector3(1.5, 2.2, 0.035), white, false)                    # shut door
+	_box(Vector3(-2.45, 1.1, 2.47), Vector3(1.5, 2.2, 0.035), white, false)                   # open door, slid across
+	for x in [-3.93, -2.47, -3.18, -1.72]:                                                    # door edges
+		_box(Vector3(x, 1.1, 2.40 if x < -3.0 or x == -2.47 else 2.45), Vector3(0.03, 2.2, 0.02), Color(0.2, 0.2, 0.2), false)
+	_box(Vector3(-1.3, 1.1, 2.97), Vector3(0.82, 2.2, 0.02), Color(0.05, 0.05, 0.06), false)  # dark interior
+	_box(Vector3(-1.3, 1.85, 2.72), Vector3(0.8, 0.025, 0.025), Color(0.5, 0.5, 0.52), false) # rail
+	_box(Vector3(-1.3, 2.0, 2.72), Vector3(0.8, 0.03, 0.5), white, false)                     # shelf
+	_box(Vector3(-1.42, 2.1, 2.75), Vector3(0.4, 0.18, 0.3), Color(0.42, 0.33, 0.24), false)  # storage box
+	var cloth := [Color(0.16, 0.20, 0.30), Color(0.45, 0.14, 0.15), Color(0.55, 0.53, 0.48), Color(0.12, 0.12, 0.13),
+		Color(0.25, 0.33, 0.27), Color(0.50, 0.40, 0.22), Color(0.30, 0.30, 0.36)]
+	for i in 7:                                                                               # hanging clothes
+		var h := 0.75 + (i * 37 % 5) * 0.09
+		_box(Vector3(-1.64 + i * 0.105, 1.83 - h / 2.0, 2.72), Vector3(0.06, h, 0.42), cloth[i], false, 0.0, (i % 3 - 1) * 0.12).material_override = _mat(cloth[i], 0.0, 1.0)
+	_box(Vector3(-1.2, 0.09, 2.72), Vector3(0.3, 0.18, 0.34), Color(0.36, 0.28, 0.2), false, 0.0, 0.2)   # shoe box
+	var body := StaticBody3D.new()
+	var cs := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(x1 - x0 + 0.1, 2.8, 0.62)
+	cs.shape = shape
+	body.add_child(cs)
+	body.position = Vector3((x0 + x1) / 2.0, 1.4, 2.7)
+	add_child(body)
 
 func _lights() -> void:
 	_omni(Vector3(-2.6, 1.15, -2.45), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)   # desk lamp
