@@ -38,6 +38,7 @@ func _ready() -> void:
 	_furniture()
 	_lights()
 	_clues()
+	_people()
 	_player()
 	_ui()
 	_say("You are Detective Nadia Okonkwo. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E.")
@@ -126,6 +127,33 @@ func _model(id: String, pos: Vector3, rot_y := 0.0, scale := 1.0, solid := Vecto
 		body.position = pos
 		body.rotation.y = rot_y
 		add_child(body)
+	return n
+
+func _person(who: String, anim: String, pos: Vector3, rot_y := 0.0) -> Node3D:
+	# A Mixamo character playing one looping Mixamo animation. Each character's bones carry
+	# their own prefix (mixamorig_, mixamorig9_, ...), so the animation's tracks are renamed to match.
+	var n: Node3D = (load("res://assets/mixamo/characters/%s.fbx" % who) as PackedScene).instantiate()
+	n.position = pos
+	n.rotation.y = rot_y
+	add_child(n)
+	var skel: Skeleton3D = n.find_child("Skeleton3D", true, false)
+	var prefix := ""
+	for i in skel.get_bone_count():
+		if skel.get_bone_name(i).ends_with("Hips"):
+			prefix = skel.get_bone_name(i).trim_suffix("Hips")
+	var src: Node = (load("res://assets/mixamo/animations/%s.fbx" % anim) as PackedScene).instantiate()
+	var a: Animation = (src.find_child("AnimationPlayer", true, false) as AnimationPlayer).get_animation("mixamo_com").duplicate()
+	src.free()
+	for t in a.get_track_count():
+		var path := str(a.track_get_path(t))
+		var bone := path.get_slice(":", 1)
+		a.track_set_path(t, NodePath("Skeleton3D:" + prefix + bone.substr(bone.find("_") + 1)))
+	a.loop_mode = Animation.LOOP_LINEAR
+	var ap: AnimationPlayer = n.find_child("AnimationPlayer", true, false)
+	var lib := AnimationLibrary.new()
+	lib.add_animation(anim, a)
+	ap.add_animation_library("mx", lib)
+	ap.play("mx/" + anim)
 	return n
 
 func _environment() -> void:
@@ -218,6 +246,11 @@ func _furniture() -> void:
 	_box(Vector3(-0.15, 1.65, -2.94), Vector3(0.3, 0.42, 0.01), Color(0.92, 0.9, 0.86), false)
 	_box(Vector3(0.3, 1.72, -2.94), Vector3(0.42, 0.28, 0.01), Color(0.86, 0.80, 0.62), false)
 	_box(Vector3(0.65, 1.38, -2.94), Vector3(0.16, 0.16, 0.01), Color(0.96, 0.9, 0.4), false, 0.3)
+
+func _people() -> void:
+	# Det. Sam Reyes, your partner, waiting just inside the door.
+	if ResourceLoader.exists("res://assets/mixamo/characters/leonard.fbx"):
+		_person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2)
 
 func _lights() -> void:
 	_omni(Vector3(-2.6, 1.15, -2.45), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)   # desk lamp

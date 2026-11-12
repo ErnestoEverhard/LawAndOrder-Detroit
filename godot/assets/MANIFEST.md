@@ -53,3 +53,14 @@ Each texture directory has the diffuse/colour, normal (GL), roughness and ARM ma
 None. Every requested item downloaded.
 
 Not found (not a download failure): no modern bed, rug or curtain model exists in the Poly Haven models listing. The day bed and the absence of a rug/curtain are noted above.
+
+## Mixamo (not in git)
+
+`assets/mixamo/` holds characters and animations downloaded from mixamo.com with the project owner's
+Adobe account. They are free to use in a game but may not be redistributed as raw files, and the
+characters are about 300 MB, so the folder is git-ignored. Without it the game still runs; people are
+simply absent.
+
+- characters/: louise, leonard, james, megan, kate, remy, the_boss (FBX, T-pose, with skin)
+- animations/: idle, walk (in place), run (in place), sit_idle, sit_talk, talk, argue, terrified
+  (FBX, without skin, exported on Leonard)
