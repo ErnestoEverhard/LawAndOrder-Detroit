@@ -157,6 +157,66 @@ func _person(who: String, anim: String, pos: Vector3, rot_y := 0.0) -> Node3D:
 	ap.play("mx/" + anim)
 	return n
 
+func _cyl(pos: Vector3, radius: float, height: float, color: Color, rough := 0.85) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = radius
+	cm.bottom_radius = radius
+	cm.height = height
+	mi.mesh = cm
+	mi.material_override = _mat(color, 0.0, rough)
+	mi.position = pos
+	add_child(mi)
+	return mi
+
+func _note(text: String, pos: Vector3, size: int, color: Color, tilt := 0.0) -> Label3D:
+	# Writing on a sheet of paper: faces +Z, lit by the room like the paper under it.
+	var l := Label3D.new()
+	l.text = text
+	l.font = FONT
+	l.font_size = size * 4
+	l.pixel_size = 0.00032
+	l.modulate = color
+	l.outline_size = 0
+	l.shaded = true
+	l.double_sided = false
+	l.line_spacing = -6.0
+	l.position = pos
+	l.rotation.z = tilt
+	add_child(l)
+	return l
+
+func _photo(pos: Vector3, hdri: String, crop: Vector3, tilt := 0.0) -> void:
+	# An instant-film snapshot: white card with a cropped piece of a real photograph.
+	var card := _box(pos, Vector3(0.13, 0.155, 0.004), Color(0.93, 0.92, 0.88), false)
+	card.rotation.z = tilt
+	var pic := MeshInstance3D.new()
+	var q := QuadMesh.new()
+	q.size = Vector2(0.11, 0.105)
+	pic.mesh = q
+	var m := StandardMaterial3D.new()
+	m.albedo_texture = load("res://assets/hdri/%s.hdr" % hdri)
+	m.albedo_color = Color(0.9, 0.9, 0.9)
+	m.uv1_scale = Vector3(0.16, 0.2, 1)
+	m.uv1_offset = crop
+	m.roughness = 0.4
+	pic.material_override = m
+	pic.position = Vector3(0, 0.014, 0.003)
+	card.add_child(pic)
+
+func _clear_glass(n: Node3D) -> void:
+	# Poly Haven glass arrives as an opaque dark shell; make it see-through.
+	for mi in n.find_children("*", "MeshInstance3D", true, false):
+		var mesh := (mi as MeshInstance3D).mesh
+		for i in mesh.get_surface_count():
+			var mat := mesh.surface_get_material(i)
+			if mat and mat.resource_name.to_lower().contains("glass"):
+				var g := StandardMaterial3D.new()
+				g.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				g.albedo_color = Color(1, 1, 1, 0.06)
+				g.roughness = 0.05
+				(mi as MeshInstance3D).set_surface_override_material(i, g)
+
 func _environment() -> void:
 	var env := Environment.new()
 	var sky := Sky.new()
@@ -261,27 +321,76 @@ func _furniture() -> void:
 		var books: Node3D = (load("res://assets/models/book_encyclopedia_set_01/book_encyclopedia_set_01_1k.gltf") as PackedScene).instantiate()
 		books.position = Vector3(-0.42 if y != 0.94 else -0.1, y + 0.01, 0.1)
 		shelf.add_child(books)
-	_box(Vector3(-3.82, 0.73, 0.5), Vector3(0.12, 0.14, 0.12), Color(0.6, 0.62, 0.65), false)   # coffee can
-	_box(Vector3(-3.82, 0.87, 0.5), Vector3(0.02, 0.18, 0.02), Color(0.7, 0.5, 0.4), false)
-	_box(Vector3(-3.82, 0.97, 0.5), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
-	# seating and the dead ceiling light
+	# coffee can of dried flowers on the shelf at 0.66, sitting on the stack of index cards
+	_box(Vector3(-3.82, 0.668, 0.5), Vector3(0.13, 0.012, 0.08), Color(0.90, 0.88, 0.80), false, 0.0, 0.25)
+	_cyl(Vector3(-3.82, 0.734, 0.5), 0.045, 0.12, Color(0.55, 0.20, 0.16), 0.5)
+	_cyl(Vector3(-3.82, 0.796, 0.5), 0.047, 0.006, Color(0.62, 0.63, 0.65), 0.35)
+	for f in [[-0.02, 0.0, 0.10, 0.2], [0.015, 0.02, 0.085, -0.25], [0.0, -0.025, 0.07, 0.1], [0.02, -0.01, 0.105, -0.1]]:
+		var stem := _cyl(Vector3(-3.82 + f[0], 0.79 + f[2] / 2.0, 0.5 + f[1]), 0.003, f[2], Color(0.42, 0.36, 0.22))
+		stem.rotation.z = f[3]
+		var head := MeshInstance3D.new()
+		var hm := SphereMesh.new()
+		hm.radius = 0.014
+		hm.height = 0.024
+		head.mesh = hm
+		head.material_override = _mat(Color(0.55, 0.38, 0.30), 0.0, 1.0)
+		head.position = Vector3(-3.82 + f[0] - sin(f[3]) * f[2] * 0.5, 0.79 + f[2], 0.5 + f[1])
+		add_child(head)
+	# seating and the ceiling light
 	_model("modern_arm_chair_01", Vector3(3.3, 0, -0.75), -1.9, 1.0, Vector3(0.8, 0.6, 0.9), -0.08)
 	_model("sofa_02", Vector3(2.5, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85), -0.1)
 	# chest of drawers on the west wall, with a framed picture above it
 	_model("drawer_cabinet", Vector3(-3.78, 0, -1.3), PI / 2, 0.7, Vector3(0.8, 1.32, 0.36))
 	_model("hanging_picture_frame_01", Vector3(-3.99, 1.95, -1.3), PI / 2, 0.8)
-	_model("alarm_clock_01", Vector3(1.3, 0.55, -2.7), 0.3)
+	_clear_glass(_model("alarm_clock_01", Vector3(1.3, 0.55, -2.68), 0.25, 1.1))
 	_model("wall_clock", Vector3(2.5, 2.05, 2.99), PI)
 	_model("wicker_basket_02", Vector3(-0.75, 0, 1.95), 0.4, 1.7)
 	_model("rubber_boots", Vector3(1.05, 0, 2.78), 2.9, 0.75)
 	_model("potted_plant_01", Vector3(3.68, 0, 2.6), 1.0, 0.9)
 	_closet()
-	_model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
+	var lamp := _model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
+	for m in lamp.find_children("*", "MeshInstance3D", true, false):
+		(m as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF   # or it would shade its own bulb
+	var bulb := MeshInstance3D.new()
+	var bm := SphereMesh.new()
+	bm.radius = 0.035
+	bm.height = 0.07
+	bulb.mesh = bm
+	bulb.material_override = _mat(Color(1.0, 0.86, 0.62), 4.0)
+	bulb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	bulb.position = Vector3(0, 2.3, 0.3)
+	add_child(bulb)
 	# corkboard
 	_box(Vector3(0.2, 1.55, -2.97), Vector3(1.3, 0.85, 0.04), Color(0.50, 0.35, 0.22), false)
-	_box(Vector3(-0.15, 1.65, -2.94), Vector3(0.3, 0.42, 0.01), Color(0.92, 0.9, 0.86), false)
-	_box(Vector3(0.3, 1.72, -2.94), Vector3(0.42, 0.28, 0.01), Color(0.86, 0.80, 0.62), false)
-	_box(Vector3(0.65, 1.38, -2.94), Vector3(0.16, 0.16, 0.01), Color(0.96, 0.9, 0.4), false, 0.3)
+	var ink := Color(0.10, 0.10, 0.12)
+	# class schedule
+	_box(Vector3(-0.2, 1.62, -2.945), Vector3(0.34, 0.46, 0.004), Color(0.92, 0.9, 0.86), false)
+	_note("HOLLIS UNIVERSITY\nFALL SCHEDULE\nT. BRANDT", Vector3(-0.2, 1.79, -2.942), 17, ink)
+	_note("MON WED   9:00   PSYC 210\nMON WED  13:00   STAT 201\nTUE THU  10:30   ENGL 245\nFRI      11:00   BIOL 110 LAB\n\nTUE THU  17:00   WORK", Vector3(-0.2, 1.62, -2.942), 16, ink)
+	_note("advisor mtg Oct 20!!", Vector3(-0.2, 1.44, -2.942), 16, Color(0.75, 0.12, 0.12), 0.06)
+	# work calendar
+	_box(Vector3(0.3, 1.74, -2.945), Vector3(0.44, 0.3, 0.004), Color(0.86, 0.80, 0.62), false)
+	_note("LIBRARY — CIRCULATION DESK\nOCTOBER SHIFTS", Vector3(0.3, 1.845, -2.942), 18, ink)
+	_note("THU  9   CLOSE  5–9\nTUE 14   CLOSE  5–9\nTHU 16   CLOSE  5–9\nTUE 21   CLOSE  5–9", Vector3(0.3, 1.72, -2.942), 18, ink)
+	_note("swap w/ Dana?", Vector3(0.38, 1.635, -2.942), 16, Color(0.75, 0.12, 0.12), 0.05)
+	# sticky note
+	_box(Vector3(0.66, 1.36, -2.945), Vector3(0.17, 0.17, 0.004), Color(0.96, 0.9, 0.4), false, 0.0)
+	_note("ask Campus\nSafety AGAIN\nabout my\nreport", Vector3(0.66, 1.36, -2.942), 20, Color(0.1, 0.15, 0.45), -0.05)
+	# campus safety card
+	_box(Vector3(0.28, 1.38, -2.945), Vector3(0.3, 0.16, 0.004), Color(0.80, 0.86, 0.90), false, 0.0)
+	_note("HOLLIS CAMPUS SAFETY\nNight escort: 555-0142\nReport no. CS-2291  (Sept 22)", Vector3(0.28, 1.38, -2.942), 15, ink)
+	# two snapshots
+	_photo(Vector3(0.68, 1.77, -2.945), "cobblestone_street_night_2k", Vector3(0.18, 0.35, 0), 0.07)
+	_photo(Vector3(-0.31, 1.27, -2.945), "hansaplatz_2k", Vector3(0.55, 0.38, 0), -0.05)
+	for pin in [Vector3(-0.2, 1.84, 0), Vector3(0.3, 1.875, 0), Vector3(0.66, 1.43, 0), Vector3(0.28, 1.45, 0), Vector3(0.68, 1.85, 0), Vector3(-0.31, 1.35, 0)]:
+		var pm := MeshInstance3D.new()
+		var ps := SphereMesh.new()
+		ps.radius = 0.008
+		ps.height = 0.016
+		pm.mesh = ps
+		pm.material_override = _mat(Color(0.7, 0.1, 0.1), 0.0, 0.3)
+		pm.position = Vector3(pin.x, pin.y, -2.936)
+		add_child(pm)
 
 func _talkable(n: Node3D, who: String, height := 1.8) -> void:
 	var body := StaticBody3D.new()
@@ -342,6 +451,7 @@ func _lights() -> void:
 	_omni(Vector3(2.6, 2.0, 0.6), Color(0.50, 0.58, 0.9), 1.0, 6.0)            # cool fill, window side
 	_omni(Vector3(-1.6, 2.1, 1.9), Color(1.0, 0.85, 0.68), 0.55, 5.5)          # hallway spill on the door wall
 	_omni(Vector3(2.4, 2.1, 2.0), Color(0.75, 0.75, 0.85), 0.45, 4.5)          # lifts the corner by the sofa
+	_omni(Vector3(0, 2.14, 0.3), Color(1.0, 0.84, 0.62), 1.1, 7.5, true)       # the ceiling light, on
 	# streetlight through the blinds
 	var s := SpotLight3D.new()
 	s.position = Vector3(6.4, 3.0, 1.1)
