@@ -12,7 +12,7 @@ const CLUES := [
 		"text": "Her tablet, showing her text messages. 73 unread, all from the unknown number in her complaint. It was a few dozen when she came to you. The most recent, 8:51 PM: \"You looked tired today. I can help with that.\""},
 	{"name": "Bookshelf", "pts": 5, "pos": Vector3(-3.8, 0.85, 0.4), "size": Vector3(0.5, 0.5, 0.9),
 		"text": "A coffee can of dried flowers. Under it, a stack of index cards in careful block capitals. \"I SAW YOU ON THE THIRD FLOOR.\" \"SIT BY THE WINDOW AGAIN.\" She kept every one, the way you keep things you might need as proof."},
-	{"name": "Laptop", "pts": 5, "pos": Vector3(2.5, 0.72, -2.45), "size": Vector3(0.6, 0.45, 0.5),
+	{"name": "Laptop", "pts": 5, "pos": Vector3(2.3, 0.74, -2.4), "size": Vector3(0.6, 0.45, 0.5),
 		"text": "Open to a rideshare receipt. She ordered a ride home at 9:14 PM from the Hollis University Library service entrance. The ride was cancelled at 9:16, two minutes later. She never got home."},
 	{"name": "Window", "pts": 5, "pos": Vector3(3.8, 1.4, 0.8), "size": Vector3(0.4, 1.4, 1.8),
 		"text": "The fire-escape window. The latch is intact. Outside, behind a dead plant on the fire escape, two cut zip ties hang from the railing around a clean patch in the rust. Something small was strapped there, aimed at her window."},
@@ -202,26 +202,20 @@ func _room() -> void:
 	]:
 		_box(w[0], w[1], Color.WHITE).material_override = plaster
 	_box(Vector3(-0.35, 1.05, 3.4), Vector3(0.9, 2.1, 0.06), Color(0.30, 0.22, 0.16), false, 0.0, 1.0)  # door, ajar
-	# a stub of hallway beyond the door, so the doorway does not open onto the street
+	# the apartment's hall beyond the bedroom door: Priya's room opposite, stairs down to the street at the east end
 	for h in [
-		[Vector3(0, 1.4, 4.75), Vector3(3.2, 2.8, 0.1)],
-		[Vector3(-1.6, 1.4, 3.9), Vector3(0.1, 2.8, 1.7)],
-		[Vector3(1.6, 1.4, 3.9), Vector3(0.1, 2.8, 1.7)],
-		[Vector3(0, 2.85, 3.9), Vector3(3.2, 0.1, 1.7)],
+		[Vector3(0, 1.4, 4.85), Vector3(6.2, 2.8, 0.1)],
+		[Vector3(-3.1, 1.4, 3.95), Vector3(0.1, 2.8, 1.9)],
+		[Vector3(3.1, 1.4, 3.95), Vector3(0.1, 2.8, 1.9)],
+		[Vector3(0, 2.85, 3.95), Vector3(6.2, 0.1, 1.9)],
 	]:
-		_box(h[0], h[1], Color.WHITE, false).material_override = plaster
-	_box(Vector3(0, -0.05, 3.9), Vector3(3.2, 0.1, 1.7), Color.WHITE, false).material_override = _tex("concrete_floor_worn_001", "diff", 0.5)
+		_box(h[0], h[1], Color.WHITE).material_override = plaster
+	_box(Vector3(0, -0.05, 3.95), Vector3(6.2, 0.1, 1.9), Color.WHITE).material_override = _tex("concrete_floor_worn_001", "diff", 0.5)
+	for i in 3:                                                                                    # stairs
+		_box(Vector3(2.3 + i * 0.3, 0.1 + i * 0.1, 3.95), Vector3(0.3, 0.2 + i * 0.2, 1.7), Color(0.20, 0.19, 0.20))
 	# Priya's bedroom door, shut, across the hall
-	_box(Vector3(0.15, 1.05, 4.69), Vector3(0.9, 2.1, 0.04), Color(0.30, 0.22, 0.16), false)
-	_box(Vector3(0.5, 1.0, 4.66), Vector3(0.04, 0.04, 0.06), Color(0.65, 0.6, 0.45), false)
-	var gap := StaticBody3D.new()                     # unseen barrier: the doorway is not an exit yet
-	var gap_cs := CollisionShape3D.new()
-	var gap_shape := BoxShape3D.new()
-	gap_shape.size = Vector3(1.0, 2.1, 0.1)
-	gap_cs.shape = gap_shape
-	gap.add_child(gap_cs)
-	gap.position = Vector3(0, 1.05, 3.05)
-	add_child(gap)
+	_box(Vector3(0.15, 1.05, 4.79), Vector3(0.9, 2.1, 0.04), Color(0.30, 0.22, 0.16), false)
+	_box(Vector3(0.5, 1.0, 4.76), Vector3(0.04, 0.04, 0.06), Color(0.65, 0.6, 0.45), false)
 	_box(Vector3(0, 0.05, -2.98), Vector3(8, 0.1, 0.03), Color(0.16, 0.14, 0.15), false)          # skirting
 	_box(Vector3(-3.98, 0.05, 0), Vector3(0.03, 0.1, 6), Color(0.16, 0.14, 0.15), false)
 	for i in 9:                                                                                    # blinds
@@ -246,8 +240,20 @@ func _furniture() -> void:
 	# wastebasket
 	_box(Vector3(-0.9, 0.2, -2.6), Vector3(0.3, 0.4, 0.3), Color(0.22, 0.24, 0.27))
 	# bed against the brick wall, laptop left open on it
-	_model("vintage_day_bed", Vector3(2.7, 0, -2.5), 0.0, 1.0, Vector3(2.0, 0.55, 0.9))
-	_model("classic_laptop", Vector3(2.5, 0.52, -2.45), 0.35, 0.8)
+	# single bed along the brick wall, unmade, head toward the window wall
+	var linen := _mat(Color(0.40, 0.46, 0.60), 0.0, 1.0)
+	_box(Vector3(2.7, 0.16, -2.45), Vector3(2.05, 0.32, 1.0), Color(0.24, 0.17, 0.12))                       # frame
+	_box(Vector3(3.76, 0.5, -2.45), Vector3(0.06, 1.0, 1.0), Color(0.24, 0.17, 0.12), false)                 # headboard
+	_box(Vector3(2.7, 0.41, -2.45), Vector3(1.96, 0.18, 0.94), Color(0.80, 0.79, 0.76), false)               # mattress
+	_box(Vector3(2.35, 0.515, -2.43), Vector3(1.35, 0.05, 1.0), Color.WHITE, false, 0.0, 0.03).material_override = linen   # duvet
+	_box(Vector3(3.0, 0.545, -2.38), Vector3(0.28, 0.07, 0.98), Color.WHITE, false, 0.0, -0.06).material_override = linen  # folded back
+	var pillow := MeshInstance3D.new()
+	pillow.mesh = SphereMesh.new()
+	pillow.scale = Vector3(0.42, 0.13, 0.62)
+	pillow.position = Vector3(3.42, 0.56, -2.45)
+	pillow.material_override = _mat(Color(0.84, 0.83, 0.80))
+	add_child(pillow)
+	_model("classic_laptop", Vector3(2.3, 0.54, -2.4), 0.35, 0.8)
 	_model("side_table_01", Vector3(1.35, 0, -2.72), 0.0, 1.0, Vector3(0.56, 0.55, 0.46))
 	# bookshelf on the west wall
 	var shelf := _model("Shelf_01", Vector3(-3.98, 0, 0.2), PI / 2, 1.0, Vector3(1.0, 2.08, 0.3), 0.13)
@@ -267,27 +273,32 @@ func _furniture() -> void:
 	_box(Vector3(0.3, 1.72, -2.94), Vector3(0.42, 0.28, 0.01), Color(0.86, 0.80, 0.62), false)
 	_box(Vector3(0.65, 1.38, -2.94), Vector3(0.16, 0.16, 0.01), Color(0.96, 0.9, 0.4), false, 0.3)
 
+func _talkable(n: Node3D, who: String, height := 1.8) -> void:
+	var body := StaticBody3D.new()
+	body.collision_layer = 3          # blocks the player (1) and is seen by the look ray (2)
+	var cs := CollisionShape3D.new()
+	var cap := CapsuleShape3D.new()
+	cap.radius = 0.28
+	cap.height = height
+	cs.shape = cap
+	cs.position.y = height / 2.0
+	body.add_child(cs)
+	body.set_meta("talk", who)
+	n.add_child(body)
+
 func _people() -> void:
+	if not ResourceLoader.exists("res://assets/mixamo/characters/leonard.fbx"):
+		return
 	# Det. Sam Reyes, your partner, waiting just inside the door.
-	if ResourceLoader.exists("res://assets/mixamo/characters/leonard.fbx"):
-		var reyes := _person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2)
-		var body := StaticBody3D.new()
-		body.collision_layer = 3          # blocks the player (1) and is seen by the look ray (2)
-		var cs := CollisionShape3D.new()
-		var cap := CapsuleShape3D.new()
-		cap.radius = 0.28
-		cap.height = 1.8
-		cs.shape = cap
-		cs.position.y = 0.9
-		body.add_child(cs)
-		body.set_meta("talk", "Reyes")
-		reyes.add_child(body)
+	_talkable(_person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2), "Reyes")
+	# Priya Nair, the roommate, sitting on the stairs in the hall.
+	_talkable(_person("megan", "sit_idle", Vector3(2.52, -0.08, 3.9), -PI / 2), "Priya", 1.3)
 
 func _lights() -> void:
 	_omni(Vector3(-2.6, 1.15, -2.45), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)   # desk lamp
 	_omni(Vector3(-2.1, 0.95, -2.5), Color(0.55, 0.75, 1.0), 0.25, 1.2)         # tablet glow
-	_omni(Vector3(2.5, 0.85, -2.3), Color(0.6, 0.78, 1.0), 0.5, 2.2)            # laptop glow
-	_omni(Vector3(0.3, 2.1, 3.9), Color(1.0, 0.9, 0.72), 1.4, 5.0, true)        # hallway, through the door
+	_omni(Vector3(2.3, 0.9, -2.2), Color(0.6, 0.78, 1.0), 0.5, 2.2)            # laptop glow
+	_omni(Vector3(0.3, 2.3, 3.9), Color(1.0, 0.9, 0.72), 1.6, 6.0, true)        # hallway, through the door
 	_omni(Vector3(2.6, 2.0, 0.6), Color(0.50, 0.58, 0.9), 1.0, 6.0)            # cool fill, window side
 	_omni(Vector3(-1.6, 2.1, 1.9), Color(1.0, 0.85, 0.68), 0.55, 5.5)          # hallway spill on the door wall
 	_omni(Vector3(2.4, 2.1, 2.0), Color(0.75, 0.75, 0.85), 0.45, 4.5)          # lifts the corner by the sofa
@@ -438,6 +449,11 @@ func _process(_delta: float) -> void:
 	else:
 		ui_prompt.text = "[ E ]  Examine the %s" % looking.get_meta("clue").name.to_lower() if looking else ""
 
+func _priya() -> String:
+	if left > 0:
+		return "She's holding her phone in both hands in case it rings. \"Did you find anything? Please. Just look. I'll be right here.\""
+	return "\"She texts me when she leaves work. Every time. Just one word: 'Leaving.' Tonight there was nothing.\"\n\n(Her interview is the next scene. End of prototype.)"
+
 func _reyes() -> String:
 	# What your partner says depends on how far the search has got.
 	talks += 1
@@ -456,7 +472,10 @@ func _reyes() -> String:
 
 func _unhandled_input(e: InputEvent) -> void:
 	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_E and looking and looking.has_meta("talk"):
-		_say("DET. SAM REYES\n" + _reyes())
+		if looking.get_meta("talk") == "Priya":
+			_say("PRIYA NAIR\n" + _priya())
+		else:
+			_say("DET. SAM REYES\n" + _reyes())
 	elif e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_E and looking:
 		var c: Dictionary = looking.get_meta("clue")
 		looking.set_meta("used", true)
@@ -465,7 +484,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		strength += c.pts
 		var text: String = c.name.to_upper() + "\n" + c.text
 		if left == 0:
-			text += "\n\nThe crime scene unit is at the door. Time to step out.  (End of prototype.)"
+			text += "\n\nThe crime scene unit is at the door. Time to step out and talk to Priya, on the stairs in the hall."
 		_say(text)
 		_status()
 
