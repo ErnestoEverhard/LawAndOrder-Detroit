@@ -27,6 +27,7 @@ var ray: RayCast3D
 var left := BUDGET
 var strength := 0
 var looking: StaticBody3D = null
+var talks := 0
 var ui_prompt: Label
 var ui_info: Label
 var ui_panel: PanelContainer
@@ -41,7 +42,7 @@ func _ready() -> void:
 	_people()
 	_player()
 	_ui()
-	_say("You are Detective Nadia Okonkwo. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E.")
+	_say("You are Detective Nadia Okonkwo. Six things in this room are worth your attention, and you have time to examine four before the crime scene unit seals it.\n\nClick to look around. WASD to walk. Look at a glowing marker and press E. You can also talk to your partner.")
 	var args := OS.get_cmdline_user_args()
 	if args.size() >= 2 and args[0] == "--shot":
 		if args.size() >= 6:
@@ -109,7 +110,7 @@ func _tex(id: String, diff := "diff", scale := 0.5, tint := Color.WHITE) -> Stan
 	m.uv1_scale = Vector3.ONE * scale
 	return m
 
-func _model(id: String, pos: Vector3, rot_y := 0.0, scale := 1.0, solid := Vector3.ZERO) -> Node3D:
+func _model(id: String, pos: Vector3, rot_y := 0.0, scale := 1.0, solid := Vector3.ZERO, off_z := 0.0) -> Node3D:
 	# A Poly Haven model. Its front faces +Z and its origin is on the floor.
 	var n: Node3D = (load("res://assets/models/%s/%s_1k.gltf" % [id, id]) as PackedScene).instantiate()
 	n.position = pos
@@ -122,7 +123,7 @@ func _model(id: String, pos: Vector3, rot_y := 0.0, scale := 1.0, solid := Vecto
 		var shape := BoxShape3D.new()
 		shape.size = solid
 		cs.shape = shape
-		cs.position.y = solid.y / 2.0
+		cs.position = Vector3(0, solid.y / 2.0, off_z)   # models are not centred on their origin
 		body.add_child(cs)
 		body.position = pos
 		body.rotation.y = rot_y
@@ -166,8 +167,8 @@ func _environment() -> void:
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.20, 0.24, 0.38)
-	env.ambient_light_energy = 0.8
+	env.ambient_light_color = Color(0.27, 0.29, 0.38)
+	env.ambient_light_energy = 1.15
 	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
 	env.glow_enabled = true
@@ -201,6 +202,23 @@ func _room() -> void:
 	]:
 		_box(w[0], w[1], Color.WHITE).material_override = plaster
 	_box(Vector3(-0.35, 1.05, 3.4), Vector3(0.9, 2.1, 0.06), Color(0.30, 0.22, 0.16), false, 0.0, 1.0)  # door, ajar
+	# a stub of hallway beyond the door, so the doorway does not open onto the street
+	for h in [
+		[Vector3(0, 1.4, 4.75), Vector3(3.2, 2.8, 0.1)],
+		[Vector3(-1.6, 1.4, 3.9), Vector3(0.1, 2.8, 1.7)],
+		[Vector3(1.6, 1.4, 3.9), Vector3(0.1, 2.8, 1.7)],
+		[Vector3(0, 2.85, 3.9), Vector3(3.2, 0.1, 1.7)],
+	]:
+		_box(h[0], h[1], Color.WHITE, false).material_override = plaster
+	_box(Vector3(0, -0.05, 3.9), Vector3(3.2, 0.1, 1.7), Color.WHITE, false).material_override = _tex("concrete_floor_worn_001", "diff", 0.5)
+	var gap := StaticBody3D.new()                     # unseen barrier: the doorway is not an exit yet
+	var gap_cs := CollisionShape3D.new()
+	var gap_shape := BoxShape3D.new()
+	gap_shape.size = Vector3(1.0, 2.1, 0.1)
+	gap_cs.shape = gap_shape
+	gap.add_child(gap_cs)
+	gap.position = Vector3(0, 1.05, 3.05)
+	add_child(gap)
 	_box(Vector3(0, 0.05, -2.98), Vector3(8, 0.1, 0.03), Color(0.16, 0.14, 0.15), false)          # skirting
 	_box(Vector3(-3.98, 0.05, 0), Vector3(0.03, 0.1, 6), Color(0.16, 0.14, 0.15), false)
 	for i in 9:                                                                                    # blinds
@@ -229,7 +247,7 @@ func _furniture() -> void:
 	_model("classic_laptop", Vector3(2.5, 0.52, -2.45), 0.35, 0.8)
 	_model("side_table_01", Vector3(1.35, 0, -2.72), 0.0, 1.0, Vector3(0.56, 0.55, 0.46))
 	# bookshelf on the west wall
-	var shelf := _model("Shelf_01", Vector3(-3.98, 0, 0.2), PI / 2, 1.0, Vector3(1.0, 2.08, 0.3))
+	var shelf := _model("Shelf_01", Vector3(-3.98, 0, 0.2), PI / 2, 1.0, Vector3(1.0, 2.08, 0.3), 0.13)
 	for y in [0.38, 0.94, 1.51]:
 		var books: Node3D = (load("res://assets/models/book_encyclopedia_set_01/book_encyclopedia_set_01_1k.gltf") as PackedScene).instantiate()
 		books.position = Vector3(-0.42 if y != 0.94 else -0.1, y + 0.01, 0.1)
@@ -238,8 +256,8 @@ func _furniture() -> void:
 	_box(Vector3(-3.82, 0.87, 0.5), Vector3(0.02, 0.18, 0.02), Color(0.7, 0.5, 0.4), false)
 	_box(Vector3(-3.82, 0.97, 0.5), Vector3(0.06, 0.05, 0.06), Color(0.8, 0.45, 0.45), false)
 	# seating and the dead ceiling light
-	_model("modern_arm_chair_01", Vector3(-3.0, 0, 2.1), 2.3, 1.0, Vector3(0.8, 0.6, 0.9))
-	_model("sofa_02", Vector3(2.4, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85))
+	_model("modern_arm_chair_01", Vector3(-3.0, 0, 2.1), 2.3, 1.0, Vector3(0.8, 0.6, 0.9), -0.08)
+	_model("sofa_02", Vector3(2.4, 0, 2.5), PI, 1.0, Vector3(1.8, 0.5, 0.85), -0.1)
 	_model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
 	# corkboard
 	_box(Vector3(0.2, 1.55, -2.97), Vector3(1.3, 0.85, 0.04), Color(0.50, 0.35, 0.22), false)
@@ -250,14 +268,27 @@ func _furniture() -> void:
 func _people() -> void:
 	# Det. Sam Reyes, your partner, waiting just inside the door.
 	if ResourceLoader.exists("res://assets/mixamo/characters/leonard.fbx"):
-		_person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2)
+		var reyes := _person("leonard", "idle", Vector3(1.5, 0, 1.2), -2.2)
+		var body := StaticBody3D.new()
+		body.collision_layer = 3          # blocks the player (1) and is seen by the look ray (2)
+		var cs := CollisionShape3D.new()
+		var cap := CapsuleShape3D.new()
+		cap.radius = 0.28
+		cap.height = 1.8
+		cs.shape = cap
+		cs.position.y = 0.9
+		body.add_child(cs)
+		body.set_meta("talk", "Reyes")
+		reyes.add_child(body)
 
 func _lights() -> void:
 	_omni(Vector3(-2.6, 1.15, -2.45), Color(1.0, 0.72, 0.38), 1.6, 4.5, true)   # desk lamp
 	_omni(Vector3(-2.1, 0.95, -2.5), Color(0.55, 0.75, 1.0), 0.25, 1.2)         # tablet glow
 	_omni(Vector3(2.5, 0.85, -2.3), Color(0.6, 0.78, 1.0), 0.5, 2.2)            # laptop glow
 	_omni(Vector3(0.3, 2.1, 3.9), Color(1.0, 0.9, 0.72), 1.4, 5.0, true)        # hallway, through the door
-	_omni(Vector3(2.6, 2.0, 0.8), Color(0.45, 0.55, 0.9), 0.5, 5.0)            # cool fill, window side
+	_omni(Vector3(2.6, 2.0, 0.6), Color(0.50, 0.58, 0.9), 1.0, 6.0)            # cool fill, window side
+	_omni(Vector3(-1.6, 2.1, 1.9), Color(1.0, 0.85, 0.68), 0.55, 5.5)          # hallway spill on the door wall
+	_omni(Vector3(2.4, 2.1, 2.0), Color(0.75, 0.75, 0.85), 0.45, 4.5)          # lifts the corner by the sofa
 	# streetlight through the blinds
 	var s := SpotLight3D.new()
 	s.position = Vector3(6.4, 3.0, 1.1)
@@ -394,14 +425,37 @@ func _say(text: String) -> void:
 
 func _process(_delta: float) -> void:
 	looking = null
-	if left > 0 and ray.is_colliding():
+	if ray.is_colliding():
 		var hit := ray.get_collider() as StaticBody3D
-		if hit and hit.has_meta("clue") and not hit.has_meta("used"):
+		if hit and hit.has_meta("talk"):
 			looking = hit
-	ui_prompt.text = "[ E ]  Examine the %s" % looking.get_meta("clue").name.to_lower() if looking else ""
+		elif hit and left > 0 and hit.has_meta("clue") and not hit.has_meta("used"):
+			looking = hit
+	if looking and looking.has_meta("talk"):
+		ui_prompt.text = "[ E ]  Talk to %s" % looking.get_meta("talk")
+	else:
+		ui_prompt.text = "[ E ]  Examine the %s" % looking.get_meta("clue").name.to_lower() if looking else ""
+
+func _reyes() -> String:
+	# What your partner says depends on how far the search has got.
+	talks += 1
+	if left == 0:
+		return "That's our time, Nadia. Crime scene has the room. Priya's still in the hall, and she's the one who called it in. Let's hear it from her."
+	if left == BUDGET:
+		return [
+			"Roommate's name is Priya Nair. She's out in the hall with a uniform. Says Tessa texts when she leaves work, every night, and tonight she didn't.",
+			"Crime scene's ten minutes out and they'll seal the room. We get four good looks, not six. Pick the ones that tell us where she was tonight.",
+		][(talks - 1) % 2]
+	return [
+		"You took her complaint three weeks ago. Whatever's in here, you'll know faster than I will what's new and what isn't.",
+		"Don't touch more than you have to. If this turns into a case, some defense lawyer is going to walk a jury through this room.",
+		"%d left. I'd want to know who had eyes on this place, and who knew her schedule." % left,
+	][(talks - 1) % 3]
 
 func _unhandled_input(e: InputEvent) -> void:
-	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_E and looking:
+	if e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_E and looking and looking.has_meta("talk"):
+		_say("DET. SAM REYES\n" + _reyes())
+	elif e is InputEventKey and e.pressed and not e.echo and e.keycode == KEY_E and looking:
 		var c: Dictionary = looking.get_meta("clue")
 		looking.set_meta("used", true)
 		(looking.get_meta("mark") as MeshInstance3D).visible = false
