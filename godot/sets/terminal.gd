@@ -6,7 +6,7 @@ var runner: Node3D
 var path := [Vector3(1.5, 0, 3.6), Vector3(4.0, 0, 2.0), Vector3(8.0, 0, 3.0), Vector3(11.0, 0, 5.0), Vector3(13.0, 0, 7.4), Vector3(13.6, 0.3, 9.6), Vector3(13.6, 0.3, 9.6)]
 
 func build() -> void:
-	ambience = "hall"
+	ambience = "bus_station"
 	env("preller_drive", 0.35, Color(0.36, 0.38, 0.42), 1.3, 0.006, Color(0.8, 0.85, 0.9))
 	var floor_m := tex("terrazzo_tiles", 0.35, Color(0.8, 0.8, 0.78))
 	var tile := tex("square_tiles", 0.8, Color(0.75, 0.82, 0.8))

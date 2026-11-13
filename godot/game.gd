@@ -76,6 +76,16 @@ var fade: ColorRect
 var pause_menu: Control
 var sfx: AudioStreamPlayer
 var amb: AudioStreamPlayer
+var tense: AudioStreamPlayer
+var tense_fade: Tween
+const AMB_DB := {"room": -14.0, "city_night": -12.0, "rail_yard": -12.0, "fire": -8.0, "office": -16.0, "courtroom": -18.0, "bus_station": -14.0, "dawn": -16.0}
+const CUES := {       # words in narration → [sound, volume]
+	"knocks": ["door_knock", -6.0], "slams the door": ["thud", -6.0], "handcuffs": ["handcuffs", -6.0], "sirens": ["siren", -12.0],
+	"gavel": ["gavel", -6.0], "hit the g": ["thud", -5.0], "glass": ["glass", -8.0], "radio": ["radio", -10.0], "phone rings": ["phone_ring", -8.0],
+	"fence": ["fence", -8.0], "van door": ["van_door", -6.0], "rear doors": ["van_door", -6.0], "gallery": ["crowd_gasp", -12.0],
+	"photograph": ["camera", -8.0], "door opens": ["door_open", -8.0],
+}
+const CHASE_TRACKS := ["yards", "chase", "gate"]
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_PAUSABLE
@@ -436,8 +446,8 @@ func _say(who: String, text: String, shot := "") -> void:
 		_shot(shot)
 	elif who != "" and loc.shots.has(who):
 		_shot(who)
-	elif who == "":
-		pass                       # narration keeps the current shot unless it names one
+	if who == "":
+		_cue(text)
 	loc.speaking(who, true)
 	dialog.visible = true
 	who_label.text = NAMES.get(who, who)
@@ -537,6 +547,7 @@ func _choose(n: Dictionary) -> Dictionary:
 		await get_tree().process_frame
 		if n.timer > 0 and deadline < 0 and clock >= read_until:
 			deadline = clock + n.timer
+			_tension(true)
 		if deadline > 0:
 			timer_bar.value = maxf(0.0, (deadline - clock) / n.timer * 100.0)
 			if clock >= deadline:
@@ -547,6 +558,7 @@ func _choose(n: Dictionary) -> Dictionary:
 				pick = n.options[int(k) - 1]
 		events.clear()
 	_blip(600, 0.06)
+	_tension(false)
 	choices.visible = false
 	timer_bar.visible = false
 	return pick
@@ -677,6 +689,8 @@ func _qte(n: Dictionary) -> Dictionary:
 	qte_marks.text = ""
 	qte_key.get_parent().visible = false
 	qte_text.text = "GET READY"
+	var chase: bool = n.get("track", "") in CHASE_TRACKS
+	_tension(true, "footsteps_run" if chase else "heartbeat", -6.0 if chase else -8.0)
 	if not track.is_empty():
 		cam.position = track[0][0]
 		cam.look_at(track[0][1])
@@ -710,6 +724,7 @@ func _qte(n: Dictionary) -> Dictionary:
 	if shots_dir != "":
 		await _snap("%s_qte-%s" % [cur_bg.replace(":", "-"), n.get("track", "x")])
 	await wait(0.2 if auto else 0.7)
+	_tension(false)
 	qte.visible = false
 	return {"fails": fails}
 
@@ -870,6 +885,8 @@ func _toast(msg: String) -> void:
 	p.add_child(l)
 	toasts.add_child(p)
 	_blip(660, 0.08)
+	if msg.begins_with("EVIDENCE"):
+		_sound("camera", -10.0)
 	var tw := p.create_tween()
 	tw.tween_interval(3.6)
 	tw.tween_property(p, "modulate:a", 0.0, 0.6)
@@ -1111,6 +1128,8 @@ func _audio() -> void:
 	amb = AudioStreamPlayer.new()
 	amb.volume_db = -14
 	add_child(amb)
+	tense = AudioStreamPlayer.new()
+	add_child(tense)
 
 func _blip(freq: float, dur := 0.1, vol := 0.05) -> void:
 	if auto:
@@ -1138,6 +1157,55 @@ func _ambience(kind: String) -> void:
 	var st: AudioStream = load(path)
 	if st is AudioStreamOggVorbis:
 		(st as AudioStreamOggVorbis).loop = true
-	if amb.stream != st:
-		amb.stream = st
-		amb.play()
+	if amb.stream == st:
+		return
+	if amb.playing:                       # dip the old bed out before the new one comes in
+		var out := create_tween()
+		out.tween_property(amb, "volume_db", -50.0, 0.4)
+		await out.finished
+	amb.stream = st
+	amb.volume_db = -50.0
+	amb.play()
+	create_tween().tween_property(amb, "volume_db", AMB_DB.get(kind, -14.0), 0.8)
+
+func _sound(name: String, db := -8.0) -> void:
+	# A recorded one-shot, if that file is installed.
+	var path := "res://assets/audio/%s.ogg" % name
+	if auto or not ResourceLoader.exists(path):
+		return
+	var st: AudioStream = load(path)
+	if st is AudioStreamOggVorbis:
+		(st as AudioStreamOggVorbis).loop = false
+	var p := AudioStreamPlayer.new()
+	p.stream = st
+	p.volume_db = db
+	add_child(p)
+	p.play()
+	p.finished.connect(p.queue_free)
+
+func _tension(on: bool, kind := "heartbeat", db := -10.0) -> void:
+	# A looping layer over the room sound while a timer or an action sequence is running.
+	if on:
+		var path := "res://assets/audio/%s.ogg" % kind
+		if auto or not ResourceLoader.exists(path):
+			return
+		var st: AudioStream = load(path)
+		if st is AudioStreamOggVorbis:
+			(st as AudioStreamOggVorbis).loop = true
+		if tense_fade:
+			tense_fade.kill()
+		tense.stream = st
+		tense.volume_db = db
+		tense.play()
+	elif tense.playing:
+		tense_fade = create_tween()
+		tense_fade.tween_property(tense, "volume_db", -50.0, 0.5)
+		tense_fade.tween_callback(tense.stop)
+
+func _cue(text: String) -> void:
+	# Narration that describes a sound gets that sound.
+	var low := text.to_lower()
+	for word in CUES:
+		if low.contains(word):
+			_sound(CUES[word][0], CUES[word][1])
+			return

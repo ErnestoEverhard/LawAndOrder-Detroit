@@ -9,7 +9,7 @@ var path := [Vector3(3, 0, -0.3), Vector3(2, 0, -5), Vector3(2, 0, -10.5), Vecto
 	Vector3(15.5, LOW, -17.5), Vector3(22, LOW, -11.5), Vector3(24.4, LOW + 0.9, -9.25), Vector3(24.4, LOW + 0.9, -9.25)]
 
 func build() -> void:
-	ambience = "night"
+	ambience = "city_night"
 	env("hansaplatz", 0.5, Color(0.24, 0.27, 0.38), 1.3, 0.016, Color(0.8, 0.75, 0.7))
 	_outside()
 	_vestibule()

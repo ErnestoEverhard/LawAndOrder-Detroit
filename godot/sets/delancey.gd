@@ -6,7 +6,7 @@ var runner: Node3D
 var path := [Vector3(-2, 0, -9.7), Vector3(3, 0, -12.5), Vector3(8, 0, -13), Vector3(17, 0, -13), Vector3(21, 0, -13.2), Vector3(24, 0, -13.5), Vector3(24, 0, -13.5)]
 
 func build() -> void:
-	ambience = "night"
+	ambience = "city_night"
 	env("preller_drive", 0.7, Color(0.26, 0.30, 0.42), 2.0, 0.008, Color(0.7, 0.75, 0.9))
 	var moon := DirectionalLight3D.new()
 	moon.light_color = Color(0.55, 0.65, 1.0)

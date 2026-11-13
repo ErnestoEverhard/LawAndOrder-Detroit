@@ -8,8 +8,9 @@ const PRUITT_LOOK := {"Suit": Color(1.9, 0.7, 0.6), "Pants": Color(1.9, 0.7, 0.6
 const JUDGE_LOOK := {"Sweater": Color(0.25, 0.25, 0.25), "Pants": Color(0.2, 0.2, 0.2), "Hair": Color(2.6, 2.6, 2.6)}
 
 func build() -> void:
-	ambience = "hall"
+	ambience = "courtroom"
 	if stage in ["office", "plea"]:
+		ambience = "office"
 		_office()
 	else:
 		_courtroom()

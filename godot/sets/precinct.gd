@@ -5,6 +5,7 @@ extends Kit
 func build() -> void:
 	env("cobblestone_street_night", 0.0, Color(0.42, 0.45, 0.42), 1.5, 0.004, Color(0.8, 0.85, 0.8))
 	if stage == "booking":
+		ambience = "office"
 		_booking()
 	else:
 		_interview()

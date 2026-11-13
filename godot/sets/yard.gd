@@ -10,7 +10,7 @@ var burning := false
 func build() -> void:
 	day = stage in ["dawn", "dawn_hurt", "aftermath"]
 	burning = stage in ["fire", "inside"]
-	ambience = "fire" if burning else ("dawn" if day else "night")
+	ambience = "fire" if burning else ("dawn" if day else "rail_yard")
 	if day:
 		env("freight_station", 0.9, Color(0.62, 0.58, 0.6), 1.0, 0.012, Color(1.0, 0.85, 0.7), 1.2)
 		var sun := DirectionalLight3D.new()
