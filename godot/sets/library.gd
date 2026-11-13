@@ -207,7 +207,7 @@ func _yard_side() -> void:
 		box(Vector3(24.4, LOW + 2.27, -9.18), Vector3(0.014, 0.08, 0.005), Color.WHITE, false).material_override = mat(Color(0.75, 0.58, 0.2), 0.3, 0.3, 0.8)
 
 func _people() -> void:
-	var gray := {"Tops": Color(1.6, 1.6, 1.6)}
+	var gray := {"Shirt": Color(0.5, 0.52, 0.56), "Pants": Color(0.75, 0.75, 0.8)}
 	match stage:
 		"dock":
 			solid_person(actor("REYES", "louise", Vector3(-1.6, 0, 7.4), 2.6), "REYES")
@@ -224,13 +224,13 @@ func _people() -> void:
 			shot("locker", Vector3(4.3, 1.5, -1.0), Vector3(5.8, 1.25, -1.55), 45)
 		"van":
 			actor("REYES", "louise", Vector3(-1.9, 0, 7.6), 1.9)
-			actor("HARLAN", "remy", Vector3(3, 0, -0.35), 0.15, "idle", "talk", gray)
+			actor("HARLAN", "brian", Vector3(3, 0, -0.35), 0.15, "idle", "talk", gray)
 			shot("wide", Vector3(-6.0, 1.9, 11.5), Vector3(1.5, 1.3, 3.5), 55)
 			shot("van", Vector3(-3.6, 1.5, 9.4), Vector3(0, 0.9, 8.7), 45)
 			shot("HARLAN", Vector3(1.9, 1.55, 4.2), Vector3(3, 1.5, -0.35), 30)
 			close("REYES", 1.5, 0.5, 1.6, 42)
 		"chase":
-			runner = actor("HARLAN", "remy", path[0], PI, "run", "run", gray)
+			runner = actor("HARLAN", "brian", path[0], PI, "run", "run", gray)
 			tracks["chase"] = [
 				[Vector3(3, 1.6, 4.0), Vector3(3, 1.4, -2)], [Vector3(3, 1.6, -1.2), Vector3(2, 1.3, -6)],
 				[Vector3(2, 1.6, -6.2), Vector3(2, 1.2, -12)], [Vector3(2, 1.6, -12.5), Vector3(5, 1.2, -17)],
@@ -242,9 +242,9 @@ func _people() -> void:
 			var fled: bool = st != null and st.on("fled")
 			actor("REYES", "louise", Vector3(23.0, LOW, -11.2), 0.6)
 			if not fled:
-				actor("HARLAN", "remy", Vector3(24.2, LOW, -10.4), 2.6, "idle", "talk", gray)
+				actor("HARLAN", "brian", Vector3(24.2, LOW, -10.4), 2.6, clip("kneel", "idle"), clip("kneel", "talk"), gray)
 			shot("wide", Vector3(20.0, LOW + 1.7, -13.5), Vector3(24.2, LOW + 1.3, -9.8), 52)
-			close("HARLAN", 1.4, 0.4, 1.58, 40)
+			close("HARLAN", 1.5, 0.4, 1.1 if clip("kneel", "") != "" and not fled else 1.58, 40)
 			close("REYES", 1.4, -0.4, 1.6, 42)
 			shot("key", Vector3(24.0, LOW + 2.0, -10.2), Vector3(24.4, LOW + 2.3, -9.2), 40)
 

@@ -61,8 +61,10 @@ Adobe account. They are free to use in a game but may not be redistributed as ra
 characters are about 300 MB, so the folder is git-ignored. Without it the game still runs; people are
 simply absent.
 
-- characters/: louise, leonard, james, megan, kate, remy, the_boss (FBX, T-pose, with skin)
-- animations/: idle, walk (in place), run (in place), sit_idle, sit_talk, talk, argue, terrified
+- characters/: louise, leonard, megan, kate, joe, josh, brian, martha, roth, elizabeth, jody, alex, chad in use;
+  james, remy, the_boss downloaded but no longer cast (FBX, T-pose, with skin)
+- animations/: idle, walk (in place), run (in place), sit_idle, sit_talk, talk, argue, terrified,
+  lie, kneel, climb, type, lean, injured, phone, point, crouch, nod, look_around, walk_slow
   (FBX, without skin, exported on Leonard)
 
 ## Bedroom additions
@@ -97,6 +99,5 @@ Source pattern: `https://polyhaven.com/a/<id>`. Licence: CC0.
 
 ## Audio
 
-| File | What it is | Source | Licence |
-|---|---|---|---|
-| `audio/room.ogg` | Indoor room tone, first 60 s, used as background ambience | "House Room Tone" by aleclubin, https://freesound.org/people/aleclubin/sounds/641306/ | CC0 |
+All from freesound.org, CC0. One row per file, with title, author and link, is in `audio/SOURCES.md`.
+`audio/room.ogg` is the first 60 s of "House Room Tone" by aleclubin, https://freesound.org/people/aleclubin/sounds/641306/ (CC0).

@@ -81,7 +81,7 @@ func build() -> void:
 	actor("", "kate", Vector3(13.0, 0, 5.9), 0.2, "idle", "talk", {"Shirt": Color(0.9, 0.5, 0.4)})
 	actor("", "kate", Vector3(13.0, 0, 4.9), 0.0, "idle", "talk", {"Shirt": Color(0.5, 0.7, 0.5), "Hair": Color(0.4, 0.3, 0.25)})
 	actor("", "megan", Vector3(12.9, 0, 4.0), -0.2, "idle", "idle", {"Shirt": Color(0.35, 0.4, 0.5), "Hair": Color(1.6, 1.3, 0.9)})
-	runner = actor("HARLAN", "remy", Vector3(13.0, 0, 3.1), 0.0, "idle", "talk", {"Tops": Color(1.6, 1.6, 1.6)})
+	runner = actor("HARLAN", "brian", Vector3(13.0, 0, 3.1), 0.0, "idle", "talk", {"Shirt": Color(0.5, 0.52, 0.56), "Pants": Color(0.75, 0.75, 0.8)})
 	box(Vector3(13.4, 0.2, 3.0), Vector3(0.7, 0.35, 0.35), Color(0.4, 0.42, 0.45), false, 0.0, 0.3)    # his duffel
 	actor("REYES", "louise", Vector3(3.5, 0, -1.0), 1.6)
 	shot("wide", Vector3(4.5, 1.7, -3.5), Vector3(12.5, 1.2, 4.5), 52)

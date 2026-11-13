@@ -63,7 +63,7 @@ func _interview() -> void:
 	if stage == "evan":
 		actor("EVAN", "leonard", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk")
 	else:
-		actor("HARLAN", "remy", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk", {"Tops": Color(1.6, 1.6, 1.6)})
+		actor("HARLAN", "brian", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk", {"Shirt": Color(0.5, 0.52, 0.56), "Pants": Color(0.75, 0.75, 0.8)})
 	actor("REYES", "louise", Vector3(1.25, 0, -0.2), -1.2)
 	shot("wide", Vector3(-1.5, 1.75, 1.45), Vector3(0.2, 0.95, -0.8), 58)
 	close("EVAN", 1.35, 0.25, 1.12, 38)
@@ -120,8 +120,9 @@ func _booking() -> void:
 		box(Vector3(0.35 + (i % 4) * 0.42, 1.45 + (i / 4) * 0.42 + (i % 2) * 0.05, 2.92), Vector3(0.21, 0.297, 0.004), Color(0.9, 0.89, 0.85) if i % 3 else Color(0.95, 0.85, 0.5), false)
 	tube(Vector3(-1, 2.86, -0.5), 1.2, true, Color(0.9, 0.96, 0.92), 3.0, 9.0, true)
 	tube(Vector3(2, 2.86, 1.0), 1.2, true, Color(0.9, 0.96, 0.92), 2.2, 8.0)
-	actor("HARLAN", "remy", Vector3(-0.3, 0, -0.45), PI + 0.3, "idle", "talk", {"Tops": Color(1.6, 1.6, 1.6)})
+	actor("HARLAN", "brian", Vector3(-0.3, 0, -0.45), PI + 0.3, "idle", "talk", {"Shirt": Color(0.5, 0.52, 0.56), "Pants": Color(0.75, 0.75, 0.8)})
 	actor("REYES", "louise", Vector3(-1.3, 0, -0.5), PI - 0.5)
+	actor("", "alex", Vector3(2.6, 0, 1.6), PI + 0.9, "idle", "idle")                                    # the desk officer
 	shot("wide", Vector3(1.6, 1.7, 2.2), Vector3(-0.8, 1.1, -1.2), 55)
 	shot("tray", Vector3(-1.2, 1.62, -0.55), Vector3(-0.85, 1.16, -1.03), 48)
 	close("HARLAN", 1.3, 0.4, 1.58, 40)

@@ -6,7 +6,7 @@ extends Node3D
 
 const AMBER := Color(0.95, 0.71, 0.27)
 const INK := Color(0.10, 0.10, 0.12)
-const HEIGHT := {"remy": 0.47}             # Remy's file is in different units from the others
+const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
 var FONT: Font = load("res://assets/fonts/SpecialElite-Regular.ttf")
@@ -443,6 +443,10 @@ func _anim(skel_prefix: String, anim: String, k := 1.0) -> Animation:
 	a.loop_mode = Animation.LOOP_LINEAR
 	return a
 
+static func clip(want: String, fallback: String) -> String:
+	# An animation that may not be installed, with the one to use instead.
+	return want if ResourceLoader.exists("res://assets/mixamo/animations/%s.fbx" % want) else fallback
+
 static func have_people() -> bool:
 	return ResourceLoader.exists("res://assets/mixamo/characters/leonard.fbx")
 
@@ -457,6 +461,19 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 	n.rotation.y = rot_y
 	n.scale = Vector3.ONE * HEIGHT.get(model_id, 1.0)
 	add_child(n)
+	# Some files mark skin and clothes as see-through, which lets the eye sockets show through the
+	# lids and makes the eyes bulge. Only hair and lashes need transparency.
+	for mi in n.find_children("*", "MeshInstance3D", true, false):
+		var mesh := (mi as MeshInstance3D).mesh
+		for i in mesh.get_surface_count():
+			var sm := mesh.surface_get_material(i) as StandardMaterial3D
+			if sm == null or sm.transparency == BaseMaterial3D.TRANSPARENCY_DISABLED:
+				continue
+			var soft := sm.resource_name.to_lower().contains("hair") or sm.resource_name.to_lower().contains("lash")
+			if soft and sm.albedo_texture != null and sm.albedo_texture.resource_path.get_file() == model_id + "_0.png":
+				(mi as MeshInstance3D).visible = false        # lashes pointing at the skin texture: drop them
+			elif not soft:
+				sm.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 	for part in look:
 		for mi in n.find_children("*", "MeshInstance3D", true, false):
 			if str(mi.name).contains(part):

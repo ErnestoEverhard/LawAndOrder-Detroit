@@ -3,9 +3,9 @@ extends Kit
 ## Arrangements: "office" and "plea" (ADA Cole's office), "hearing" (suppression hearing, no jury),
 ## "trial", "tessa", "okonkwo" (who is on the witness stand) and "closing".
 
-const OKONKWO_LOOK := {"Hair": Color(0.3, 0.24, 0.2), "Shirt": Color(0.45, 0.45, 0.5), "Pants": Color(0.35, 0.35, 0.4)}
-const PRUITT_LOOK := {"Suit": Color(1.9, 0.7, 0.6), "Pants": Color(1.9, 0.7, 0.6), "Hair": Color(1.15, 1.05, 0.95)}
-const JUDGE_LOOK := {"Sweater": Color(0.25, 0.25, 0.25), "Pants": Color(0.2, 0.2, 0.2), "Hair": Color(2.6, 2.6, 2.6)}
+const OKONKWO_LOOK := {"Shirt": Color(0.32, 0.34, 0.4)}
+const PRUITT_LOOK := {"Suit": Color(0.55, 0.5, 0.5), "Pants": Color(0.4, 0.38, 0.38)}
+const JUDGE_LOOK := {"Suit": Color(0.12, 0.12, 0.13), "Pants": Color(0.2, 0.2, 0.2), "Tie": Color(0.5, 0.15, 0.15), "Hair": Color(2.4, 2.4, 2.4)}
 
 func build() -> void:
 	ambience = "courtroom"
@@ -96,10 +96,10 @@ func _office() -> void:
 	door(Vector3(-1.5, 0, 2.2), PI, Color(0.36, 0.28, 0.2), 0.9, 2.05, true)
 	# people: you are behind the desk
 	if stage == "office":
-		actor("OKONKWO", "kate", Vector3(-0.45, -0.03, -0.45), 0.0, "sit_idle", "sit_talk", OKONKWO_LOOK)
+		actor("OKONKWO", "roth", Vector3(-0.45, -0.03, -0.45), 0.0, "sit_idle", "sit_talk", OKONKWO_LOOK)
 		close("OKONKWO", 1.35, 0.3, 1.1, 38)
 	else:
-		actor("PRUITT", "louise", Vector3(0.3, 0, -0.9), 0.1, "idle", "talk", PRUITT_LOOK)
+		actor("PRUITT", "martha", Vector3(0.3, 0, -0.9), 0.1, "idle", "talk", PRUITT_LOOK)
 		close("PRUITT", 1.5, 0.35, 1.58, 40)
 	shot("wide", Vector3(1.5, 1.6, 2.0), Vector3(-0.4, 0.95, -0.7), 56)
 	shot("desk", Vector3(0.5, 1.45, 1.5), Vector3(-0.1, 0.8, 0.85), 50)
@@ -228,26 +228,27 @@ func _courtroom() -> void:
 	plate("QUIET PLEASE\nCOURT IS IN SESSION", Vector3(-2.4, 2.0, 8.98), PI, 0.7, 0.3, Color(0.9, 0.9, 0.85), INK, 34)
 	# people
 	var trial := stage != "hearing"
-	actor("JUDGE", "leonard", Vector3(0, 1.1, -7.5), 0.0, "sit_idle", "sit_talk", JUDGE_LOOK)
-	actor("HARLAN", "remy", Vector3(-3.1, -0.03, 2.75), PI, "sit_idle", "sit_idle", {"Tops": Color(0.5, 0.55, 0.7)})
+	actor("JUDGE", "joe", Vector3(0, 1.1, -7.5), 0.0, "sit_idle", "sit_talk", JUDGE_LOOK)
+	actor("HARLAN", "brian", Vector3(-3.1, -0.03, 2.75), PI, "sit_idle", "sit_idle", {"Shirt": Color(0.55, 0.65, 0.9), "Pants": Color(0.45, 0.45, 0.5)})
+	actor("", "alex", Vector3(-5.6, 0, -3.2), PI / 2 + 0.3, "idle", "idle")                              # court officer by the side door
 	var cross := stage in ["tessa", "okonkwo", "trial"]
-	actor("PRUITT", "louise", Vector3(-1.3, 0, -2.6) if cross else Vector3(-1.9, 0, 1.2), PI + 0.75 if cross else PI, "idle", "talk", PRUITT_LOOK)
+	actor("PRUITT", "martha", Vector3(-1.3, 0, -2.6) if cross else Vector3(-1.9, 0, 1.2), PI + 0.75 if cross else PI, "idle", "talk", PRUITT_LOOK)
 	match stage:
 		"tessa":
 			actor("TESSA", "kate", Vector3(-3.3, 0.27, -5.5), 0.5, "sit_idle", "sit_talk")
 			close("TESSA", 1.4, 0.3, 1.1, 36)
 		"okonkwo":
-			actor("OKONKWO", "kate", Vector3(-3.3, 0.27, -5.5), 0.5, "sit_idle", "sit_talk", OKONKWO_LOOK)
+			actor("OKONKWO", "roth", Vector3(-3.3, 0.27, -5.5), 0.5, "sit_idle", "sit_talk", OKONKWO_LOOK)
 			close("OKONKWO", 1.4, 0.3, 1.1, 36)
 		"trial":
 			actor("PRIYA", "megan", Vector3(-3.3, 0.27, -5.5), 0.5, "sit_idle", "sit_talk")
 			close("PRIYA", 1.4, 0.3, 1.1, 36)
-			actor("OKONKWO", "kate", Vector3(3.2, -0.03, 5.45), PI, "sit_idle", "sit_talk", OKONKWO_LOOK)
+			actor("OKONKWO", "roth", Vector3(3.2, -0.03, 5.45), PI, "sit_idle", "sit_talk", OKONKWO_LOOK)
 			shot("OKONKWO", Vector3(2.6, 1.2, 3.6), Vector3(3.2, 1.1, 5.45), 40)
 	if trial:
-		var tints := [{"Shirt": Color(0.6, 0.4, 0.4)}, {"Sweater": Color(1.5, 1.2, 0.9)}, {"Shirt": Color(0.5, 0.6, 0.8), "Hair": Color(0.4, 0.3, 0.25)}, {"Suit": Color(0.8, 0.8, 0.8)},
-			{"Sweater": Color(0.8, 1.2, 1.0), "Hair": Color(2.0, 2.0, 2.0)}, {"Shirt": Color(0.9, 0.8, 0.5)}, {"Shirt": Color(0.4, 0.4, 0.45), "Hair": Color(1.5, 1.2, 0.8)}, {"Suit": Color(1.2, 1.0, 0.6), "Hair": Color(0.5, 0.4, 0.3)}]
-		var who := ["megan", "leonard", "kate", "louise", "leonard", "megan", "kate", "louise"]
+		var tints := [{"Shirt": Color(0.6, 0.4, 0.4)}, {}, {}, {"Suit": Color(0.8, 0.8, 0.8)},
+			{"Sweater": Color(0.8, 1.2, 1.0), "Hair": Color(2.0, 2.0, 2.0)}, {}, {"Shirt": Color(0.4, 0.4, 0.45), "Hair": Color(1.5, 1.2, 0.8)}, {"Suit": Color(1.5, 1.3, 1.0), "Shirt": Color(0.9, 0.7, 0.6), "Hair": Color(2.2, 2.0, 1.8)}]
+		var who := ["megan", "josh", "elizabeth", "louise", "leonard", "jody", "kate", "josh"]
 		for i in 8:
 			actor("", who[i], Vector3(4.9 if i < 4 else 6.2, -0.03 if i < 4 else 0.27, -5.2 + [0, 1, 3, 4, 1, 2, 4, 5][i] * 1.08), -PI / 2, "sit_idle", "sit_idle", tints[i])
 		# an exhibit on an easel, where the jury can't avoid it

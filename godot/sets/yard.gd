@@ -232,7 +232,7 @@ func _dressing() -> void:
 # ── arrangements ─────────────────────────────────────────────────
 
 func _standoff() -> void:
-	actor("HARLAN", "remy", Vector3(0.6, UP, 2.95), 0.1, "argue", "argue", {"Tops": Color(1.6, 1.6, 1.6)})
+	actor("HARLAN", "brian", Vector3(0.6, UP, 2.95), 0.1, "argue", "argue", {"Shirt": Color(0.5, 0.52, 0.56), "Pants": Color(0.75, 0.75, 0.8)})
 	actor("TESSA", "kate", Vector3(0.75, UP, 3.3), 0.0, "terrified", "terrified")
 	actor("REYES", "louise", Vector3(-2.2, 0, 9.5), PI + 0.2)
 	box(Vector3(0.95, UP + 1.25, 3.25), Vector3(0.02, 0.1, 0.03), Color(0.9, 0.75, 0.1), false)             # box cutter, roughly at his hand
@@ -279,19 +279,21 @@ func _morning() -> void:
 			cyl(Vector3(p.x, 0.55, p.z), 0.02, 1.1, Color(0.4, 0.3, 0.2))
 	prop("medical_box", Vector3(5.6, 0, 7.0), 0.5)
 	actor("REYES", "louise", Vector3(4.2, 0, 9.6), 1.9)
-	var medic := {"Shirt": Color(0.25, 0.35, 0.6), "Pants": Color(0.4, 0.4, 0.5), "Hair": Color(0.5, 0.3, 0.2)}
 	if stage == "dawn":
 		actor("TESSA", "kate", Vector3(6.3, -0.08, 8.05), -PI / 2, "sit_idle", "sit_talk")
 		for side in [-1, 1]:                                                                                # foil blanket over her shoulders
 			var foil := box(Vector3(6.38, 0.95, 8.05 + side * 0.2), Vector3(0.36, 0.6, 0.03), Color.WHITE, false)
 			foil.material_override = mat(Color(0.85, 0.72, 0.35), 0.0, 0.25, 0.9)
 			foil.rotation.x = side * 0.35
-		actor("", "megan", Vector3(6.0, 0, 6.6), 0.4, "idle", "talk", medic)
+		actor("", "chad", Vector3(6.0, 0, 6.6), 0.4, "idle", "talk")
 		close("TESSA", 1.5, 0.35, 1.06, 38)
 	else:
 		box(Vector3(7.6, 0.75, 8.2), Vector3(1.9, 0.08, 0.6), Color(0.85, 0.85, 0.82), false)               # stretcher
 		box(Vector3(7.6, 0.87, 8.2), Vector3(1.7, 0.16, 0.5), Color(0.75, 0.3, 0.1), false)
-		actor("", "megan", Vector3(5.9, 0, 8.6), 1.3, "idle", "talk", medic)
+		actor("", "chad", Vector3(6.5, 0, 9.35), 2.9, "idle", "talk")
+		if stage == "dawn_hurt":
+			actor("TESSA", "kate", Vector3(7.6, 0.0, 8.2), PI / 2, clip("lie", "sit_idle"), clip("lie", "sit_idle"))
+		actor("", "alex", Vector3(4.4, 0, 6.0), 0.5, "idle", "idle")
 		if stage == "aftermath":
 			van(Vector3(-2.5, 0, 10.5), PI - 0.15, Color(0.6, 0.08, 0.06), false, "CALDER FIRE  ·  ENGINE 9", Color(0.9, 0.85, 0.3), true)
 			box(Vector3(0, 0.04, 6.5), Vector3(0.09, 0.07, 7.0), Color(0.6, 0.55, 0.3), false, 0.0, 0.25)     # hose

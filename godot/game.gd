@@ -78,12 +78,12 @@ var sfx: AudioStreamPlayer
 var amb: AudioStreamPlayer
 var tense: AudioStreamPlayer
 var tense_fade: Tween
-const AMB_DB := {"room": -14.0, "city_night": -12.0, "rail_yard": -12.0, "fire": -8.0, "office": -16.0, "courtroom": -18.0, "bus_station": -14.0, "dawn": -16.0}
+const AMB_DB := {"room": 14.0, "dawn": 12.0, "city_night": 22.0, "rail_yard": 10.0, "fire": 0.0, "office": -6.0, "courtroom": -8.0, "bus_station": -10.0}   # set from each file's measured loudness
 const CUES := {       # words in narration → [sound, volume]
-	"knocks": ["door_knock", -6.0], "slams the door": ["thud", -6.0], "handcuffs": ["handcuffs", -6.0], "sirens": ["siren", -12.0],
-	"gavel": ["gavel", -6.0], "hit the g": ["thud", -5.0], "glass": ["glass", -8.0], "radio": ["radio", -10.0], "phone rings": ["phone_ring", -8.0],
-	"fence": ["fence", -8.0], "van door": ["van_door", -6.0], "rear doors": ["van_door", -6.0], "gallery": ["crowd_gasp", -12.0],
-	"photograph": ["camera", -8.0], "door opens": ["door_open", -8.0],
+	"knocks": ["door_knock", -6.0], "slams the door": ["thud", -4.0], "handcuffs": ["handcuffs", -4.0], "sirens": ["siren", -10.0],
+	"gavel": ["gavel", -6.0], "hit the g": ["thud", -3.0], "glass": ["glass", 0.0], "radio": ["radio", -6.0], "phone rings": ["phone_ring", -14.0],
+	"fence": ["fence", 6.0], "van door": ["van_door", -4.0], "rear doors": ["van_door", -4.0], "gallery": ["crowd_gasp", -12.0],
+	"photograph": ["camera", -8.0], "door opens": ["door_open", 0.0],
 }
 const CHASE_TRACKS := ["yards", "chase", "gate"]
 
@@ -690,7 +690,7 @@ func _qte(n: Dictionary) -> Dictionary:
 	qte_key.get_parent().visible = false
 	qte_text.text = "GET READY"
 	var chase: bool = n.get("track", "") in CHASE_TRACKS
-	_tension(true, "footsteps_run" if chase else "heartbeat", -6.0 if chase else -8.0)
+	_tension(true, "footsteps_run" if chase else "heartbeat", 8.0 if chase else -8.0)
 	if not track.is_empty():
 		cam.position = track[0][0]
 		cam.look_at(track[0][1])
@@ -1166,7 +1166,7 @@ func _ambience(kind: String) -> void:
 	amb.stream = st
 	amb.volume_db = -50.0
 	amb.play()
-	create_tween().tween_property(amb, "volume_db", AMB_DB.get(kind, -14.0), 0.8)
+	create_tween().tween_property(amb, "volume_db", AMB_DB.get(kind, AMB_DB.room), 0.8)
 
 func _sound(name: String, db := -8.0) -> void:
 	# A recorded one-shot, if that file is installed.
@@ -1183,7 +1183,7 @@ func _sound(name: String, db := -8.0) -> void:
 	p.play()
 	p.finished.connect(p.queue_free)
 
-func _tension(on: bool, kind := "heartbeat", db := -10.0) -> void:
+func _tension(on: bool, kind := "heartbeat", db := -8.0) -> void:
 	# A looping layer over the room sound while a timer or an action sequence is running.
 	if on:
 		var path := "res://assets/audio/%s.ogg" % kind

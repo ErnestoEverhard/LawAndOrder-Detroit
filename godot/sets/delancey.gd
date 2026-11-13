@@ -170,7 +170,7 @@ func _people() -> void:
 			]
 			shot("wide", Vector3(-5.8, 1.6, 3.0), Vector3(-5.8, 1.4, -8), 60)
 		"caught":
-			actor("EVAN", "leonard", Vector3(24, 0, -13.5), -1.9, "terrified", "terrified")
+			actor("EVAN", "leonard", Vector3(24, 0, -13.5), -1.9, clip("hands_up", "terrified"), clip("hands_up", "terrified"))
 			actor("REYES", "louise", Vector3(22.7, 0, -14.2), 1.2)
 			strobe(Vector3(22, 2.5, -8.0))
 			shot("wide", Vector3(20.5, 1.7, -11.2), Vector3(23.6, 1.2, -13.8), 52)
