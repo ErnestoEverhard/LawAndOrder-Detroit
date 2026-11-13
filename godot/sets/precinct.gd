@@ -12,11 +12,11 @@ func build() -> void:
 # ── Interview Room 2 ─────────────────────────────────────────────
 
 func _interview() -> void:
-	var block := tex("concrete_block_wall", 0.55, Color(1.0, 1.0, 0.95))
+	var block := tex("beige_wall_001", 0.5, Color(0.80, 0.84, 0.78))
 	var lino := tex("old_linoleum_flooring_01", 0.6, Color(0.62, 0.62, 0.58))
 	shell(-1.9, 1.9, -1.7, 1.7, 2.6, block, lino, tex("ceiling_interior", 0.8, Color(0.8, 0.8, 0.78)))
 	# a darker painted band along the bottom of the wall, scuffed by years of chair backs
-	var band := tex("concrete_block_wall", 0.55, Color(0.6, 0.72, 0.68))
+	var band := tex("beige_wall_001", 0.5, Color(0.48, 0.60, 0.56))
 	for w in [[Vector3(0, 0.55, -1.69), Vector3(3.8, 1.1, 0.012)], [Vector3(0, 0.55, 1.69), Vector3(3.8, 1.1, 0.012)], [Vector3(-1.89, 0.55, 0), Vector3(0.012, 1.1, 3.4)], [Vector3(1.89, 0.55, 0), Vector3(0.012, 1.1, 3.4)]]:
 		tbox(w[0], w[1], band, false)
 	box(Vector3(0, 1.11, -1.685), Vector3(3.8, 0.03, 0.015), Color(0.2, 0.22, 0.2), false)
@@ -60,10 +60,10 @@ func _interview() -> void:
 	omni(Vector3(0, 1.4, 1.2), Color(0.7, 0.75, 0.8), 0.25, 4.0)
 	# people
 	if stage == "evan":
-		actor("EVAN", "james", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk")
+		actor("EVAN", "leonard", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk")
 	else:
 		actor("HARLAN", "remy", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk", {"Tops": Color(1.6, 1.6, 1.6)})
-	actor("REYES", "leonard", Vector3(1.25, 0, -0.2), -1.2)
+	actor("REYES", "louise", Vector3(1.25, 0, -0.2), -1.2)
 	shot("wide", Vector3(-1.5, 1.75, 1.45), Vector3(0.2, 0.95, -0.8), 58)
 	close("EVAN", 1.35, 0.25, 1.12, 38)
 	close("HARLAN", 1.35, 0.25, 1.12, 38)
@@ -74,7 +74,7 @@ func _interview() -> void:
 # ── booking desk ─────────────────────────────────────────────────
 
 func _booking() -> void:
-	var block := tex("concrete_block_wall", 0.55, Color(1.0, 0.98, 0.88))
+	var block := tex("beige_wall_001", 0.5, Color(0.86, 0.84, 0.74))
 	shell(-4, 4, -3, 3, 2.9, block, tex("old_linoleum_flooring_01", 0.6, Color(0.55, 0.57, 0.55)), tex("ceiling_interior", 0.8, Color(0.8, 0.8, 0.78)))
 	# the desk: a chest-high counter with a scratched plastic screen on top
 	tbox(Vector3(-0.6, 0.55, -1.2), Vector3(4.2, 1.1, 0.6), tex("wooden_panels", 0.7, Color(0.5, 0.42, 0.36)))
@@ -120,7 +120,7 @@ func _booking() -> void:
 	tube(Vector3(-1, 2.86, -0.5), 1.2, true, Color(0.9, 0.96, 0.92), 3.0, 9.0, true)
 	tube(Vector3(2, 2.86, 1.0), 1.2, true, Color(0.9, 0.96, 0.92), 2.2, 8.0)
 	actor("HARLAN", "remy", Vector3(-0.3, 0, -0.45), PI + 0.3, "idle", "talk", {"Tops": Color(1.6, 1.6, 1.6)})
-	actor("REYES", "leonard", Vector3(-1.3, 0, -0.5), PI - 0.5)
+	actor("REYES", "louise", Vector3(-1.3, 0, -0.5), PI - 0.5)
 	shot("wide", Vector3(1.6, 1.7, 2.2), Vector3(-0.8, 1.1, -1.2), 55)
 	shot("tray", Vector3(-1.2, 1.62, -0.55), Vector3(-0.85, 1.16, -1.03), 48)
 	close("HARLAN", 1.3, 0.4, 1.58, 40)

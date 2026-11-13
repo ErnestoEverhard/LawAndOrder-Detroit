@@ -6,6 +6,7 @@ extends Node
 ##   --at <node>            start at a story node instead of the title screen
 ##   --set k=v,k=v          preset story flags / clues (clue.<id>=1, strength=40, late=2, trust=2, f flags otherwise)
 ##   --auto [skill 0-1]     play by itself with random choices, fast; quits at the ending
+##   --robot               play through the real input paths: keys are injected, and in searches the player is aimed at things
 ##   --shots <dir>          save a picture of every camera shot the run reaches
 ##   --stage <set:stage>    build one location, save all of its shots to --shots dir, and quit
 
@@ -31,6 +32,10 @@ var drifted := 0.0
 var clock := 0.0                   # game time; stops while paused
 var events: Array[String] = []     # key presses waiting to be read
 var auto := false
+var robot := false
+var robot_t := 0.0
+var robot_i := 0
+var robot_exit := ""
 var skill := 0.7
 var shots_dir := ""
 var shot_seen := {}
@@ -100,13 +105,15 @@ func _ready() -> void:
 			"--stage":
 				stage = args[i + 1]
 				i += 1
+			"--robot":
+				robot = true
 			"--auto":
 				auto = true
 				if i + 1 < args.size() and args[i + 1].is_valid_float():
 					skill = float(args[i + 1])
 					i += 1
 		i += 1
-	if auto:
+	if auto or robot:
 		Engine.time_scale = 6.0
 	if stage != "":
 		_stage_shots(stage, preset)
@@ -135,6 +142,18 @@ func _new_state(preset := "") -> void:
 
 func _process(delta: float) -> void:
 	clock += delta
+	if robot:
+		robot_t += delta
+		if robot_t > 0.35:
+			robot_t = 0.0
+			robot_i += 1
+			if player != null:
+				_robot_aim()
+			elif qte.visible and qte_key.get_parent().visible:
+				for i in 4:
+					events.append(qte_key.text)
+			else:
+				events.append(["SPACE", "1", "SPACE", "2", "SPACE", "3"][robot_i % 6])
 	if drift != Vector3.ZERO and drifted < 0.3 and cam.current:
 		cam.position += drift * delta * 0.018
 		drifted += delta * 0.018
@@ -148,6 +167,41 @@ func _unhandled_input(e: InputEvent) -> void:
 			events.append(k)
 	elif e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT and player == null:
 		events.append("CLICK")
+
+func _robot_aim() -> void:
+	# stands the player in front of the next thing worth pressing E on, looking at it
+	var target: Node3D = null
+	var spots_left := 0
+	for c in loc.get_children():
+		if c is StaticBody3D and c.has_meta("spot") and not c.has_meta("used"):
+			spots_left += 1
+			if target == null:
+				target = c
+	if target == null or roam_status.text.count("●") == 0:
+		for c in loc.get_children():
+			if c is StaticBody3D and c.has_meta("talk") and c.get_meta("talk") == robot_exit:
+				target = c
+	if target == null:
+		return
+	var at: Vector3 = target.global_position
+	var eye := Vector3(at.x, 1.62, at.z) + (Vector3(loc.spawn[0].x, 0, loc.spawn[0].z) - Vector3(at.x, 0, at.z)).normalized() * 1.4
+	var aim := at + Vector3(0, 0.9 if target.has_meta("talk") else 0.0, 0)
+	if target.has_meta("talk") and loc.cast.has(target.get_meta("talk")):      # people are approached from the front
+		var r: float = loc.cast[target.get_meta("talk")].node.rotation.y
+		eye = Vector3(at.x, 1.62, at.z) + Vector3(sin(r), 0, cos(r)) * 1.3
+	for k in 8:                                # try standing on different sides until nothing is in the way
+		var q := PhysicsRayQueryParameters3D.create(eye, aim, 3, [player.get_rid()])
+		var hit := loc.get_world_3d().direct_space_state.intersect_ray(q)
+		if hit.is_empty() or hit.collider == target:
+			break
+		eye = Vector3(at.x, 1.62, at.z) + Vector3(sin(k * PI / 4), 0, cos(k * PI / 4)) * 1.4
+	player.global_position = Vector3(eye.x, 0, eye.z)
+	player.rotation.y = atan2(eye.x - at.x, eye.z - at.z)
+	player.cam.rotation.x = atan2(at.y + (0.9 if target.has_meta("talk") else 0.0) - 1.62, 1.4)
+	if robot_i % 3 == 0:
+		events.append("E")
+		if OS.has_environment("ROBOT_DEBUG"):
+			print("robot aims at ", target.get_meta("spot").name if target.has_meta("spot") else target.get_meta("talk"), " ray hits ", ray.get_collider(), " left ", roam_status.text)
 
 func wait(sec: float) -> void:
 	var until := clock + sec
@@ -291,7 +345,7 @@ func _run(id: String) -> void:
 				await _ending(n)
 				id = ""
 	running = false
-	if auto:
+	if auto or robot:
 		print("AUTO RUN FINISHED strength=%d clues=%d late=%d" % [s.strength, s.clues.size(), s.late])
 		await wait(0.5)
 		get_tree().quit()
@@ -546,6 +600,7 @@ func _roam(n: Dictionary) -> void:
 	roam_status.visible = true
 	_info(n.title, n.intro)
 	var exit_who: String = n.exit.talk
+	robot_exit = exit_who
 	var asked_leave := false
 	events.clear()
 	while true:
@@ -784,7 +839,7 @@ func _ending(n: Dictionary) -> void:
 	_olabel("[ SPACE ]  REVIEW THE CASE", 18, PAPER)
 	if shots_dir != "":
 		await _snap("ending")
-	if auto:
+	if auto or robot:
 		await wait(0.3)
 		return
 	await _key(["SPACE", "ENTER", "CLICK"])
@@ -1081,6 +1136,8 @@ func _ambience(kind: String) -> void:
 	if not ResourceLoader.exists(path) or auto:
 		return
 	var st: AudioStream = load(path)
+	if st is AudioStreamOggVorbis:
+		(st as AudioStreamOggVorbis).loop = true
 	if amb.stream != st:
 		amb.stream = st
 		amb.play()

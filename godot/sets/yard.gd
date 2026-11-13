@@ -37,7 +37,7 @@ func build() -> void:
 			shot("wide", Vector3(9, 1.0, 13), Vector3(0, 4, 0), 50)
 			shot("title", Vector3(10, 0.7, 12), Vector3(0, 4.2, 0), 46)
 		"fire":
-			actor("REYES", "leonard", Vector3(2.6, 0, 9.5), PI + 0.3)
+			actor("REYES", "louise", Vector3(2.6, 0, 9.5), PI + 0.3)
 			shot("wide", Vector3(6.5, 1.5, 14), Vector3(0, 3.6, 0), 52)
 			shot("tower", Vector3(1.6, 1.5, 7.2), Vector3(0, 1.0, 2.5), 50)
 			close("REYES", 1.5, 0.5, 1.6, 42)
@@ -182,7 +182,7 @@ func _tower() -> void:
 			box(Vector3(w[0], UP + 3.0, w[1]), Vector3(2.0, 1.4, 0.02), Color(0.02, 0.02, 0.02, 0.8), false)   # soot above the windows
 	elif not day:
 		omni(Vector3(1.2, UP + 1.5, 1.0), Color(1.0, 0.6, 0.3), 0.8, 4.0)                                  # the heater, behind the boards
-		box(Vector3(1.15, UP + 1.7, 2.4), Vector3(1.8, 1.5, 0.02), Color(1.0, 0.55, 0.25), false, 0.5)
+		box(Vector3(1.15, UP + 1.7, 2.4), Vector3(1.8, 1.5, 0.02), Color(1.0, 0.55, 0.25), false, 0.2)
 
 func _inside() -> void:
 	var conc := tex("concrete_floor_worn_001", 0.5)
@@ -234,7 +234,7 @@ func _dressing() -> void:
 func _standoff() -> void:
 	actor("HARLAN", "remy", Vector3(0.6, UP, 2.95), 0.1, "argue", "argue", {"Tops": Color(1.6, 1.6, 1.6)})
 	actor("TESSA", "kate", Vector3(0.75, UP, 3.3), 0.0, "terrified", "terrified")
-	actor("REYES", "leonard", Vector3(-2.2, 0, 9.5), PI + 0.2)
+	actor("REYES", "louise", Vector3(-2.2, 0, 9.5), PI + 0.2)
 	box(Vector3(0.95, UP + 1.25, 3.25), Vector3(0.02, 0.1, 0.03), Color(0.9, 0.75, 0.1), false)             # box cutter, roughly at his hand
 	spot(Vector3(-4, 1.2, 12), Vector3(0.6, UP + 1.2, 3.1), Color(0.9, 0.95, 1.0), 5.0, 16, 22, true, 2.5)   # Reyes's flashlight
 	shot("wide", Vector3(3.5, 1.4, 11.5), Vector3(0.4, 3.6, 3), 52)
@@ -249,7 +249,7 @@ func _standoff() -> void:
 
 func _rescue() -> void:
 	actor("TESSA", "kate", Vector3(0.0, UP - 0.25, -1.75), 0.0, "sit_idle", "sit_idle")
-	actor("REYES", "leonard", Vector3(1.6, 0, 5.6), PI)
+	actor("REYES", "louise", Vector3(1.6, 0, 5.6), PI)
 	fire(Vector3(-0.6, 0.05, -0.2), 2.5, 7.0, 0.5)
 	fire(Vector3(0.2, UP + 0.05, 1.7), 3.0, 8.0, 0.7)
 	fire(Vector3(-1.75, 1.8, -0.2), 2.0, 6.0, 0.3)
@@ -278,7 +278,7 @@ func _morning() -> void:
 		for p in seg:
 			cyl(Vector3(p.x, 0.55, p.z), 0.02, 1.1, Color(0.4, 0.3, 0.2))
 	prop("medical_box", Vector3(5.6, 0, 7.0), 0.5)
-	actor("REYES", "leonard", Vector3(4.2, 0, 9.6), 1.9)
+	actor("REYES", "louise", Vector3(4.2, 0, 9.6), 1.9)
 	var medic := {"Shirt": Color(0.25, 0.35, 0.6), "Pants": Color(0.4, 0.4, 0.5), "Hair": Color(0.5, 0.3, 0.2)}
 	if stage == "dawn":
 		actor("TESSA", "kate", Vector3(6.3, -0.08, 8.05), -PI / 2, "sit_idle", "sit_talk")
@@ -301,6 +301,6 @@ func _morning() -> void:
 	shot("wide", Vector3(1.0, 1.5, 12.5), Vector3(6.0, 1.1, 8.0), 50)
 	shot("ambulance", Vector3(3.6, 1.5, 9.4), Vector3(6.8, 1.0, 8.1), 42)
 	shot("tower", Vector3(5.5, 1.4, 10.0), Vector3(0.5, 3.2, 2.0), 50)
-	shot("sunrise", Vector3(0, 2.0, 15), Vector3(-40, 4.0, 11), 40)
+	shot("sunrise", Vector3(-2, 1.4, 10), Vector3(-40, 5.0, 4), 40)
 	shot("ending", Vector3(8, 1.0, 14), Vector3(0, 4, 0), 46)
 	close("REYES", 1.5, -0.5, 1.6, 42)

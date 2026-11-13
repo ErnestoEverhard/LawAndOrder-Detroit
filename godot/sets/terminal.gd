@@ -78,12 +78,12 @@ func build() -> void:
 	# people waiting for the first bus out
 	actor("", "megan", Vector3(-8.6, -0.02, -1.45), 0.0, "sit_idle", "sit_idle", {"Shirt": Color(0.6, 0.3, 0.3)})
 	actor("", "leonard", Vector3(6.3, -0.02, -2.45), 0.0, "sit_idle", "sit_idle", {"Sweater": Color(1.6, 1.2, 0.8)})
-	actor("", "louise", Vector3(13.0, 0, 5.9), 0.2, "idle", "talk", {"Suit": Color(0.9, 0.5, 0.4), "Hair": Color(1.6, 1.3, 0.9)})
+	actor("", "kate", Vector3(13.0, 0, 5.9), 0.2, "idle", "talk", {"Shirt": Color(0.9, 0.5, 0.4)})
 	actor("", "kate", Vector3(13.0, 0, 4.9), 0.0, "idle", "talk", {"Shirt": Color(0.5, 0.7, 0.5), "Hair": Color(0.4, 0.3, 0.25)})
-	actor("", "james", Vector3(12.9, 0, 4.0), -0.2, "idle", "idle")
+	actor("", "megan", Vector3(12.9, 0, 4.0), -0.2, "idle", "idle", {"Shirt": Color(0.35, 0.4, 0.5), "Hair": Color(1.6, 1.3, 0.9)})
 	runner = actor("HARLAN", "remy", Vector3(13.0, 0, 3.1), 0.0, "idle", "talk", {"Tops": Color(1.6, 1.6, 1.6)})
 	box(Vector3(13.4, 0.2, 3.0), Vector3(0.7, 0.35, 0.35), Color(0.4, 0.42, 0.45), false, 0.0, 0.3)    # his duffel
-	actor("REYES", "leonard", Vector3(3.5, 0, -1.0), 1.6)
+	actor("REYES", "louise", Vector3(3.5, 0, -1.0), 1.6)
 	shot("wide", Vector3(4.5, 1.7, -3.5), Vector3(12.5, 1.2, 4.5), 52)
 	shot("HARLAN", Vector3(11.2, 1.6, 0.6), Vector3(13.0, 1.55, 3.1), 30)
 	shot("bus", Vector3(9.5, 1.6, 6.0), Vector3(14.5, 1.6, 11.0), 46)

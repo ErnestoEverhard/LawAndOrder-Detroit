@@ -4,7 +4,7 @@ extends Kit
 ## "trial", "tessa", "okonkwo" (who is on the witness stand) and "closing".
 
 const OKONKWO_LOOK := {"Hair": Color(0.3, 0.24, 0.2), "Shirt": Color(0.45, 0.45, 0.5), "Pants": Color(0.35, 0.35, 0.4)}
-const PRUITT_LOOK := {"Suit": Color(1.9, 0.7, 0.6), "Pants": Color(1.9, 0.7, 0.6), "Hair": Color(1.7, 1.4, 1.0)}
+const PRUITT_LOOK := {"Suit": Color(1.9, 0.7, 0.6), "Pants": Color(1.9, 0.7, 0.6), "Hair": Color(1.15, 1.05, 0.95)}
 const JUDGE_LOOK := {"Sweater": Color(0.25, 0.25, 0.25), "Pants": Color(0.2, 0.2, 0.2), "Hair": Color(2.6, 2.6, 2.6)}
 
 func build() -> void:
@@ -112,8 +112,8 @@ func _seat(pos: Vector3, rot_y: float, color := Color(0.35, 0.16, 0.12)) -> void
 	back.material_override = mat(color, 0.0, 0.5)
 
 func _courtroom() -> void:
-	env("freight_station", 1.0, Color(0.42, 0.40, 0.38), 1.25, 0.012, Color(1.0, 0.95, 0.85), 0.5)
-	var panel := tex("wooden_panels", 0.6, Color(0.62, 0.5, 0.42))
+	env("freight_station", 1.0, Color(0.46, 0.44, 0.42), 1.6, 0.012, Color(1.0, 0.95, 0.85), 0.5)
+	var panel := tex("wooden_panels", 0.6, Color(1.45, 1.3, 1.15))
 	var plaster := tex("beige_wall_001", 0.5, Color(0.86, 0.84, 0.76))
 	var wood := tex("old_wooden_floor_01", 0.5, Color(0.7, 0.6, 0.52))
 	tbox(Vector3(0, -0.05, 0), Vector3(14, 0.1, 18), wood)
@@ -141,12 +141,13 @@ func _courtroom() -> void:
 	for p in [Vector3(-3, 0, -2), Vector3(3, 0, -2), Vector3(-3, 0, 4.5), Vector3(3, 0, 4.5)]:                    # pendant lamps
 		cyl(p + Vector3(0, 5.4, 0), 0.01, 1.2, Color(0.2, 0.2, 0.2))
 		ball(p + Vector3(0, 4.7, 0), 0.2, Color(1.0, 0.92, 0.75), 2.2)
-		omni(p + Vector3(0, 4.5, 0), Color(1.0, 0.9, 0.72), 1.5, 9.0)
+		omni(p + Vector3(0, 4.5, 0), Color(1.0, 0.9, 0.72), 3.0, 10.0)
 	# the bench
 	tbox(Vector3(0, 0.25, -7.6), Vector3(7.5, 0.5, 2.8), wood)
 	tbox(Vector3(0, 1.12, -6.45), Vector3(5.2, 1.25, 0.5), panel)
 	box(Vector3(0, 1.77, -6.5), Vector3(5.4, 0.06, 0.75), Color(0.3, 0.22, 0.17), false)
-	prop("GreenChair_01", Vector3(0, 0.5, -7.75), 0.0, 1.35)
+	prop("GreenChair_01", Vector3(0, 0.95, -7.75), 0.0, 1.35)
+	box(Vector3(0, 0.72, -7.6), Vector3(1.2, 0.45, 1.2), Color(0.3, 0.22, 0.17), false)
 	box(Vector3(0.9, 1.83, -6.5), Vector3(0.14, 0.05, 0.1), Color(0.3, 0.2, 0.12), false)                         # gavel block
 	cyl(Vector3(0.9, 1.88, -6.45), 0.03, 0.12, Color(0.35, 0.22, 0.12)).rotation.z = PI / 2
 	box(Vector3(-0.6, 1.83, -6.3), Vector3(0.5, 0.07, 0.05), Color(0.25, 0.18, 0.1), false)
@@ -157,16 +158,15 @@ func _courtroom() -> void:
 	# seal and flags
 	var seal := cyl(Vector3(0, 4.1, -8.96), 0.75, 0.05, Color(0.55, 0.42, 0.2), 0.4)
 	seal.rotation.x = PI / 2
-	seal.material_override = mat(Color(0.6, 0.47, 0.22), 0.0, 0.35, 0.8)
-	note("CALDER COUNTY", Vector3(0, 4.42, -8.92), 34, Color(0.2, 0.14, 0.05))
-	note("SUPERIOR\nCOURT", Vector3(0, 3.95, -8.92), 40, Color(0.2, 0.14, 0.05))
+	seal.material_override = mat(Color(0.5, 0.4, 0.22), 0.0, 0.6)
+	note("CALDER COUNTY", Vector3(0, 4.42, -8.92), 62, Color(0.2, 0.14, 0.05))
+	note("SUPERIOR\nCOURT", Vector3(0, 3.92, -8.92), 80, Color(0.2, 0.14, 0.05))
 	for fx in [-2.6, 2.6]:
 		cyl(Vector3(fx, 1.9, -8.5), 0.025, 2.8, Color(0.6, 0.5, 0.25), 0.3)
 		ball(Vector3(fx, 3.35, -8.5), 0.05, Color(0.75, 0.6, 0.25))
 		cyl(Vector3(fx, 0.52, -8.5), 0.2, 0.04, Color(0.6, 0.5, 0.25), 0.3)
 		if fx < 0:
-			for i in 3:
-				box(Vector3(fx + 0.08 + i * 0.07, 2.45, -8.45), Vector3(0.07, 1.5, 0.12), [Color(0.6, 0.08, 0.1), Color(0.9, 0.9, 0.88), Color(0.1, 0.15, 0.4)][i], false).rotation.z = 0.06
+			box(Vector3(fx + 0.15, 2.45, -8.45), Vector3(0.22, 1.5, 0.12), Color(0.42, 0.1, 0.12), false).rotation.z = 0.06
 		else:
 			box(Vector3(fx - 0.15, 2.45, -8.45), Vector3(0.22, 1.5, 0.12), Color(0.1, 0.2, 0.42), false).rotation.z = -0.06
 	# witness stand, clerk, court reporter
@@ -227,8 +227,7 @@ func _courtroom() -> void:
 	plate("QUIET PLEASE\nCOURT IS IN SESSION", Vector3(-2.4, 2.0, 8.98), PI, 0.7, 0.3, Color(0.9, 0.9, 0.85), INK, 34)
 	# people
 	var trial := stage != "hearing"
-	actor("JUDGE", "leonard", Vector3(0, 0.63, -7.55), 0.0, "sit_idle", "sit_talk", JUDGE_LOOK)
-	box(Vector3(0, 1.75, -7.6), Vector3(0.62, 0.9, 0.4), Color(0.03, 0.03, 0.04), false)                           # the robe, more or less
+	actor("JUDGE", "leonard", Vector3(0, 1.1, -7.5), 0.0, "sit_idle", "sit_talk", JUDGE_LOOK)
 	actor("HARLAN", "remy", Vector3(-3.1, -0.03, 2.75), PI, "sit_idle", "sit_idle", {"Tops": Color(0.5, 0.55, 0.7)})
 	var cross := stage in ["tessa", "okonkwo", "trial"]
 	actor("PRUITT", "louise", Vector3(-1.3, 0, -2.6) if cross else Vector3(-1.9, 0, 1.2), PI + 0.75 if cross else PI, "idle", "talk", PRUITT_LOOK)
@@ -249,15 +248,15 @@ func _courtroom() -> void:
 			{"Sweater": Color(0.8, 1.2, 1.0), "Hair": Color(2.0, 2.0, 2.0)}, {"Shirt": Color(0.9, 0.8, 0.5)}, {"Shirt": Color(0.4, 0.4, 0.45), "Hair": Color(1.5, 1.2, 0.8)}, {"Suit": Color(1.2, 1.0, 0.6), "Hair": Color(0.5, 0.4, 0.3)}]
 		var who := ["megan", "leonard", "kate", "louise", "leonard", "megan", "kate", "louise"]
 		for i in 8:
-			actor("", who[i], Vector3(4.9 if i < 4 else 6.2, -0.03 if i < 4 else 0.27, -5.2 + (i % 4) * 1.08 * 1.6 + (0.0 if i < 4 else 0.5)), -PI / 2, "sit_idle", "sit_idle", tints[i])
-		actor("REYES", "leonard", Vector3(4.4, -0.03, 5.45), PI, "sit_idle", "sit_talk")
+			actor("", who[i], Vector3(4.9 if i < 4 else 6.2, -0.03 if i < 4 else 0.27, -5.2 + [0, 1, 3, 4, 1, 2, 4, 5][i] * 1.08), -PI / 2, "sit_idle", "sit_idle", tints[i])
 		# an exhibit on an easel, where the jury can't avoid it
-		box(Vector3(2.4, 1.3, -3.6), Vector3(0.05, 1.0, 1.3), Color(0.92, 0.91, 0.86), false, 0.0, 0.35)
-		note("PEOPLE'S 4\n\nSIT BY THE\nWINDOW AGAIN.", Vector3(2.43, 1.3, -3.6), 40, INK, 0.0, PI / 2 + 0.35)
-		for lx in [-0.3, 0.3]:
-			box(Vector3(2.35, 0.65, -3.6 + lx * 1.5), Vector3(0.04, 1.4, 0.04), Color(0.4, 0.3, 0.2), false)
+		box(Vector3(1.9, 1.35, -4.2), Vector3(1.3, 1.0, 0.05), Color(0.92, 0.91, 0.86), false, 0.0, PI / 4)
+		note("PEOPLE'S 4\n\nSIT BY THE\nWINDOW AGAIN.", Vector3(1.92, 1.35, -4.18), 40, INK, 0.0, PI / 4)
+		for lx in [-0.4, 0.4]:
+			box(Vector3(1.9 + lx, 0.45, -4.2 + lx), Vector3(0.04, 0.9, 0.04), Color(0.4, 0.3, 0.2), false)
 	shot("wide", Vector3(0.5, 2.3, 7.6), Vector3(0, 1.5, -6), 56)
-	shot("bench", Vector3(0.9, 1.75, -3.6), Vector3(0, 2.2, -7.5), 34)
+	shot("bench", Vector3(0.9, 1.9, -3.4), Vector3(0, 2.25, -7.5), 30)
+	shots["JUDGE"] = shots["bench"]
 	shot("jury", Vector3(1.6, 1.5, -1.6), Vector3(5.6, 1.15, -3.0), 50)
 	shot("ending", Vector3(-4.5, 1.3, 7.8), Vector3(1, 2.4, -6), 60)
 	close("PRUITT", 1.5, 0.4, 1.58, 40)

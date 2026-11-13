@@ -156,13 +156,13 @@ func _yards() -> void:
 func _people() -> void:
 	match stage:
 		"door":
-			actor("EVAN", "james", Vector3(0.5, 0.45, 0.25), 0.0, "idle", "terrified")
-			actor("REYES", "leonard", Vector3(-0.2, 0.45, 1.25), PI - 0.35)
+			actor("EVAN", "leonard", Vector3(0.5, 0.45, 0.25), 0.0, "idle", "terrified")
+			actor("REYES", "louise", Vector3(-0.2, 0.45, 1.25), PI - 0.35)
 			shot("wide", Vector3(4.0, 1.5, 8.5), Vector3(0.3, 1.9, 0), 50)
 			shot("EVAN", Vector3(1.0, 2.05, 1.75), Vector3(0.5, 2.0, 0.25), 40)
 			close("REYES", 1.4, -0.5, 1.6, 42)
 		"yards":
-			runner = actor("EVAN", "james", path[0], 2.0, "run", "run")
+			runner = actor("EVAN", "leonard", path[0], 2.0, "run", "run")
 			tracks["yards"] = [
 				[Vector3(-5.8, 1.6, 3.0), Vector3(-5.8, 1.4, -8)], [Vector3(-5.6, 1.6, -9.6), Vector3(2, 1.2, -12.3)],
 				[Vector3(4.2, 1.6, -12.6), Vector3(8, 1.7, -13)], [Vector3(15.5, 1.6, -13), Vector3(20, 1.3, -13.1)],
@@ -170,8 +170,8 @@ func _people() -> void:
 			]
 			shot("wide", Vector3(-5.8, 1.6, 3.0), Vector3(-5.8, 1.4, -8), 60)
 		"caught":
-			actor("EVAN", "james", Vector3(24, 0, -13.5), -1.9, "terrified", "terrified")
-			actor("REYES", "leonard", Vector3(22.7, 0, -14.2), 1.2)
+			actor("EVAN", "leonard", Vector3(24, 0, -13.5), -1.9, "terrified", "terrified")
+			actor("REYES", "louise", Vector3(22.7, 0, -14.2), 1.2)
 			strobe(Vector3(22, 2.5, -8.0))
 			shot("wide", Vector3(20.5, 1.7, -11.2), Vector3(23.6, 1.2, -13.8), 52)
 			close("EVAN", 1.7, 0.5, 1.35, 46)

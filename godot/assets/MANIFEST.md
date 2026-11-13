@@ -94,3 +94,9 @@ Fetched with `tools/fetch_assets.py`.
 - HDRIs: freight_station, preller_drive
 
 Source pattern: `https://polyhaven.com/a/<id>`. Licence: CC0.
+
+## Audio
+
+| File | What it is | Source | Licence |
+|---|---|---|---|
+| `audio/room.ogg` | Indoor room tone, first 60 s, used as background ambience | "House Room Tone" by aleclubin, https://freesound.org/people/aleclubin/sounds/641306/ | CC0 |

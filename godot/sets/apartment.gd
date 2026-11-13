@@ -52,11 +52,11 @@ func _reyes(left: int, budget: int) -> String:
 
 func _people() -> void:
 	if stage == "hall":
-		actor("REYES", "leonard", Vector3(0.9, 0, 3.7), 1.2)
+		actor("REYES", "louise", Vector3(0.9, 0, 3.7), 1.2)
 		actor("PRIYA", "megan", Vector3(2.52, -0.08, 3.9), -PI / 2, "sit_idle", "sit_talk")
 	else:
 		# Det. Sam Reyes, your partner, waiting just inside the door; Priya on the stairs in the hall.
-		solid_person(actor("REYES", "leonard", Vector3(1.5, 0, 1.2), -2.2), "REYES")
+		solid_person(actor("REYES", "louise", Vector3(1.5, 0, 1.2), -2.2), "REYES")
 		solid_person(actor("PRIYA", "megan", Vector3(2.52, -0.08, 3.9), -PI / 2, "sit_idle", "sit_talk"), "PRIYA", 1.3)
 
 func _photo(pos: Vector3, hdri: String, crop: Vector3, tilt := 0.0) -> void:
@@ -111,6 +111,20 @@ func _room() -> void:
 	# Priya's bedroom door, shut, across the hall
 	box(Vector3(0.15, 1.05, 4.79), Vector3(0.9, 2.1, 0.04), Color(0.30, 0.22, 0.16), false)
 	box(Vector3(0.5, 1.0, 4.76), Vector3(0.04, 0.04, 0.06), Color(0.65, 0.6, 0.45), false)
+	# the hall is lived in: coats, shoes by the door, yesterday's mail, a runner that has seen better years
+	box(Vector3(-1.6, 1.7, 4.76), Vector3(1.2, 0.08, 0.04), Color(0.3, 0.22, 0.16), false)
+	for i in 3:
+		box(Vector3(-2.0 + i * 0.4, 1.25, 4.7), Vector3(0.34, 0.85, 0.12), [Color(0.2, 0.3, 0.25), Color(0.5, 0.2, 0.2), Color(0.15, 0.15, 0.2)][i], false, 0.0, (i - 1) * 0.1)
+	for i in 4:
+		box(Vector3(-2.2 + i * 0.28, 0.05, 4.6 - (i % 2) * 0.05), Vector3(0.1, 0.09, 0.27), [Color(0.9, 0.9, 0.88), Color(0.9, 0.9, 0.88), Color(0.2, 0.15, 0.1), Color(0.2, 0.15, 0.1)][i], false, 0.0, (i % 2) * 0.3 - 0.1)
+	box(Vector3(1.4, 0.4, 4.7), Vector3(0.7, 0.8, 0.25), Color(0.32, 0.24, 0.18))
+	box(Vector3(1.3, 0.81, 4.7), Vector3(0.24, 0.012, 0.16), Color(0.92, 0.9, 0.85), false, 0.0, 0.3)
+	box(Vector3(1.55, 0.815, 4.68), Vector3(0.22, 0.01, 0.11), Color(0.85, 0.8, 0.65), false, 0.0, -0.2)
+	cyl(Vector3(1.62, 0.84, 4.75), 0.05, 0.07, Color(0.3, 0.45, 0.5), 0.4)
+	box(Vector3(-0.4, 0.006, 3.95), Vector3(4.2, 0.012, 0.9), Color.WHITE, false).material_override = tex("dirty_carpet", 0.7, Color(0.45, 0.5, 0.6))
+	box(Vector3(1.4, 1.6, 4.79), Vector3(0.5, 0.65, 0.02), Color(0.2, 0.2, 0.22), false)
+	box(Vector3(1.4, 1.6, 4.778), Vector3(0.42, 0.57, 0.01), Color.WHITE, false).material_override = mat(Color(0.3, 0.33, 0.36), 0.0, 0.1)
+	cyl(Vector3(0.3, 2.74, 3.95), 0.14, 0.08, Color(0.95, 0.9, 0.8), 0.4)
 	box(Vector3(0, 0.05, -2.98), Vector3(8, 0.1, 0.03), Color(0.16, 0.14, 0.15), false)          # skirting
 	box(Vector3(-3.98, 0.05, 0), Vector3(0.03, 0.1, 6), Color(0.16, 0.14, 0.15), false)
 	for i in 9:                                                                                    # blinds

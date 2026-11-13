@@ -210,7 +210,7 @@ func _people() -> void:
 	var gray := {"Tops": Color(1.6, 1.6, 1.6)}
 	match stage:
 		"dock":
-			solid_person(actor("REYES", "leonard", Vector3(-1.6, 0, 7.4), 2.6), "REYES")
+			solid_person(actor("REYES", "louise", Vector3(-1.6, 0, 7.4), 2.6), "REYES")
 			talk = {"REYES": _reyes}
 			spawn = [Vector3(-2.5, 0, 10.5), 0.0]
 			spots = {
@@ -223,7 +223,7 @@ func _people() -> void:
 			close("REYES", 1.5, 0.5, 1.6, 42)
 			shot("locker", Vector3(4.3, 1.5, -1.0), Vector3(5.8, 1.25, -1.55), 45)
 		"van":
-			actor("REYES", "leonard", Vector3(-1.9, 0, 7.6), 1.9)
+			actor("REYES", "louise", Vector3(-1.9, 0, 7.6), 1.9)
 			actor("HARLAN", "remy", Vector3(3, 0, -0.35), 0.15, "idle", "talk", gray)
 			shot("wide", Vector3(-6.0, 1.9, 11.5), Vector3(1.5, 1.3, 3.5), 55)
 			shot("van", Vector3(-3.6, 1.5, 9.4), Vector3(0, 0.9, 8.7), 45)
@@ -240,7 +240,7 @@ func _people() -> void:
 			shot("wide", Vector3(3, 1.6, 4.0), Vector3(3, 1.4, -2), 60)
 		"fence":
 			var fled: bool = st != null and st.on("fled")
-			actor("REYES", "leonard", Vector3(23.0, LOW, -11.2), 0.6)
+			actor("REYES", "louise", Vector3(23.0, LOW, -11.2), 0.6)
 			if not fled:
 				actor("HARLAN", "remy", Vector3(24.2, LOW, -10.4), 2.6, "idle", "talk", gray)
 			shot("wide", Vector3(20.0, LOW + 1.7, -13.5), Vector3(24.2, LOW + 1.3, -9.8), 52)

@@ -120,5 +120,9 @@ func _init() -> void:
 	for id in N:
 		if N[id].type == "ending":
 			print("  %-13s %5.1f%%" % [id, endings.get(id, 0) * 100.0 / RUNS])
+	for id in strengths:
+		var v: Array = strengths[id]
+		v.sort()
+		print("  strength at %s: min %d, median %d, max %d" % [id, v[0], v[v.size() / 2], v[-1]])
 	print("FAILED with %d error(s)" % errors if errors else "OK")
 	quit(1 if errors else 0)

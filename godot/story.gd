@@ -162,7 +162,7 @@ func _chapter2_ex() -> void:
 
 	scene("c2e_door", "delancey:door", [
 		["", "A student rental with a couch on the porch and one light on upstairs. Somebody's recycling has been at the curb for more than one week.", "wide"],
-		["", "Reyes knocks hard. The door opens. A young man with headphones around his neck and his phone still in his hand sees two badges, and the color drains out of his face.", "EVAN"],
+		["", "Reyes knocks hard. The door opens. A young man with his phone still in his hand sees two badges, and the color drains out of his face.", "EVAN"],
 		["EVAN", "Is this about Tessa? I didn't — I only —"],
 		["", "He slams the door. You hear him running for the back of the house.", "wide"],
 		["REYES", "Innocent people don't run. Go!"],
@@ -349,7 +349,7 @@ func _chapter2() -> void:
 
 	scene("c2_fled", "library:fence", func(s): return [
 		["", "He drops down the far side of the fence and disappears between the freight cars.", "wide"],
-		["", "Reyes climbs over after him and lands badly. You hear him hit the ground."] if s.num("chaseFails") >= 4 else null,
+		["", "Reyes climbs over after him and lands badly. You hear her hit the ground."] if s.num("chaseFails") >= 4 else null,
 		["REYES", "It's my ankle. I can still walk. Keep going."] if s.num("chaseFails") >= 4 else null,
 		["", "Something is caught on the top of the fence: a belt loop torn from his shorts, with a single old brass key clipped to it. The key is stamped \"C.R.\"", "key"],
 		["REYES", "C.R. — Calder Rail. That key opens one of the old signal towers in the yard. He wasn't running away from us, Nadia. He was running to her."],
