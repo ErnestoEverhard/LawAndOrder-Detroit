@@ -84,3 +84,13 @@ Poly Haven models, CC0, 1k glTF. Dresser and wardrobe candidates are listed firs
 | `metal_trash_can` | Metal waste bin with rust texture | https://polyhaven.com/a/metal_trash_can | CC0 | 4.8 MB |
 
 Not downloaded: `decorative_book_set_01` has no glTF at any resolution in the Poly Haven file listing (only FBX, USD and Blender), so it was skipped.
+
+## Full-game additions (Poly Haven, CC0)
+
+Fetched with `tools/fetch_assets.py`.
+
+- Models: metal_office_desk, steel_frame_shelves_01, steel_frame_shelves_03, mounted_fluorescent_lights, security_camera_01, plastic_monobloc_chair_01, metal_stool_01, office_notepads, binder_notebook, clipboard, stationery_supplies, cardboard_box_01, fire_alarm, korean_fire_extinguisher_01, WoodenChair_01, WoodenTable_01, WoodenTable_02, dining_chair_02, Television_01, standing_chalkboard_01, street_lamp_01, street_lamp_02, fire_hydrant, concrete_road_barrier, modular_chainlink_fence, rollershutter_door, hand_truck, plastic_crate_01, wooden_crate_01, wooden_crate_02, Barrel_01, trashbag, exterior_aircon_unit, industrial_wall_lamp, caged_hanging_light, hanging_industrial_lamp, security_light, utility_box_01, covered_car, old_tyre, modular_electricity_poles, WetFloorSign_01, industrial_storage_cart, metal_toolbox, metal_tool_chest, adjustable_wrench, ladder_sectioned_01, wooden_bookshelf_worn, barrel_stove, old_bed_frame, flood_lights, cement_bag, Sofa_01, painted_wooden_bench, planter_pot_clay, dirty_football, modular_street_seating, korean_public_payphone_01, vintage_suitcase, ArmChair_01, GreenChair_01, ClassicConsole_01, fancy_picture_frame_01, mantel_clock_01, medical_box, wheelchair_01, ceiling_fan, weed_plant_02, grass_medium_01, plastic_thermos, cigarette_pack, vintage_electric_kettle, vintage_microwave
+- Textures: concrete_block_wall, asphalt_02, gravel_floor_02, old_linoleum_flooring_01, wooden_panels, dark_paneled_wood, marble_tiles, terrazzo_tiles, corrugated_iron_02, rusty_metal_02, weathered_plank_siding, wood_planks_grey, factory_brick, ceiling_interior, metal_plate, painted_concrete, square_tiles, concrete_pavement, leafy_grass, red_brick_03, painted_metal_shutter, brown_leather
+- HDRIs: freight_station, preller_drive
+
+Source pattern: `https://polyhaven.com/a/<id>`. Licence: CC0.
