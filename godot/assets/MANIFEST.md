@@ -101,3 +101,9 @@ Source pattern: `https://polyhaven.com/a/<id>`. Licence: CC0.
 
 All from freesound.org, CC0. One row per file, with title, author and link, is in `audio/SOURCES.md`.
 `audio/room.ogg` is the first 60 s of "House Room Tone" by aleclubin, https://freesound.org/people/aleclubin/sounds/641306/ (CC0).
+
+### Action clips (third-person sequences), added 2026-11-16
+Exported on Leonard, without skin, 30 fps. Mixamo clip name in brackets.
+`jump` (Running Jump), `vault` (Vault Over Box), `dodge` (Standing Dodge Right), `slide` (Running Slide),
+`tackle` (Soccer Tackle), `stumble` (Jogging Stumble, in place), `shove` (Pushing, unused), `kick` (Kicking),
+`crouch_walk` (Crouched Walking, in place), `stairs_up` (Running Up Stairs, in place).

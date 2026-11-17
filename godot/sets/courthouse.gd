@@ -4,7 +4,7 @@ extends Kit
 ## "trial", "tessa", "okonkwo" (who is on the witness stand) and "closing".
 
 # Pruitt: silver hair and a charcoal suit, so she cannot be mistaken for Reyes (dark hair, navy suit).
-const PRUITT_LOOK := {"Suit": Color(0.8, 0.76, 0.74), "Pants!": Color(0.2, 0.2, 0.21), "Heels": Color(0.1, 0.1, 0.1), "Hair": Color(2.3, 3.1, 3.8)}
+const PRUITT_LOOK := {"Suit": Color(0.8, 0.76, 0.74), "Pants!": Color(0.2, 0.2, 0.21), "Heels": Color(0.1, 0.1, 0.1), "Hair": Color(2.7, 2.9, 3.1)}
 const JUDGE_LOOK := {"Suit": Color(0.12, 0.12, 0.13), "Pants": Color(0.2, 0.2, 0.2), "Tie": Color(0.5, 0.15, 0.15), "Hair": Color(2.4, 2.4, 2.4)}
 
 func build() -> void:

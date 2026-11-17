@@ -30,3 +30,8 @@ Some models have no glTF (`decorative_book_set_01`) or exceed the size cap; the 
   not only the furniture. Look at reference stills of real precincts and courtrooms first.
 
 Finish with the `scene-check` skill.
+
+## Things Poly Haven does not have
+Vehicles and soft items are built in `godot/kit.gd`: `van(pos, rot, colour, open, text, stripe, lightbar, kind)`
+with `kind` one of van, car, truck, coach (outlines in `VEHICLES`); `blanket()`, `tape_roll()`, `sneaker()`.
+Preview all vehicles with `godot --path godot -s tools/vehicles.gd -- out.png`.

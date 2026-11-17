@@ -280,11 +280,9 @@ func _morning() -> void:
 	prop("medical_box", Vector3(5.6, 0, 7.0), 0.5)
 	actor("REYES", "louise", Vector3(4.2, 0, 9.6), 1.9)
 	if stage == "dawn":
+		# foil blanket wrapped round her shoulders
 		actor("TESSA", "kate", Vector3(6.3, -0.08, 8.05), -PI / 2, "sit_idle", "sit_talk")
-		for side in [-1, 1]:                                                                                # foil blanket over her shoulders
-			var foil := box(Vector3(6.38, 0.95, 8.05 + side * 0.2), Vector3(0.36, 0.6, 0.03), Color.WHITE, false)
-			foil.material_override = mat(Color(0.85, 0.72, 0.35), 0.0, 0.25, 0.9)
-			foil.rotation.x = side * 0.35
+		foil_wrap(Vector3(6.1, -0.08, 8.05), -PI / 2, 1.14)
 		actor("", "chad", Vector3(6.0, 0, 6.6), 0.4, "idle", "talk")
 		close("TESSA", 1.5, 0.35, 1.06, 38)
 	else:
@@ -295,7 +293,7 @@ func _morning() -> void:
 			actor("TESSA", "kate", Vector3(7.6, 0.0, 8.2), PI / 2, clip("lie", "sit_idle"), clip("lie", "sit_idle"))
 		actor("", "alex", Vector3(4.4, 0, 6.0), 0.5, "idle", "idle")
 		if stage == "aftermath":
-			van(Vector3(-2.5, 0, 10.5), PI - 0.15, Color(0.6, 0.08, 0.06), false, "CALDER FIRE  ·  ENGINE 9", Color(0.9, 0.85, 0.3), true, "truck")
+			van(Vector3(-6.5, 0, 12.5), PI - 0.15, Color(0.6, 0.08, 0.06), false, "CALDER FIRE  ·  ENGINE 9", Color(0.9, 0.85, 0.3), true, "truck")
 			box(Vector3(0, 0.04, 6.5), Vector3(0.09, 0.07, 7.0), Color(0.6, 0.55, 0.3), false, 0.0, 0.25)     # hose
 			actor("", "leonard", Vector3(1.0, 0, 5.2), PI + 0.4, "idle", "talk", {"Sweater": Color(2.4, 2.0, 0.6), "Pants": Color(2.0, 1.7, 0.5)})
 	if st != null and st.on("harlanDead"):

@@ -52,7 +52,27 @@ git-ignored: Mixamo files may be used in a game but not redistributed raw. Recor
   1.1 kneeling or sitting.
 - A model in different units gets a scale in `HEIGHT` in `kit.gd`.
 
+## Telling people apart
+- Two named characters must never share a model, and a named character's model must not appear as an
+  extra in the same scene (the jury once held doubles of Reyes and three witnesses).
+- `look` keys: a part name recolours it (`"Hair"`, `"Body"` for skin, `"Suit"`, `"Shirt"`, `"Pants"`, `"Heels"`).
+  Add `!` to drop the printed pattern as well (`"Shirt!"` turns a striped top into a plain one).
+  Hair textures are dark brown, so grey needs a cool multiplier around `Color(2.7, 2.9, 3.1)`.
+- `badge(actor)` clips a detective shield to the belt (automatic for REYES and OKONKWO); `robe(actor)` is the
+  judge's robe; `foil_wrap(pos, rot, neck_y)` is an emergency blanket. Bone-attached cones look wrong in a
+  close-up; build a draped mesh instead.
+- `godot --path godot -s tools/costumes.gd -- out.png` shows the principal cast in costume side by side.
+- Wardrobe reference (SVU): detectives in dark plain clothes or dark suits with a belt badge; lawyers in dark
+  tailored suits; judge in a black robe; uniformed officers in dark navy.
+
+## Action clips
+- Clips that travel (jump, vault, slide, tackle) are pinned in place automatically by `Kit._anim`; the game
+  moves the person. `game.gd` `ACT_CLIPS` maps a word in a step's label to the clip shown on success;
+  `stumble` plays on failure.
+
 ## Known faults
+- **Thin, see-through hair:** hair cards drawn one-sided. `actor()` now draws hair two-sided with a low alpha
+  cut-off; do not set hair back to depth pre-pass.
 - **Bulging eyes, dark rings round the eyes:** the file marks skin as see-through. `actor()` already
   forces non-hair materials opaque and hides lashes that point at the skin texture. If a new model still
   shows it, inspect its materials' `transparency` and albedo texture names before blaming the model.

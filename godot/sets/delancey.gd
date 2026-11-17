@@ -160,7 +160,7 @@ func _people() -> void:
 			actor("REYES", "louise", Vector3(-0.2, 0.45, 1.25), PI - 0.35)
 			shot("wide", Vector3(4.0, 1.5, 8.5), Vector3(0.3, 1.9, 0), 50)
 			shot("EVAN", Vector3(1.0, 2.05, 1.75), Vector3(0.5, 2.0, 0.25), 40)
-			close("REYES", 1.4, -0.5, 1.6, 42)
+			close("REYES", 1.1, 1.0, 1.6, 42)          # from her other side, clear of Evan's head
 		"yards":
 			runner = actor("EVAN", "leonard", path[0], 2.0, "run", "run")
 			tracks["yards"] = [

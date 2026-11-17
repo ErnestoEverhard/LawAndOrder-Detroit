@@ -527,7 +527,8 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 		badge(n)
 	return n
 
-func robe(n: Node3D, color := Color(0.03, 0.03, 0.035)) -> void:
+func robe(n: Node3D, color := Color(0.03, 0.03, 0.035), sleeves := true, metal := 0.0, rough := 0.92, body := 1.0) -> void:
+	# `body` under 1 shortens it to a wrap round the shoulders (a blanket).
 	# A judge's robe worn over a suit: a loose black body, a yoke over the shoulders and bell sleeves,
 	# each piece fixed to a bone so it moves with the person.
 	if n == null:
@@ -536,11 +537,16 @@ func robe(n: Node3D, color := Color(0.03, 0.03, 0.035)) -> void:
 	var k := 1.0 / skel.global_transform.basis.get_scale().x
 	var cloth := StandardMaterial3D.new()
 	cloth.albedo_color = color
-	cloth.roughness = 0.92
+	cloth.roughness = rough
+	cloth.metallic = metal
 	# [bone, top radius, bottom radius, length, offset along the bone, squash]
 	for part in [["Spine1", 0.2, 0.36, 0.8, -0.12, Vector3(1.0, 1.0, 0.74)], ["Spine2", 0.13, 0.27, 0.2, 0.17, Vector3(1.0, 1.0, 0.72)],
 			["LeftArm", 0.1, 0.095, 0.3, 0.14, Vector3.ONE], ["RightArm", 0.1, 0.095, 0.3, 0.14, Vector3.ONE],
 			["LeftForeArm", 0.095, 0.15, 0.25, 0.11, Vector3.ONE], ["RightForeArm", 0.095, 0.15, 0.25, 0.11, Vector3.ONE]]:
+		if not sleeves and (part[0] as String).contains("Arm"):
+			continue
+		if part[0] == "Spine1" and body < 1.0:
+			part = ["Spine1", 0.24, lerpf(0.24, 0.36, body), 0.8 * body, -0.12 + (1.0 - body) * 0.42, Vector3(1.05, 1.0, 0.8)]
 		var at := BoneAttachment3D.new()
 		skel.add_child(at)
 		at.bone_name = str(n.get_meta("prefix")) + part[0]
@@ -959,6 +965,39 @@ func blanket(pos: Vector3, size: Vector2, color: Color, rot_y := 0.0, lump := 0.
 		img.set_pixel(i, i, Color(0.8, 0.8, 0.8))
 	img.generate_mipmaps()
 	m.albedo_texture = ImageTexture.create_from_image(img)
+	mi.material_override = m
+	mi.position = pos
+	mi.rotation.y = rot_y
+	add_child(mi)
+	return mi
+
+func foil_wrap(pos: Vector3, rot_y: float, neck_y := 1.0) -> MeshInstance3D:
+	# An emergency blanket round a seated or standing person's shoulders: open at the front, crinkled,
+	# falling from the neck over the shoulders to the elbows. `pos` and `rot_y` are the person's.
+	var noise := FastNoiseLite.new()
+	noise.frequency = 9.0
+	var rings := [[0.0, 0.1, 0.15], [-0.05, 0.16, 0.23], [-0.13, 0.2, 0.3], [-0.3, 0.22, 0.31], [-0.5, 0.25, 0.33]]   # drop, depth, width
+	var seg := 22
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	st.set_smooth_group(-1)
+	var at := func(r: int, i: int) -> Vector3:
+		var ang := deg_to_rad(52.0 + 256.0 * i / seg)
+		var ring: Array = rings[r]
+		var crinkle := 1.0 + 0.07 * noise.get_noise_2d(i * 0.13, r * 0.31)
+		return Vector3(ring[2] * sin(ang) * crinkle, neck_y + ring[0] + 0.02 * noise.get_noise_2d(i * 0.2, r * 0.9), ring[1] * cos(ang) * crinkle - 0.02)
+	for r in rings.size() - 1:
+		for i in seg:
+			for c in [[0, 0], [1, 0], [0, 1], [0, 1], [1, 0], [1, 1]]:
+				st.add_vertex(at.call(r + c[0], i + c[1]))
+	st.generate_normals()
+	var mi := MeshInstance3D.new()
+	mi.mesh = st.commit()
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.78, 0.74, 0.62)
+	m.metallic = 0.85
+	m.roughness = 0.38
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	mi.material_override = m
 	mi.position = pos
 	mi.rotation.y = rot_y
