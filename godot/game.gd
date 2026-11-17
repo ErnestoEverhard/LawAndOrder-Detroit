@@ -38,7 +38,9 @@ const HERO_MODEL := Kit.OKONKWO_MODEL
 const HERO_LOOK := Kit.OKONKWO_LOOK
 const FIRST_PERSON_TRACKS := ["closing"]
 const HERO_CAM_DIST := {"rescue": 1.9, "walkway": 2.3}      # tight places: keep the camera in the room with her
+const HERO_CAM_HEIGHT := {"yards": 3.1}                   # back yards: look over the fences, not into them
 var hero_dist := 3.1
+var hero_height := 2.15
 # Word in a step's action label -> the animation that shows it succeeding.
 const ACT_CLIPS := [["VAULT", "vault"], ["OVER THE", "jump"], ["JUMP", "jump"], ["DODGE", "dodge"], ["SIDESTEP", "dodge"],
 	["DUCK", "dodge"], ["SLIDE", "slide"], ["GET LOW", "crouch_walk"], ["SHOULDER", "tackle"],
@@ -201,9 +203,9 @@ func _hero_frame(delta: float) -> void:
 func _hero_cam() -> Vector3:
 	# Behind her, above her shoulder; in front of any wall that would come between.
 	var chest := hero_pos + Vector3(0, 1.3, 0)
-	var want := hero_pos + Vector3(0, 2.15, 0) - hero_dir * hero_dist + hero_dir.cross(Vector3.UP) * 0.55
+	var want := hero_pos + Vector3(0, hero_height, 0) - hero_dir * hero_dist + hero_dir.cross(Vector3.UP) * 0.55
 	var hit := loc.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(chest, want, 1))
-	return want if hit.is_empty() else chest.lerp(hit.position, 0.8)
+	return want if hit.is_empty() else chest.lerp(hit.position, 0.8) + Vector3(0, 0.6, 0)      # blocked: come in close and look down
 
 func _hero_act(st: Dictionary, ok: bool) -> float:
 	# Show the result of a step on the detective. Returns how long the move takes.
@@ -766,6 +768,13 @@ func _qte(n: Dictionary) -> Dictionary:
 		var h := loc.actor("", HERO_MODEL, hero_pos, atan2(hero_dir.x, hero_dir.z), "run", "run", HERO_LOOK)
 		hero = h
 		hero_dist = HERO_CAM_DIST.get(n.get("track", ""), 3.1)
+		hero_height = HERO_CAM_HEIGHT.get(n.get("track", ""), 2.15)
+		var fill := OmniLight3D.new()                # a soft light that travels with her, so she reads in the dark
+		fill.light_color = Color(1.0, 0.93, 0.82)
+		fill.light_energy = 0.9
+		fill.omni_range = 4.5
+		fill.position = Vector3(0, 2.3, -1.2) / h.scale.x
+		h.add_child(fill)
 		loc.badge(h)
 		cam.position = _hero_cam()
 	loc.on_step(n.get("track", ""), 0)

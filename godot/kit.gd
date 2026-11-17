@@ -9,6 +9,12 @@ const INK := Color(0.10, 0.10, 0.12)
 # Detective Okonkwo, the player. Her model is used for nobody else, so she always reads as herself.
 const OKONKWO_MODEL := "elizabeth"
 const OKONKWO_LOOK := {"Shirt!": Color(0.1, 0.11, 0.13), "Pants!": Color(0.12, 0.12, 0.14), "Heels": Color(0.08, 0.08, 0.09)}
+# Who plays whom. A name listed here always gets this model and look, whatever a set asks for, so a
+# character cannot drift between scenes. Reyes has the fuller, tousled hair; Pruitt the tight grey bun.
+const CASTING := {
+	"REYES": ["martha", {"Suit": Color(0.4, 0.46, 0.72), "Pants!": Color(0.09, 0.1, 0.15), "Heels": Color(0.08, 0.08, 0.09)}],
+	"PRUITT": ["louise", {"Suit!": Color(0.3, 0.3, 0.32), "Pants!": Color(0.27, 0.27, 0.29), "Hair": Color(2.7, 2.9, 3.1)}],
+}
 const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
@@ -473,6 +479,9 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 	# `look` recolours parts of the model, e.g. {"Hair": Color, "Suit": Color}, to tell reused models apart.
 	if not have_people():
 		return null
+	if CASTING.has(who):
+		model_id = CASTING[who][0]
+		look = CASTING[who][1]
 	var n: Node3D = _load("res://assets/mixamo/characters/%s.fbx" % model_id).instantiate()
 	n.position = pos
 	n.rotation.y = rot_y
@@ -497,6 +506,8 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 				sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
 				sm.alpha_scissor_threshold = 0.12
 				sm.cull_mode = BaseMaterial3D.CULL_DISABLED
+	for mi in n.find_children("*Hair*", "MeshInstance3D", true, false):
+		(mi as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF      # hair cards throw blotchy shadows on the neck
 	for key in look:
 		var part: String = (key as String).trim_suffix("!")       # "Shirt!" also drops the printed pattern: a plain garment
 		for mi in n.find_children("*", "MeshInstance3D", true, false):

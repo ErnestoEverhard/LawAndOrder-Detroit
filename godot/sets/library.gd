@@ -226,7 +226,7 @@ func _people() -> void:
 			}
 			blocker(Vector3(2, 1.4, -3.0), Vector3(1.0, 2.8, 0.2))
 			shot("wide", Vector3(-7.5, 2.3, 13.5), Vector3(0.5, 1.4, 3), 55)
-			close("REYES", 1.5, 0.5, 1.6, 42)
+			close("REYES", 1.5, 0.5, 1.6, 42, 0.45)      # from a little above, so the street lights are not behind her head
 			shot("locker", Vector3(4.3, 1.5, -1.0), Vector3(5.8, 1.25, -1.55), 45)
 		"van":
 			actor("REYES", "louise", Vector3(-1.9, 0, 7.6), 1.9)
@@ -234,7 +234,7 @@ func _people() -> void:
 			shot("wide", Vector3(-6.0, 1.9, 11.5), Vector3(1.5, 1.3, 3.5), 55)
 			shot("van", Vector3(-3.6, 1.5, 9.4), Vector3(0, 0.9, 8.7), 45)
 			shot("HARLAN", Vector3(1.9, 1.55, 4.2), Vector3(3, 1.5, -0.35), 30)
-			close("REYES", 1.5, 0.5, 1.6, 42)
+			close("REYES", 1.5, 0.5, 1.6, 42, 0.45)      # from a little above, so the street lights are not behind her head
 		"chase":
 			runner = actor("HARLAN", "brian", path[0], PI, "run", "run", gray)
 			tracks["chase"] = [

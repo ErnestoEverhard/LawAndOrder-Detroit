@@ -55,7 +55,7 @@ func _chapter1() -> void:
 		["REYES", "You took it?"],
 		["OKONKWO", "Three weeks ago. Texts from a number she didn't know. No threats, no name."],
 		["OKONKWO", "I told her to keep a record."],
-		["REYES", "Then she kept one. Crime scene's a few minutes out. Once they tape this room, we're reading about it."],
+		["REYES", "Then she kept one. You want to find it? Crime scene's a few minutes out, and then we're reading about it."],
 		["OKONKWO", "Then we look now."],
 	], "c1_inv")
 
@@ -125,7 +125,7 @@ func _chapter1() -> void:
 		["PRIYA", "Evan! Okay? Evan Kessler. Her ex."],
 		["PRIYA", "She blocked him, so he got a new number. Is that what you want?"],
 		["", "She is crying now. Reyes steps between the two of you without making it obvious."],
-		["REYES", "That helps. Thank you."],
+		["REYES", "That helps. Thank you. You okay to stay here?"],
 	], "c1_lead", func(s):
 		s.f.evanName = true
 		s.say("LEAD — Evan Kessler, ex-boyfriend")
@@ -141,7 +141,7 @@ func _chapter1() -> void:
 	scene("c1_lead_talk", "apartment:hall", func(s): return [
 		["REYES", "An ex who won't let go. Nine times out of ten, it's the boyfriend."] if s.can_ex() else null,
 		["OKONKWO", "Her whole night runs through that library."] if s.can_lib() else null,
-		["REYES", "One car. Your call."],
+		["REYES", "One car. Where to?"],
 	], "c1_lead_choice")
 
 	choice("c1_lead_choice", "Two possible leads, one car. Whichever you choose, the other waits.", 14, [
@@ -261,8 +261,8 @@ func _chapter2_ex() -> void:
 		["EVAN", "What? No — the van! Check the van! Please!"],
 		["DIAZ", "(from the doorway) Stalker ex, no alibi, ran from police. Good work. Go home.", "door"],
 		["DIAZ", "He'll tell us where she is in the morning."],
-		["REYES", "He ran. He lied. Seventy-three texts."],
-		["REYES", "So why don't I feel good?"],
+		["REYES", "He ran. He lied. Seventy-three texts. What more do you want?"],
+		["REYES", "So why don't I feel good about it?"],
 		["", "Nobody checks the van.", "wide"],
 	], "c2_end", func(s):
 		s.f.wrong = true
@@ -280,7 +280,7 @@ func _chapter2() -> void:
 		["DIAZ", "(on the phone) Okonkwo. Cole's waking up a judge. Van and locker. Thirty minutes."],
 		["OKONKWO", "Thirty minutes?"],
 		["DIAZ", "Do not go in there without it."],
-		["REYES", "(quietly) Thirty minutes. If she is in that van, that is thirty more minutes.", "REYES"],
+		["REYES", "(quietly) Thirty minutes? If she's in that van, that's thirty more minutes.", "REYES"],
 		["REYES", "And if she isn't, and we open it anyway? Some lawyer argues about everything in there for a year."],
 	], "c2_warrant")
 
@@ -313,7 +313,7 @@ func _chapter2() -> void:
 
 	scene("c2_warrant_in", "library:dock", [
 		["", "Thirty-one minutes after you hung up, the warrant arrives on your phone with a one-word text from Diaz: \"Now.\"", "REYES"],
-		["REYES", "Van and locker. Locker first, it's ten feet inside the door."],
+		["REYES", "Van and locker. Locker first? It's ten feet inside the door."],
 		["", "Locker 14, HARLAN. A spare gray shirt, a thermos, and a shoebox. In the shoebox: a small battery camera with zip-tie mounts, and two memory cards labelled in block capitals. \"WINDOW — SEPT.\" \"WINDOW — OCT.\"", "locker"],
 		["REYES", "Two months. He's been watching her bedroom for two months."],
 		["OKONKWO", "And a judge signed for every bit of it."],
@@ -344,7 +344,7 @@ func _chapter2() -> void:
 	], {"next": "c2_h_rush"})
 
 	scene("c2_h_calm", "library:van", [
-		["OKONKWO", "Wade. Nobody is in trouble yet. We just want to talk."],
+		["OKONKWO", "Wade? Nobody's in trouble yet. Can we talk?"],
 		["", "He hesitates. It buys you half a second."],
 	], "c2_chase", func(s):
 		s.f.edge = true
@@ -402,6 +402,7 @@ func _chapter2() -> void:
 		["", "Booking. Reyes empties Harlan's pockets into a property tray and names each item for the desk sergeant.", "wide"],
 		["REYES", "Wallet. University ID. Phone, no SIM card. Work keys."],
 		["REYES", "And one more. Loose, other pocket. Old brass. Tag says \"C.R.\"", "tray"],
+		["REYES", "What's it open, Wade?"],
 		["HARLAN", "That's nothing. It's for a shed."],
 		["", "It is the first thing he has said since the arrest. You take the key with you."],
 	], "c2_int", func(s): s.clue("key", "Brass key tagged \"C.R.\" from Harlan's pocket", 4))
@@ -423,7 +424,7 @@ func _chapter2() -> void:
 	], {"next": "c2_int1_none"})
 
 	scene("c2_int1_emp", "precinct:harlan", [
-		["OKONKWO", "Eleven years in that building. You keep everything running, and nobody even learns your name."],
+		["OKONKWO", "Eleven years in that building. You keep it all running. Does anybody even know your name?"],
 		["HARLAN", "...Do you know how many people in that library know my name? Two. And one of them does the payroll."],
 	], "c2_int2", func(s):
 		s.f.pts += 1
@@ -436,7 +437,7 @@ func _chapter2() -> void:
 		s.f.pts += 2
 		s.say("HARLAN — rattled"))
 	scene("c2_int1_thr", "precinct:harlan", [
-		["OKONKWO", "Kidnapping is twenty-five years to life, Wade. Think about how old you'll be."],
+		["OKONKWO", "Kidnapping is twenty-five to life, Wade. How old will you be?"],
 		["HARLAN", "Then I had better not say anything at all."],
 	], "c2_int2", func(s):
 		s.f.hostile = true
@@ -460,7 +461,7 @@ func _chapter2() -> void:
 		s.add(4)
 		s.say("ADMISSION — \"I gave her a blanket\""))
 	scene("c2_int2_ver", "precinct:harlan", func(s): return [
-		["OKONKWO", "Forget how it looks. Tell me what happened, your way."],
+		["OKONKWO", "Forget how it looks. What happened, Wade? Your way."],
 		["HARLAN", "She was going to quit. I heard her say it at the desk. If she quit, I'd never see her again. I just needed more time. That's all it was."] if s.on("emp")
 			else ["HARLAN", "I would tell it to somebody who actually wanted to hear it. That isn't you."],
 	], "c2_int_gate", func(s): s.f.pts += 2 if s.on("emp") else 1)
@@ -728,7 +729,7 @@ func _chapter4() -> void:
 
 	scene("c4_office", "courthouse:office", func(s): return [
 		["", "You are Assistant District Attorney Imani Cole. The Harlan file covers your desk in three stacks: what you can use, what you might lose, and what you wish weren't true. Detective Okonkwo is in the chair across from you.", "wide"],
-		["COLE", "I've read it twice, Nadia. Now I'm going to read it out loud the way Dana Pruitt will. Stop me when I'm being unfair."],
+		["COLE", "I've read it twice. Want to hear it the way Dana Pruitt will read it? Stop me when I'm unfair."],
 		["COLE", "You booked Evan Kessler first. Pruitt will put his booking photo in front of the jury and say: \"The police were certain once before.\""] if s.on("wrong") else null,
 		["COLE", "The van was searched three days late, with a warrant, after he had cleaned it out. What I have is her word, the tower, and the key."] if s.on("wrong") else (
 			["COLE", "You waited for the warrant. Thirty minutes, with a girl missing. I know what that cost. It means everything in that van is mine to use."] if s.on("warrant")
@@ -751,7 +752,7 @@ func _chapter4() -> void:
 
 	scene("c4_ch_all", "courthouse:office", func(s): return [
 		["COLE", "Kidnapping in the first degree. Stalking. Unlawful surveillance."],
-		["OKONKWO", "The surveillance count is the camera."],
+		["OKONKWO", "The surveillance count. That's the camera?"],
 	] + ([
 		["COLE", "And I can put the camera in his locker, with her window on the memory cards." if s.has("locker") else "And you found where it was mounted. Cut zip ties, a clean patch in the rust, aimed at her bed."],
 		["COLE", "So the jury meets him two months before the van. He watched her sleep. He doesn't get to say he only wanted to talk."],
