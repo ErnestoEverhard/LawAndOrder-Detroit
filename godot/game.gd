@@ -603,6 +603,13 @@ func _roam(n: Dictionary) -> void:
 		loc.remove_child(mark)
 		mark.position = Vector3(0, sp.size.y / 2.0 + 0.12, 0)
 		body.add_child(mark)
+		# The light itself counts as the clue, so aiming at what you can see always works.
+		var glow := CollisionShape3D.new()
+		var ball := SphereShape3D.new()
+		ball.radius = 0.16
+		glow.shape = ball
+		glow.position = mark.position
+		body.add_child(glow)
 		loc.add_child(body)
 		marks[h.name] = body
 		var tw := mark.create_tween().set_loops()
