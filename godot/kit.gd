@@ -494,7 +494,7 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 			elif sm.resource_name.to_lower().contains("hair"):
 				# Hair is painted on thin cards. Drawn one-sided with a hard cut-off it looks sparse and the
 				# scalp shows; drawing both sides and keeping the faint strands fills it out.
-				sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+				sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
 				sm.alpha_scissor_threshold = 0.12
 				sm.cull_mode = BaseMaterial3D.CULL_DISABLED
 	for key in look:

@@ -733,15 +733,15 @@ func _chapter4() -> void:
 		["COLE", "The van was searched three days late, with a warrant, after he had cleaned it out. What I have is her word, the tower, and the key."] if s.on("wrong") else (
 			["COLE", "You waited for the warrant. Thirty minutes, with a girl missing. I know what that cost. It means everything in that van is mine to use."] if s.on("warrant")
 			else ["COLE", "You opened the van without a warrant, with a judge half an hour away. Pruitt has already filed to throw out everything you found in it."]),
-		["COLE", "And because you waited, the locker came with it. The camera, the memory cards. Two months of him watching her window."] if s.has("locker") else null,
-		["COLE", "He confessed on video, after his rights, in his own words. That is the best thing in this file."] if s.on("confession") else null,
+		["COLE", "And the locker came with it. The camera. The memory cards. Two months of her window."] if s.has("locker") else null,
+		["COLE", "He confessed. On video, after his rights, in his own words. Best thing in this file."] if s.on("confession") else null,
 		["COLE", "You told him the van's GPS had already led you to her. It hadn't."] if s.on("confession") and s.on("bluffed") else null,
 		["OKONKWO", "No. It hadn't."] if s.on("confession") and s.on("bluffed") else null,
-		["COLE", "You're allowed to lie to a suspect about what you know. You are not allowed to threaten him or promise him anything. Pruitt will say you did both. I've watched the tape. You did neither."] if s.on("confession") and s.on("bluffed") else null,
-		["COLE", "He asked for a lawyer. You asked him if he meant it, he said yes, and you stopped. Then he kept talking on his own. I wish every file read like that."] if s.on("clarified") else null,
+		["COLE", "You can lie to him about what you know. You can't threaten him, and you can't promise him anything. Pruitt will say you did both. I watched the tape. You didn't."] if s.on("confession") and s.on("bluffed") else null,
+		["COLE", "He asked for a lawyer. You asked if he meant it. He did, and you stopped. Then he kept talking. I wish every file read like that."] if s.on("clarified") else null,
 		["COLE", "And then he asks for a lawyer, on video, and you keep going. Nadia."] if s.on("pushed") else null,
 		["OKONKWO", "I would do it again."] if s.on("pushed") else null,
-		["COLE", "I know. That is what I now have to explain to a judge."] if s.on("pushed") else null,
+		["COLE", "I know. Now I get to explain it to a judge."] if s.on("pushed") else null,
 	], "c4_charges")
 
 	choice("c4_charges", "The grand jury sits tomorrow. What do you ask them to indict Wade Harlan for?", 18, [
@@ -754,9 +754,9 @@ func _chapter4() -> void:
 		["OKONKWO", "The surveillance count is the camera."],
 	] + ([
 		["COLE", "And I can put the camera in his locker, with her window on the memory cards." if s.has("locker") else "And you found where it was mounted. Cut zip ties, a clean patch in the rust, aimed at her bed."],
-		["COLE", "So the jury meets him two months before the van. A man who watched her sleep doesn't get to say he only wanted to talk."],
+		["COLE", "So the jury meets him two months before the van. He watched her sleep. He doesn't get to say he only wanted to talk."],
 	] if (s.has("locker") or s.has("window")) else [
-		["COLE", "Which nobody ever found. No camera, no mount, nothing that puts a lens on her window. I'm charging it on her word that she felt watched."],
+		["COLE", "Which nobody found. No camera. No mount. I'm charging it on her word that she felt watched."],
 		["", "It is the count Pruitt will spend the most time on. If they guessed about this, she'll say, what else did they guess about?"],
 	]), "c4_gate1", func(s):
 		s.f.chargedAll = true
@@ -768,8 +768,8 @@ func _chapter4() -> void:
 			s.say("INDICTMENT — the surveillance count is thin"))
 
 	scene("c4_ch_core", "courthouse:office", [
-		["COLE", "Kidnapping in the first degree, and stalking. Unlawful imprisonment as the fallback if the jury won't go all the way."],
-		["COLE", "A short indictment. Every count on it, I can prove twice."],
+		["COLE", "Kidnapping one. Stalking. Unlawful imprisonment if the jury won't go all the way."],
+		["COLE", "Short indictment. Every count, I can prove twice."],
 	], "c4_gate1", func(s):
 		s.add(2)
 		s.say("INDICTMENT — two counts, both solid"))
@@ -777,10 +777,12 @@ func _chapter4() -> void:
 	branch("c4_gate1", func(s): return "c4_supp_warrant" if not s.on("warrant") else "c4_gate2")
 
 	scene("c4_supp_warrant", "courthouse:hearing", [
-		["JUDGE", "We're on the record in People against Harlan, on the defense motion to suppress. Ms. Pruitt.", "bench"],
-		["PRUITT", "Your Honor, the detectives had their captain on the phone and a judge being woken up. A warrant was thirty minutes away. Detective Okonkwo said the words \"bad signal\" and opened my client's van anyway."],
-		["PRUITT", "The Fourth Amendment is not a suggestion. The sneaker, the tape, the blanket, and everything that followed from them should go."],
-		["JUDGE", "Ms. Cole. It's the People's burden. Why was that search lawful without a warrant?"],
+		["JUDGE", "On the record. People against Harlan. Defense motion to suppress.", "bench"],
+		["JUDGE", "Ms. Pruitt."],
+		["PRUITT", "Your Honor, a warrant was thirty minutes away. Their own captain told them to wait."],
+		["PRUITT", "Detective Okonkwo said \"bad signal\" and opened my client's van."],
+		["PRUITT", "The Fourth Amendment is not a suggestion. The sneaker, the tape, the blanket. All of it goes."],
+		["JUDGE", "Ms. Cole. Your burden. Why was that search lawful?"],
 	], "c4_supp_warrant_c")
 
 	choice("c4_supp_warrant_c", "The van was searched without a warrant. Which exception do you argue?", 20, [
@@ -791,35 +793,42 @@ func _chapter4() -> void:
 
 	branch("c4_exig", func(s): return "c4_exig_win" if s.pre_van() >= 3 else "c4_supp_lost")
 	scene("c4_exig_win", "courthouse:hearing", [
-		["COLE", "The detectives were not guessing, Your Honor. They had her messages, her work schedule and the last place anyone saw her. They had every reason to believe she was in that van and running out of air."],
+		["COLE", "They weren't guessing, Your Honor. They had her messages, her schedule, and the last place anyone saw her."],
+		["COLE", "They believed she was in that van and running out of air."],
 		["PRUITT", "And she wasn't in it."],
-		["COLE", "The question is what a reasonable officer believed at the door, not what was behind it."],
-		["JUDGE", "It is. Specific facts, a missing young woman, and a vehicle she was last seen near. That is an emergency, and the law doesn't make officers wait outside one. The motion is denied.", "bench"],
+		["COLE", "The question is what they believed at the door. Not what was behind it."],
+		["JUDGE", "It is. A missing young woman, and the vehicle she was last seen near.", "bench"],
+		["JUDGE", "That's an emergency. The law doesn't make officers wait outside one. Denied."],
 	], "c4_gate2", func(s):
 		s.mark("supp_won")
 		s.say("RULING — the van evidence stays in"))
 
 	branch("c4_auto", func(s): return "c4_auto_win" if (s.has("receipt") or s.has("witness")) else "c4_supp_lost")
 	scene("c4_auto_win", "courthouse:hearing", func(s): return [
-		["COLE", "It is a vehicle, Your Honor, parked at a loading dock with its keys somewhere inside that building."],
-		["COLE", "A witness watched Tessa Brandt get into that van." if s.has("witness") else "She called a ride to that exact door at 9:14. It was cancelled two minutes later, and the only vehicle at that door was his."],
-		["COLE", "That is probable cause to believe she, or evidence of her, was inside. The law has not required a warrant for that in a hundred years."],
-		["JUDGE", "A vehicle that can leave, and probable cause tied to that vehicle. Ms. Pruitt, your client's van is not his bedroom. The motion is denied.", "bench"],
+		["COLE", "It's a vehicle, Your Honor. At a loading dock, keys somewhere in the building."],
+		["COLE", "A witness watched Tessa Brandt get into that van." if s.has("witness") else "She called a ride to that door. It was cancelled two minutes later. The only vehicle there was his."],
+		["COLE", "That's probable cause. For a vehicle, the law hasn't asked for a warrant in a hundred years."],
+		["JUDGE", "A vehicle that can drive away, and probable cause tied to it.", "bench"],
+		["JUDGE", "Ms. Pruitt, a van is not a bedroom. Denied."],
 	], "c4_gate2", func(s):
 		s.mark("supp_won")
 		s.say("RULING — the van evidence stays in"))
 
 	scene("c4_inev", "courthouse:hearing", [
-		["COLE", "A warrant application was already in front of Judge Feld. It was granted. The police would have lawfully opened that van thirty minutes later and found exactly what they found."],
-		["PRUITT", "\"We would have done it properly\" is what everyone says after doing it improperly."],
-		["JUDGE", "It is. But the application was real, it was pending, and it was signed. I will allow the evidence. Barely. And Ms. Cole, tell your detectives that \"bad signal\" is not a doctrine.", "bench"],
+		["COLE", "The warrant was already in front of Judge Feld. It was granted."],
+		["COLE", "Thirty minutes later they open that van lawfully and find exactly the same things."],
+		["PRUITT", "\"We would have done it right.\" Everybody says that after doing it wrong."],
+		["JUDGE", "They do. But the application was real, it was pending, and it was signed.", "bench"],
+		["JUDGE", "I'll allow it. Barely."],
+		["JUDGE", "Ms. Cole. Tell your detectives \"bad signal\" is not a doctrine."],
 	], "c4_gate2", func(s):
 		s.add(-5)
 		s.say("RULING — evidence stays in, but the judge is unhappy"))
 
 	scene("c4_supp_lost", "courthouse:hearing", [
-		["JUDGE", "A hunch is not an emergency, Ms. Cole, and it is not probable cause either. Your detectives knew she worked in that building. They had almost nothing that pointed at that van.", "bench"],
-		["JUDGE", "The motion is granted. The sneaker, the tape and the blanket cannot be used at trial."],
+		["JUDGE", "A hunch is not an emergency, Ms. Cole. It isn't probable cause either.", "bench"],
+		["JUDGE", "They knew she worked in that building. Nothing pointed at that van."],
+		["JUDGE", "Granted. The sneaker, the tape and the blanket are out."],
 	], "c4_gate2", func(s):
 		s.add(-15)
 		s.f.suppVan = true
@@ -828,20 +837,22 @@ func _chapter4() -> void:
 	branch("c4_gate2", func(s): return "c4_supp_stmt" if s.on("pushed") else ("c4_vol" if s.on("confession") and s.on("bluffed") else ("c4_clar" if s.on("clarified") else "c4_plea")))
 
 	scene("c4_vol", "courthouse:hearing", [
-		["PRUITT", "The detective lied to him, Your Honor. She told him a GPS had already led them to the girl. The confession came out of that lie, and it should go."],
-		["COLE", "Deception about the evidence is not coercion. No threat, no promise, rights read and waived, every second of it recorded."],
-		["JUDGE", "The police may misstate what they know. They may not overbear a man's will. I have watched the recording twice, and nobody overbore Mr. Harlan. The motion is denied.", "bench"],
+		["PRUITT", "She lied to him, Your Honor. She said a GPS had already found the girl. The confession came out of that lie."],
+		["COLE", "A lie about the evidence isn't coercion. No threat. No promise. Rights read, rights waived, all of it on tape."],
+		["JUDGE", "Police may lie about what they know. They may not break a man's will.", "bench"],
+		["JUDGE", "I watched the tape twice. Nobody broke Mr. Harlan. Denied."],
 	], "c4_plea", func(s): s.say("RULING — the confession stays in"))
 
 	scene("c4_clar", "courthouse:hearing", [
-		["PRUITT", "My client asked for counsel. Everything after that sentence should be gone, including the remark about the tank."],
-		["COLE", "Everything the detectives asked after that sentence, yes. They asked nothing. He volunteered it to the table."],
-		["JUDGE", "Once he asked for a lawyer the questions had to stop, and they did. The rule protects him from interrogation. It does not protect him from himself. Denied.", "bench"],
+		["PRUITT", "My client asked for a lawyer. Everything after that goes. Including the tank."],
+		["COLE", "Everything they asked after that, yes. They asked nothing. He said it to the table."],
+		["JUDGE", "He asked for a lawyer. The questions stopped.", "bench"],
+		["JUDGE", "The rule protects him from the police. Not from himself. Denied."],
 	], "c4_plea", func(s): s.say("RULING — the volunteered remark stays in"))
 
 	scene("c4_supp_stmt", "courthouse:hearing", [
-		["JUDGE", "That leaves the statement. Mr. Harlan asked for a lawyer, on camera, and the detective kept going.", "bench"],
-		["PRUITT", "\"Forget the lawyer,\" Your Honor. Her words. I don't think I need to add anything."],
+		["JUDGE", "That leaves the statement. He asked for a lawyer, on camera. The detective kept going.", "bench"],
+		["PRUITT", "\"Forget the lawyer,\" Your Honor. Her words. I have nothing to add."],
 	], "c4_supp_stmt_c")
 
 	choice("c4_supp_stmt_c", "He asked for a lawyer and was questioned anyway. How do you handle it?", 18, [
@@ -852,25 +863,30 @@ func _chapter4() -> void:
 	branch("c4_stmt_ps", func(s): return "c4_stmt_win" if s.on("warrant") else "c4_stmt_lost")
 
 	scene("c4_stmt_win", "courthouse:hearing", [
-		["COLE", "Detective Okonkwo was not building a case in that room, Your Honor. She asked one question: where is she. Not why, not how. A girl was tied up somewhere with the night getting colder."],
-		["COLE", "These are the same detectives who stood outside a van for thirty minutes waiting for a signature. They do not cut corners for convenience."],
-		["JUDGE", "No, they don't, and that is the only reason I am listening. When a life is at stake, an officer may ask the question that saves it. One question, no more. I'll allow the answer in.", "bench"],
-		["JUDGE", "Do not mistake this for a habit I approve of."],
+		["COLE", "She wasn't building a case in that room, Your Honor. She asked one question."],
+		["COLE", "Where is she. Not why. Not how."],
+		["COLE", "A girl was tied up somewhere, and it was getting colder."],
+		["COLE", "These detectives stood outside a van for thirty minutes waiting on a signature. They don't cut corners."],
+		["JUDGE", "No, they don't. That's the only reason I'm listening.", "bench"],
+		["JUDGE", "With a life at stake, an officer may ask the question that saves it. One question."],
+		["JUDGE", "The answer comes in."],
+		["JUDGE", "Don't make it a habit."],
 	], "c4_plea", func(s):
 		s.mark("stmt_won")
 		s.add(4)
 		s.say("RULING — rescue exception; the statement stays in"))
 
 	scene("c4_stmt_lost", "courthouse:hearing", func(s): return [
-		["COLE", "Detective Okonkwo was not building a case in that room, Your Honor. She was trying to find a girl before it was too late."],
-		["JUDGE", "And she nearly was too late. But this is the same detective who hung up on a warrant an hour earlier. I cannot call it an emergency every time the rules are inconvenient to her." if s.f.get("tessa") == "hurt"
+		["COLE", "She wasn't building a case, Your Honor. She was trying to find a girl in time."],
+		["JUDGE", "She nearly didn't. But this detective hung up on a warrant an hour earlier. It can't be an emergency every time the rules get in her way." if s.f.get("tessa") == "hurt"
 			else "This is the same detective who hung up on a warrant an hour earlier. I cannot call it an emergency every time the rules are inconvenient to her.", "bench"],
-		["JUDGE", "The statement is suppressed. What the police found at the tower stays in: the remedy for a statement wrongly taken is losing the statement, not the girl."],
+		["JUDGE", "The statement is out."],
+		["JUDGE", "What they found at the tower stays in. You lose the statement, Ms. Cole. Not the girl."],
 	], "c4_plea", func(s): s.add(-10))
 
 	scene("c4_stmt_con", "courthouse:hearing", [
-		["COLE", "The People withdraw the statement, Your Honor. I won't defend the way it was obtained."],
-		["JUDGE", "Thank you, Ms. Cole. That kind of candor is rarer in this room than it should be. The physical evidence from the tower is unaffected.", "bench"],
+		["COLE", "The People withdraw the statement, Your Honor. I won't defend how we got it."],
+		["JUDGE", "Thank you, Ms. Cole. I don't hear that often enough. The evidence from the tower stands.", "bench"],
 	], "c4_plea", func(s):
 		s.add(-8)
 		s.f.candor = true
@@ -878,7 +894,8 @@ func _chapter4() -> void:
 
 	scene("c4_plea", "courthouse:plea", func(s): return [
 		["", "Dana Pruitt comes to your office instead of calling. She doesn't sit down.", "PRUITT"],
-		["PRUITT", "Fifteen years. He pleads to kidnapping in the second degree, you drop the rest, and Tessa Brandt never sees the inside of a courtroom."],
+		["PRUITT", "Fifteen years. Kidnapping two. You drop the rest."],
+		["PRUITT", "And Tessa Brandt never sees the inside of a courtroom."],
 		["", "Your case is strong. You would probably win at trial, and Pruitt knows it." if s.strength >= 55
 			else ("Your case could go either way at trial." if s.strength >= 35 else "Your case is weak. A trial would be a real risk.")],
 		["", "You call Tessa before you answer. The statute says the victim is consulted. You would have called anyway.", "desk"] if s.f.get("tessa") == "safe" else
@@ -896,11 +913,11 @@ func _chapter4() -> void:
 	branch("c4_counter", func(s): return "c4_counter_yes" if s.strength >= 55 else "c4_counter_no")
 	scene("c4_counter_yes", "courthouse:plea", [
 		["COLE", "Twenty. Kidnapping and stalking, and he says what he did out loud, in open court."],
-		["PRUITT", "...I've read your file too, Imani. Twenty. I'll have him sign it tonight."],
+		["PRUITT", "...I've read your file too. Twenty. He signs tonight."],
 	], "end_plea20")
 	scene("c4_counter_no", "courthouse:plea", [
 		["COLE", "Twenty. Kidnapping and stalking, and he says what he did out loud, in open court."],
-		["PRUITT", "With this file? I'll take my chances with twelve strangers. The offer is withdrawn. I'll see you at trial."],
+		["PRUITT", "With this file? I'll take twelve strangers. Offer's withdrawn. See you at trial."],
 	], "c4_trial", func(s): s.say("OFFER WITHDRAWN — the case goes to trial"))
 
 	scene("c4_trial", "courthouse:trial", [
@@ -917,7 +934,7 @@ func _chapter4() -> void:
 
 	scene("c4_front_yes", "courthouse:trial", func(s): return [
 		["COLE", "Detective, did you arrest someone else for this crime first?" if s.on("wrong") else ("Detective, did you have a warrant when you opened that van?" if not s.on("warrant") else "Detective, did Mr. Harlan ask for a lawyer before he told you where she was?")],
-		["OKONKWO", "Yes. Evan Kessler. He ran, he had lied to her, and I was sure. I was wrong, and she spent the night in that tower because of it." if s.on("wrong")
+		["OKONKWO", "Yes. Evan Kessler. He ran, and I was sure. I was wrong. She spent the night in that tower because of it." if s.on("wrong")
 			else ("No. I had a judge thirty minutes away and a girl I couldn't find. I made the call. I'd want the jury to hear that from me." if not s.on("warrant")
 			else "Yes. And I asked him anyway. One question. I'd ask it again."), "OKONKWO"],
 		["", "By the time Pruitt stands up, there is nothing left for her to reveal.", "jury"],
@@ -927,7 +944,7 @@ func _chapter4() -> void:
 		s.say("JURY — heard the bad news from you first"))
 
 	scene("c4_front_no", "courthouse:trial", func(s): return [
-		["PRUITT", "Detective Okonkwo. Before my client, you arrested a twenty-one-year-old named Evan Kessler for this. You were certain then, too?" if s.on("wrong")
+		["PRUITT", "Detective. Before my client, you arrested Evan Kessler for this. You were certain then, too?" if s.on("wrong")
 			else ("\"Bad signal,\" Detective. Was that true?" if not s.on("warrant") else "He said the word \"lawyer,\" Detective. What did you say next?")],
 		["OKONKWO", "...Yes." if s.on("wrong") else ("No." if not s.on("warrant") else "\"Forget the lawyer.\""), "OKONKWO"],
 		["", "Twelve jurors write the same thing down, and then look at you to see why you didn't tell them.", "jury"],
@@ -945,7 +962,8 @@ func _chapter4() -> void:
 	], {"next": "c4_protect"})
 
 	scene("c4_call", "courthouse:tessa", func(s): return [
-		["TESSA", "A detective told me that night that I did everything right. So I am going to do this right, too."],
+		["TESSA", "A detective told me I did everything right."],
+		["TESSA", "So I'm going to do this right, too."],
 		["", "She testifies for fifty minutes and looks at Harlan exactly once. After that, the jury no longer sees a harmless man.", "jury"],
 	] if s.on("bond") else [
 		["", "She gets through her testimony, but only just. She has no reason to trust the people who are asking her to do this.", "TESSA"],
@@ -960,7 +978,7 @@ func _chapter4() -> void:
 
 	# cross-examination: object, and on the right ground
 	scene("c4_obj1t", "courthouse:tessa", [
-		["PRUITT", "You kept his cards, Ms. Brandt. Every one, in a coffee can, with dried flowers on top. You liked the attention, didn't you?"],
+		["PRUITT", "You kept his cards, Ms. Brandt. Every one. With dried flowers on top. You liked the attention, didn't you?"],
 	], "c4_obj1t_c")
 	choice("c4_obj1t_c", "Tessa is looking at you. Object? On what ground?", 9, [
 		opt("LEADING", "She's putting words in the witness's mouth.", "c4_obj_bad_lead"),
@@ -969,7 +987,7 @@ func _chapter4() -> void:
 	], {"next": "c4_obj_none1"})
 
 	scene("c4_obj1p", "courthouse:trial", [
-		["PRUITT", "Ms. Nair, your roommate kept his cards. Every one, in a coffee can, with dried flowers on top. She liked the attention, didn't she?"],
+		["PRUITT", "Ms. Nair, your roommate kept his cards. Every one. With dried flowers on top. She liked the attention, didn't she?"],
 	], "c4_obj1p_c")
 	choice("c4_obj1p_c", "Priya is looking at you. Object? On what ground?", 9, [
 		opt("LEADING", "She's putting words in the witness's mouth.", "c4_obj_bad_lead"),
@@ -978,18 +996,18 @@ func _chapter4() -> void:
 	], {"next": "c4_obj_none1"})
 
 	scene("c4_obj_good1", "courthouse:trial", [
-		["JUDGE", "Sustained. Ms. Pruitt, ask a question or sit down. The jury will disregard that.", "bench"],
+		["JUDGE", "Sustained. Ask a question or sit down, Ms. Pruitt. The jury will disregard.", "bench"],
 	], "c4_obj2", func(s):
 		s.add(4)
 		s.say("SUSTAINED"))
 	scene("c4_obj_bad_lead", "courthouse:trial", [
-		["JUDGE", "It's cross-examination, Ms. Cole. She is allowed to lead. Overruled.", "bench"],
+		["JUDGE", "Overruled. It's cross, Ms. Cole. She can lead.", "bench"],
 		["", "The witness has to answer. It takes her a long time."],
 	], "c4_obj2", func(s):
 		s.add(-2)
 		s.say("OVERRULED"))
 	scene("c4_obj_bad1", "courthouse:trial", [
-		["JUDGE", "The cards are your own exhibit, Ms. Cole, and they're the defendant's words. Overruled.", "bench"],
+		["JUDGE", "Overruled. The cards are your own exhibit, Ms. Cole.", "bench"],
 		["", "The witness has to answer. It takes her a long time."],
 	], "c4_obj2", func(s):
 		s.add(-2)
@@ -1000,7 +1018,7 @@ func _chapter4() -> void:
 
 	scene("c4_obj2", "courthouse:okonkwo", [
 		["", "Okonkwo is recalled. Pruitt doesn't use her notes.", "OKONKWO"],
-		["PRUITT", "Detective, the roommate told you that night, and I'm quoting your report, that Tessa \"thought it would go away if she ignored him.\" So she wasn't even afraid of him. Isn't that right?"],
+		["PRUITT", "Detective, your own report. The roommate said Tessa \"thought it would go away if she ignored him.\" So she wasn't afraid of him. Was she?"],
 	], "c4_obj2_c")
 	choice("c4_obj2_c", "Pruitt is reading someone else's words to a third person. Object?", 9, [
 		opt("RELEVANCE", "What Tessa thought doesn't matter.", "c4_obj2_bad"),
@@ -1008,12 +1026,12 @@ func _chapter4() -> void:
 		opt("BADGERING", "She's harassing the witness.", "c4_obj2_bad"),
 	], {"next": "c4_obj2_none"})
 	scene("c4_obj2_good", "courthouse:okonkwo", [
-		["JUDGE", "That's a statement inside a statement, Ms. Pruitt, and neither woman is the one on the stand. Sustained.", "bench"],
+		["JUDGE", "Sustained. That's hearsay twice over, Ms. Pruitt.", "bench"],
 	], "c4_obj3", func(s):
 		s.add(4)
 		s.say("SUSTAINED"))
 	scene("c4_obj2_bad", "courthouse:okonkwo", [
-		["JUDGE", "Her state of mind is squarely at issue and counsel has been perfectly civil. Overruled.", "bench"],
+		["JUDGE", "Overruled. Her state of mind is the issue, and counsel has been civil.", "bench"],
 		["OKONKWO", "That is what the roommate said, yes."],
 	], "c4_obj3", func(s):
 		s.add(-2)
@@ -1024,7 +1042,7 @@ func _chapter4() -> void:
 	], "c4_obj3", func(s): s.add(-3))
 
 	scene("c4_obj3", "courthouse:okonkwo", [
-		["PRUITT", "Three weeks before any of this, a frightened young woman sat across your desk with dozens of messages, and you sent her home. You're not here for the truth, Detective. You're here because you feel guilty. Isn't that so?"],
+		["PRUITT", "Three weeks before this, a frightened girl sat at your desk, and you sent her home. You're not here for the truth, Detective. You're here because you feel guilty. Isn't that so?"],
 	], "c4_obj3_c")
 	choice("c4_obj3_c", "Okonkwo hasn't looked away from Pruitt. She isn't asking you for help.", 9, [
 		opt("OBJECT", "Argumentative. Get her out from under it.", "c4_obj3_obj"),
@@ -1032,18 +1050,18 @@ func _chapter4() -> void:
 		opt("RELEVANCE", "Her feelings aren't evidence.", "c4_obj3_bad"),
 	], {"next": "c4_obj3_let"})
 	scene("c4_obj3_obj", "courthouse:okonkwo", [
-		["JUDGE", "Sustained as to form. Rephrase, Ms. Pruitt.", "bench"],
+		["JUDGE", "Sustained. Rephrase.", "bench"],
 		["", "Pruitt rephrases. The jury watched you step in front of your own detective, and they noticed.", "jury"],
 	], "c4_closing", func(s): s.add(1))
 	scene("c4_obj3_let", "courthouse:okonkwo", [
 		["OKONKWO", "Yes. I feel guilty. I told her there was nothing we could do, and I was wrong."],
-		["OKONKWO", "That is why I counted every card and wrote down every time on every receipt. Guilt didn't put her shoe in his van. He did."],
+		["OKONKWO", "That's why I counted every card. Guilt didn't put her shoe in his van. He did."],
 		["", "Pruitt has no further questions.", "PRUITT"],
 	], "c4_closing", func(s):
 		s.add(6)
 		s.say("JURY — believed her"))
 	scene("c4_obj3_bad", "courthouse:okonkwo", [
-		["JUDGE", "A witness's bias is always relevant, Ms. Cole. Overruled. The detective will answer.", "bench"],
+		["JUDGE", "Overruled. Bias is always relevant. The detective will answer.", "bench"],
 		["OKONKWO", "...Yes. I feel guilty."],
 		["", "Because you objected first, it sounds like something you were trying to hide.", "jury"],
 	], "c4_closing", func(s):

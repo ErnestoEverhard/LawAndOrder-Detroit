@@ -37,6 +37,8 @@ var hero_aim := Vector3.ZERO
 const HERO_MODEL := Kit.OKONKWO_MODEL
 const HERO_LOOK := Kit.OKONKWO_LOOK
 const FIRST_PERSON_TRACKS := ["closing"]
+const HERO_CAM_DIST := {"rescue": 1.9, "walkway": 2.3}      # tight places: keep the camera in the room with her
+var hero_dist := 3.1
 # Word in a step's action label -> the animation that shows it succeeding.
 const ACT_CLIPS := [["VAULT", "vault"], ["OVER THE", "jump"], ["JUMP", "jump"], ["DODGE", "dodge"], ["SIDESTEP", "dodge"],
 	["DUCK", "dodge"], ["SLIDE", "slide"], ["GET LOW", "crouch_walk"], ["SHOULDER", "tackle"],
@@ -192,16 +194,16 @@ func _hero_frame(delta: float) -> void:
 	hero.position = hero_pos
 	hero.rotation.y = lerp_angle(hero.rotation.y, atan2(hero_dir.x, hero_dir.z), minf(1.0, delta * 10.0))
 	cam.position = cam.position.lerp(_hero_cam(), 1.0 - exp(-6.0 * delta))
-	var aim := (hero_pos + Vector3(0, 0.95, 0)).lerp(hero_aim, 0.3)      # aimed low so she sits above the prompt
+	var aim := (hero_pos + Vector3(0, 0.7, 0)).lerp(hero_aim, 0.3)      # aimed low so she sits above the prompt
 	if aim.distance_to(cam.position) > 0.2:
 		cam.look_at(aim)
 
 func _hero_cam() -> Vector3:
 	# Behind her, above her shoulder; in front of any wall that would come between.
 	var chest := hero_pos + Vector3(0, 1.3, 0)
-	var want := hero_pos + Vector3(0, 2.05, 0) - hero_dir * 3.1 + hero_dir.cross(Vector3.UP) * 0.55
+	var want := hero_pos + Vector3(0, 2.15, 0) - hero_dir * hero_dist + hero_dir.cross(Vector3.UP) * 0.55
 	var hit := loc.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(chest, want, 1))
-	return want if hit.is_empty() else chest.lerp(hit.position, 0.85)
+	return want if hit.is_empty() else chest.lerp(hit.position, 0.8)
 
 func _hero_act(st: Dictionary, ok: bool) -> float:
 	# Show the result of a step on the detective. Returns how long the move takes.
@@ -763,6 +765,7 @@ func _qte(n: Dictionary) -> Dictionary:
 		hero_dir = Vector3(d0.x, 0, d0.z).normalized()
 		var h := loc.actor("", HERO_MODEL, hero_pos, atan2(hero_dir.x, hero_dir.z), "run", "run", HERO_LOOK)
 		hero = h
+		hero_dist = HERO_CAM_DIST.get(n.get("track", ""), 3.1)
 		loc.badge(h)
 		cam.position = _hero_cam()
 	loc.on_step(n.get("track", ""), 0)
