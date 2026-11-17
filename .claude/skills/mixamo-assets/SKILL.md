@@ -53,6 +53,10 @@ git-ignored: Mixamo files may be used in a game but not redistributed raw. Recor
 - A model in different units gets a scale in `HEIGHT` in `kit.gd`.
 
 ## Telling people apart
+- `Kit.CASTING` in `godot/kit.gd` fixes the model and look for REYES and PRUITT; `Kit.OKONKWO_MODEL` and
+  `OKONKWO_LOOK` do the same for the player. Change a principal there, not in each set.
+- Louise's slicked-back bun reads as thin hair in close-up, which the owner found off-putting on a lead.
+  Reyes is Martha (short, full cut); Louise plays Pruitt with the bun tinted grey.
 - Two named characters must never share a model, and a named character's model must not appear as an
   extra in the same scene (the jury once held doubles of Reyes and three witnesses).
 - `look` keys: a part name recolours it (`"Hair"`, `"Body"` for skin, `"Suit"`, `"Shirt"`, `"Pants"`, `"Heels"`).
