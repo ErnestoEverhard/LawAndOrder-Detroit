@@ -25,6 +25,7 @@ func build() -> void:
 	else:
 		shot("wide", Vector3(-3.3, 1.7, 2.3), Vector3(1.0, 1.0, -1.2), 62)
 		shot("door", Vector3(0.1, 1.55, 3.9), Vector3(0.6, 1.2, 0.0), 55)
+		shot("doorway", Vector3(-1.3, 1.5, 0.6), Vector3(0.3, 1.1, 3.05), 60)
 		close("REYES", 1.6, 0.5, 1.6, 42)
 
 var _talks := 0
@@ -96,7 +97,22 @@ func _room() -> void:
 		[Vector3(4.05, 2.5, 0.8), Vector3(0.1, 0.6, 1.6)],
 	]:
 		box(w[0], w[1], Color.WHITE).material_override = plaster
-	box(Vector3(-0.35, 1.05, 3.4), Vector3(0.9, 2.1, 0.06), Color(0.30, 0.22, 0.16), false, 0.0, 1.0)  # door, ajar
+	# Bedroom door: hinged on the east jamb, swung back into the room almost flat against the wall.
+	var wood := Color(0.30, 0.22, 0.16)
+	var leaf := box(Vector3(0.89, 1.025, 2.75), Vector3(0.9, 2.05, 0.045), wood, true, 0.0, 0.5236)
+	for side in [-1.0, 1.0]:
+		var knob := ball(Vector3.ZERO, 0.032, Color(0.7, 0.66, 0.5))
+		remove_child(knob)
+		knob.position = Vector3(0.38, -0.05, 0.05 * side)
+		leaf.add_child(knob)
+	for z in [2.985, 3.115]:                                   # casing on both faces of the wall
+		box(Vector3(-0.54, 1.07, z), Vector3(0.09, 2.14, 0.03), wood, false)
+		box(Vector3(0.54, 1.07, z), Vector3(0.09, 2.14, 0.03), wood, false)
+		box(Vector3(0, 2.14, z), Vector3(1.17, 0.09, 0.03), wood, false)
+	box(Vector3(-0.5, 1.05, 3.05), Vector3(0.02, 2.1, 0.11), wood, false)     # jambs lining the opening
+	box(Vector3(0.5, 1.05, 3.05), Vector3(0.02, 2.1, 0.11), wood, false)
+	box(Vector3(0, 2.09, 3.05), Vector3(1.0, 0.02, 0.11), wood, false)
+	box(Vector3(0, 0.008, 3.05), Vector3(1.0, 0.016, 0.12), Color(0.45, 0.4, 0.33), false)   # threshold
 	# the apartment's hall beyond the bedroom door: Priya's room opposite, stairs down to the street at the east end
 	for h in [
 		[Vector3(0, 1.4, 4.85), Vector3(6.2, 2.8, 0.1)],
@@ -194,7 +210,7 @@ func _furniture() -> void:
 	clear_glass(model("alarm_clock_01", Vector3(1.3, 0.55, -2.68), 0.25, 1.1))
 	model("wall_clock", Vector3(2.5, 2.05, 2.99), PI)
 	model("wicker_basket_02", Vector3(-0.75, 0, 1.95), 0.4, 1.7)
-	model("rubber_boots", Vector3(1.05, 0, 2.78), 2.9, 0.75)
+	model("rubber_boots", Vector3(1.75, 0, 2.78), 2.9, 0.75)
 	model("potted_plant_01", Vector3(3.68, 0, 2.6), 1.0, 0.9)
 	_closet()
 	var lamp := model("modern_ceiling_lamp_01", Vector3(0, 2.1, 0.3), 0.0, 0.6)
