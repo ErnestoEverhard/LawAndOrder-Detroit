@@ -99,26 +99,15 @@ func build() -> void:
 
 func _coach(pos: Vector3) -> void:
 	# A long-distance coach, door side toward the terminal, lit inside.
-	var c := Node3D.new()
-	c.position = pos
-	add_child(c)
-	var parts := [
-		[Vector3(0, 1.75, 0), Vector3(11.5, 2.7, 2.5), Color(0.82, 0.84, 0.86)],
-		[Vector3(0, 0.95, -1.26), Vector3(11.5, 0.5, 0.02), Color(0.15, 0.3, 0.55)],
-		[Vector3(-0.6, 2.2, -1.26), Vector3(9.6, 0.9, 0.02), Color(0.9, 0.85, 0.6)],
-		[Vector3(5.76, 2.0, 0), Vector3(0.02, 1.3, 2.2), Color(0.05, 0.06, 0.08)],
-		[Vector3(0, 0.3, 0), Vector3(11.0, 0.2, 2.2), Color(0.08, 0.08, 0.09)],
-		[Vector3(0.4, 1.2, -1.27), Vector3(0.9, 1.9, 0.03), Color(0.03, 0.03, 0.04)],     # the open door
-		[Vector3(0.4, 0.42, -1.5), Vector3(0.9, 0.12, 0.4), Color(0.2, 0.2, 0.22)],      # its step
-	]
-	for i in parts.size():
-		var b := _into(c, box(parts[i][0], parts[i][1], parts[i][2], i == 0, 1.2 if i == 2 else 0.0))
-	for wx in [-4.0, 3.8]:
-		_into(c, cyl(Vector3(wx, 0.5, -1.15), 0.5, 0.3, Color(0.05, 0.05, 0.05), 0.9)).rotation.x = PI / 2
+	var c := van(pos, 0.0, Color(0.82, 0.84, 0.86), false, "", Color(0.15, 0.3, 0.55), false, "coach")
+	for p in [
+		[Vector3(0.4, 1.6, -1.255), Vector3(0.95, 2.1, 0.03), Color(0.03, 0.03, 0.04)],     # the open door
+		[Vector3(0.4, 0.5, -1.5), Vector3(0.95, 0.12, 0.4), Color(0.2, 0.2, 0.22)],        # its step
+		[Vector3(0, 0.95, -1.256), Vector3(11.3, 0.12, 0.01), Color(0.75, 0.2, 0.15)],     # a red pinstripe under the blue
+	]:
+		_into(c, box(p[0], p[1], p[2], false))
 	plate("14  ALDER FALLS — NORTHGATE", Vector3(pos.x + 3.6, 2.85, pos.z - 1.28), PI, 2.6, 0.28, Color(0.03, 0.03, 0.04), AMBER, 60, null, 1.0)
 	omni(pos + Vector3(0.4, 1.8, -1.8), Color(1.0, 0.9, 0.7), 1.2, 4.0)
-	for hz in [-0.8, 0.8]:
-		_into(c, box(Vector3(5.77, 0.8, hz), Vector3(0.02, 0.18, 0.35), Color(1.0, 0.95, 0.8), false, 3.0))
 
 func on_step(track: String, i: int) -> void:
 	if track != "gate" or runner == null:

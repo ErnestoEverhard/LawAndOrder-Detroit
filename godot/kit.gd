@@ -697,6 +697,9 @@ const VEHICLES := {
 		"top": [Vector2(-3.6, 0.6), Vector2(-3.62, 0.8), Vector2(-3.6, 2.55), Vector2(1.2, 2.55), Vector2(1.25, 2.8), Vector2(3.0, 2.8),
 			Vector2(3.4, 1.75), Vector2(3.46, 1.5), Vector2(3.48, 0.62)],
 		"windows": [[Vector2(1.4, 1.8), Vector2(1.4, 2.6), Vector2(2.95, 2.6), Vector2(3.2, 1.8)]]},
+	"coach": {"w": 2.5, "wheel": 0.5, "arches": [-3.9, 3.9], "glass": [4], "seams": [], "shoulder": 1.6,
+		"top": [Vector2(-5.75, 0.6), Vector2(-5.77, 0.85), Vector2(-5.72, 3.0), Vector2(-5.5, 3.12), Vector2(5.2, 3.12), Vector2(5.72, 1.6), Vector2(5.76, 0.66)],
+		"windows": [[Vector2(-5.20, 1.75), Vector2(-5.20, 2.72), Vector2(-3.98, 2.72), Vector2(-3.98, 1.75)], [Vector2(-3.84, 1.75), Vector2(-3.84, 2.72), Vector2(-2.62, 2.72), Vector2(-2.62, 1.75)], [Vector2(-2.48, 1.75), Vector2(-2.48, 2.72), Vector2(-1.26, 2.72), Vector2(-1.26, 1.75)], [Vector2(-1.12, 1.75), Vector2(-1.12, 2.72), Vector2(0.10, 2.72), Vector2(0.10, 1.75)], [Vector2(0.24, 1.75), Vector2(0.24, 2.72), Vector2(1.46, 2.72), Vector2(1.46, 1.75)], [Vector2(1.60, 1.75), Vector2(1.60, 2.72), Vector2(2.82, 2.72), Vector2(2.82, 1.75)], [Vector2(2.96, 1.75), Vector2(2.96, 2.72), Vector2(4.18, 2.72), Vector2(4.18, 1.75)]]},
 }
 
 func van(pos: Vector3, rot_y: float, body_c := Color(0.86, 0.86, 0.84), open := false, side_text := "", stripe: Variant = null, lightbar := false, kind := "van") -> Node3D:
@@ -739,6 +742,11 @@ func van(pos: Vector3, rot_y: float, body_c := Color(0.86, 0.86, 0.84), open := 
 	glass.metallic = 0.7
 	glass.roughness = 0.08
 	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	if kind == "coach":                           # cabin lights on
+		glass.albedo_color = Color(0.5, 0.46, 0.34)
+		glass.emission_enabled = true
+		glass.emission = Color(1.0, 0.88, 0.6)
+		glass.emission_energy_multiplier = 0.9
 	var half := func(y: float) -> float:          # the body leans in above the shoulder line
 		return hw - 0.09 * smoothstep(spec.shoulder, roof_y, y)
 	var body := SurfaceTool.new()
@@ -842,7 +850,7 @@ func van(pos: Vector3, rot_y: float, body_c := Color(0.86, 0.86, 0.84), open := 
 		if stripe != null:
 			_into(v, box(Vector3((rear_x + top[spec.glass[-1]].x) / 2.0 - 0.1, spec.shoulder - 0.3, side * (hw + 0.004)), Vector3(top[spec.glass[-1]].x - rear_x - 0.4, 0.2, 0.004), stripe, false))
 	# rear doors on vans and trucks
-	if kind != "car":
+	if kind in ["van", "truck"]:
 		var door_h: float = roof_y - sill - 0.16
 		for side in [-1.0, 1.0]:
 			var hinge := Node3D.new()
