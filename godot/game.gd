@@ -34,8 +34,8 @@ var hero: Node3D
 var hero_pos := Vector3.ZERO
 var hero_dir := Vector3.FORWARD
 var hero_aim := Vector3.ZERO
-const HERO_MODEL := "roth"
-const HERO_LOOK := {"Shirt": Color(0.32, 0.34, 0.4)}
+const HERO_MODEL := Kit.OKONKWO_MODEL
+const HERO_LOOK := Kit.OKONKWO_LOOK
 const FIRST_PERSON_TRACKS := ["closing"]
 # Word in a step's action label -> the animation that shows it succeeding.
 const ACT_CLIPS := [["VAULT", "vault"], ["OVER THE", "jump"], ["JUMP", "jump"], ["DODGE", "dodge"], ["SIDESTEP", "dodge"],

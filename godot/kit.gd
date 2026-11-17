@@ -6,6 +6,9 @@ extends Node3D
 
 const AMBER := Color(0.95, 0.71, 0.27)
 const INK := Color(0.10, 0.10, 0.12)
+# Detective Okonkwo, the player. Her model is used for nobody else, so she always reads as herself.
+const OKONKWO_MODEL := "elizabeth"
+const OKONKWO_LOOK := {"Shirt": Color(0.25, 0.25, 0.3), "Pants": Color(0.3, 0.3, 0.33)}
 const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
@@ -498,6 +501,37 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 	pose(n, idle)
 	ap.seek(randf() * 2.0)
 	return n
+
+func robe(n: Node3D, color := Color(0.03, 0.03, 0.035)) -> void:
+	# A judge's robe worn over a suit: a loose black body, a yoke over the shoulders and bell sleeves,
+	# each piece fixed to a bone so it moves with the person.
+	if n == null:
+		return
+	var skel: Skeleton3D = n.find_child("Skeleton3D", true, false)
+	var k := 1.0 / skel.global_transform.basis.get_scale().x
+	var cloth := StandardMaterial3D.new()
+	cloth.albedo_color = color
+	cloth.roughness = 0.92
+	# [bone, top radius, bottom radius, length, offset along the bone, squash]
+	for part in [["Spine1", 0.2, 0.36, 0.8, -0.12, Vector3(1.0, 1.0, 0.74)], ["Spine2", 0.13, 0.27, 0.2, 0.17, Vector3(1.0, 1.0, 0.72)],
+			["LeftArm", 0.1, 0.095, 0.3, 0.14, Vector3.ONE], ["RightArm", 0.1, 0.095, 0.3, 0.14, Vector3.ONE],
+			["LeftForeArm", 0.095, 0.15, 0.25, 0.11, Vector3.ONE], ["RightForeArm", 0.095, 0.15, 0.25, 0.11, Vector3.ONE]]:
+		var at := BoneAttachment3D.new()
+		skel.add_child(at)
+		at.bone_name = str(n.get_meta("prefix")) + part[0]
+		var mi := MeshInstance3D.new()
+		var m := CylinderMesh.new()
+		m.top_radius = part[1]
+		m.bottom_radius = part[2]
+		m.height = part[3]
+		if (part[0] as String).contains("Arm"):         # arm bones run shoulder to hand, so the wide end goes last
+			m.top_radius = part[2]
+			m.bottom_radius = part[1]
+		mi.mesh = m
+		mi.material_override = cloth
+		mi.position = Vector3(0, part[4], 0.015 if (part[0] as String).begins_with("Spine") else 0.0) * k
+		mi.scale = (part[5] as Vector3) * k
+		at.add_child(mi)
 
 func pose(n: Node3D, anim: String, blend := 0.3) -> void:
 	if n == null:
