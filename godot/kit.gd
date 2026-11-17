@@ -15,6 +15,7 @@ const CASTING := {
 	"REYES": ["martha", {"Suit": Color(0.4, 0.46, 0.72), "Pants!": Color(0.09, 0.1, 0.15), "Heels": Color(0.08, 0.08, 0.09)}],
 	"PRUITT": ["louise", {"Suit!": Color(0.3, 0.3, 0.32), "Pants!": Color(0.27, 0.27, 0.29), "Hair": Color(2.7, 2.9, 3.1)}],
 }
+const SKIN := {"HARLAN": Color(0.9, 0.78, 0.7)}      # skin tone corrections: his model is chalk white under strip lights
 const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
@@ -482,6 +483,8 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 	if CASTING.has(who):
 		model_id = CASTING[who][0]
 		look = CASTING[who][1]
+	if SKIN.has(who):
+		look = look.merged({"Body": SKIN[who]})
 	var n: Node3D = _load("res://assets/mixamo/characters/%s.fbx" % model_id).instantiate()
 	n.position = pos
 	n.rotation.y = rot_y
@@ -536,6 +539,8 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 	ap.seek(randf() * 2.0)
 	if who in ["REYES", "OKONKWO"]:
 		badge(n)
+	if model_id == "alex":                      # the uniformed officer: a shield on the chest
+		badge(n, true)
 	return n
 
 func robe(n: Node3D, color := Color(0.03, 0.03, 0.035), sleeves := true, metal := 0.0, rough := 0.92, body := 1.0) -> void:
@@ -575,15 +580,15 @@ func robe(n: Node3D, color := Color(0.03, 0.03, 0.035), sleeves := true, metal :
 		mi.scale = (part[5] as Vector3) * k
 		at.add_child(mi)
 
-func badge(n: Node3D) -> void:
-	# A detective's shield clipped to the belt, left of the buckle.
+func badge(n: Node3D, on_chest := false) -> void:
+	# A detective's shield clipped to the belt, left of the buckle; or a patrol officer's, pinned to the chest.
 	if n == null:
 		return
 	var skel: Skeleton3D = n.find_child("Skeleton3D", true, false)
 	var k := 1.0 / skel.global_transform.basis.get_scale().x
 	var at := BoneAttachment3D.new()
 	skel.add_child(at)
-	at.bone_name = str(n.get_meta("prefix")) + "Hips"
+	at.bone_name = str(n.get_meta("prefix")) + ("Spine2" if on_chest else "Hips")
 	var gold := StandardMaterial3D.new()
 	gold.albedo_color = Color(0.85, 0.68, 0.25)
 	gold.metallic = 0.9
@@ -594,7 +599,7 @@ func badge(n: Node3D) -> void:
 		bm.size = piece[1]
 		mi.mesh = bm
 		mi.material_override = gold if piece[2] == Color.WHITE else mat(piece[2])
-		mi.position = (piece[0] as Vector3) * k
+		mi.position = ((piece[0] as Vector3) + (Vector3(0, 0.06, 0.035) if on_chest else Vector3.ZERO)) * k
 		mi.scale = Vector3.ONE * k
 		at.add_child(mi)
 
