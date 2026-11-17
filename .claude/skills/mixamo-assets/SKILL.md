@@ -65,6 +65,8 @@ git-ignored: Mixamo files may be used in a game but not redistributed raw. Recor
 - `badge(actor)` clips a detective shield to the belt (automatic for REYES and OKONKWO); `robe(actor)` is the
   judge's robe; `foil_wrap(pos, rot, neck_y)` is an emergency blanket. Bone-attached cones look wrong in a
   close-up; build a draped mesh instead.
+- Tried and rejected: replacing a model's high heels with bone-attached boots. The foot bones of those
+  models rest heel-up, so the boots tilt and separate once an animation plays; dark-tinted heels look better.
 - `godot --path godot -s tools/costumes.gd -- out.png` shows the principal cast in costume side by side.
 - Wardrobe reference (SVU): detectives in dark plain clothes or dark suits with a belt badge; lawyers in dark
   tailored suits; judge in a black robe; uniformed officers in dark navy.
