@@ -48,6 +48,7 @@ func _chapter1() -> void:
 	scene("c1_arrive", "apartment:search", [
 		["", "You are Detective Nadia Okonkwo of the Special Victims Division, 9th Precinct. Your partner, Detective Sam Reyes, got here four minutes before you did.", "door"],
 		["REYES", "Roommate called it in around ten. Tessa Brandt, nineteen."],
+		["OKONKWO", "Missing how long?"],
 		["REYES", "Never came home from work. Phone's off."],
 		["OKONKWO", "A few hours late doesn't get us out of bed."],
 		["REYES", "It does when patrol runs her name. Open stalking complaint."],
@@ -152,6 +153,7 @@ func _chapter1() -> void:
 
 	scene("c1_lead_good", "apartment:hall", [
 		["REYES", "Library it is. Three names on the night roster."],
+		["OKONKWO", "Anybody with a record?"],
 		["REYES", "One's got a trespass charge. Dropped."],
 		["OKONKWO", "Who?"],
 		["REYES", "Wade Harlan. Thirty-four. Maintenance."],
@@ -159,7 +161,7 @@ func _chapter1() -> void:
 
 	scene("c1_lead_ex", "apartment:hall", [
 		["REYES", "The number's a burner. But the account email starts with \"ekessler.\""],
-		["OKONKWO", "The ex."],
+		["OKONKWO", "The ex?"],
 		["REYES", "Evan Kessler, twenty-one. Rents a place on Delancey Court."],
 		["OKONKWO", "Let's go wake him up."],
 	], "c1_end", func(s): s.f.wentEx = true)
@@ -205,6 +207,8 @@ func _chapter2_ex() -> void:
 		["", "You lose him. Twenty minutes later a patrol car finds him hiding behind a dumpster two streets away."] if s.num("evanFails") >= 2
 			else ["", "You get a knee on his back. He doesn't fight. He just keeps saying her name."],
 		["EVAN", "I didn't do anything! I just text her! That's all I do, I just text her!"],
+		["OKONKWO", "Where is she, Evan?"],
+		["EVAN", "I don't know! I swear, I don't know!"],
 		["REYES", "Seventy-three times. Let's go, Romeo."],
 	], "c2e_int_card")
 
@@ -249,6 +253,7 @@ func _chapter2_ex() -> void:
 	scene("c2e_believe", "precinct:evan", [
 		["", "It takes Reyes over an hour to get the library's outdoor camera footage. At 9:16 PM, Tessa Brandt climbs into a white maintenance van. Evan Kessler is at the edge of the frame, watching, then walking away.", "wide"],
 		["REYES", "Kid was telling the truth. The van's signed out to a Wade Harlan. Night maintenance."],
+		["OKONKWO", "How long did that cost us?"],
 		["REYES", "Two hours. On the wrong guy."],
 	], "c2_card", func(s):
 		s.f.cleared = true
@@ -293,6 +298,8 @@ func _chapter2() -> void:
 		["OKONKWO", "Understood, Captain. We'll hold for the paper."],
 		["REYES", "For the record, I hate this."],
 		["OKONKWO", "The van needs a warrant. The dock doesn't."],
+		["REYES", "So we just look?"],
+		["OKONKWO", "We just look."],
 	], "c2_canvass", func(s):
 		s.f.warrant = true
 		s.late += 1)
@@ -316,6 +323,7 @@ func _chapter2() -> void:
 		["REYES", "Van and locker. Locker first? It's ten feet inside the door."],
 		["", "Locker 14, HARLAN. A spare gray shirt, a thermos, and a shoebox. In the shoebox: a small battery camera with zip-tie mounts, and two memory cards labelled in block capitals. \"WINDOW — SEPT.\" \"WINDOW — OCT.\"", "locker"],
 		["REYES", "Two months. He's been watching her bedroom for two months."],
+		["REYES", "You seeing this?"],
 		["OKONKWO", "And a judge signed for every bit of it."],
 	], "c2_van", func(s):
 		s.add(8)
@@ -386,6 +394,7 @@ func _chapter2() -> void:
 		["REYES", "It's my ankle. I can still walk. Keep going."] if s.num("chaseFails") >= 4 else null,
 		["", "Something is caught on the top of the fence: a belt loop torn from his shorts, with a single old brass key clipped to it. The key is stamped \"C.R.\"", "key"],
 		["REYES", "C.R. Calder Rail. That's a signal tower key."],
+		["OKONKWO", "Why carry it on a run?"],
 		["REYES", "He wasn't running from us. He was running to her."],
 	], "c2_end", func(s):
 		s.f.fled = true
@@ -415,6 +424,7 @@ func _chapter2() -> void:
 		["HARLAN", "I maintain the building. I see who comes and goes. That's not a crime."],
 		["REYES", "Where is Tessa Brandt, Wade?"],
 		["HARLAN", "At home, I'd think. It's late."],
+		["REYES", "You'd think?"],
 	], "c2_int1", func(s): s.f.pts = 0)
 
 	choice("c2_int1", "He is calm and in no hurry. You need to shake that. How do you start?", 14, [
@@ -513,6 +523,7 @@ func _chapter2() -> void:
 		["HARLAN", "She'll be all right till morning. The tank's good for four hours. Maybe five."],
 		["", "Nobody asked him. Reyes looks at the camera's red light, then at you. A man who has asked for a lawyer can't be questioned. He can still talk.", "REYES"],
 		["REYES", "A tank. He left a heater running. Nobody's watching it."],
+		["OKONKWO", "Where?"],
 		["REYES", "\"C.R.\" Calder Rail. Nine signal towers in that yard. Go."],
 	], "c2_end", func(s):
 		s.f.clarified = true
@@ -547,6 +558,8 @@ func _chapter3() -> void:
 	scene("c3_fire", "yard:fire", func(s): return [
 		["", "Signal tower six is a two-story brick box at the dead end of a siding, with its windows boarded up. There is light behind the boards, and it is flickering.", "wide"],
 		["REYES", "That's not a lamp. That's a fire."],
+		["OKONKWO", "Is she in there?"],
+		["REYES", "Somebody is."],
 		["", "Thick smoke is pouring out from under the door. You are very late." if s.late >= 2 else "A thin line of smoke is coming out from under the door.", "tower"],
 	], "c3_fire_qte")
 
@@ -751,6 +764,7 @@ func _chapter4() -> void:
 	], {"next": "c4_ch_core"})
 
 	scene("c4_ch_all", "courthouse:office", func(s): return [
+		["OKONKWO", "What are you charging?"],
 		["COLE", "Kidnapping in the first degree. Stalking. Unlawful surveillance."],
 		["OKONKWO", "The surveillance count. That's the camera?"],
 	] + ([
