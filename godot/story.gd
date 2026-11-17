@@ -47,12 +47,15 @@ func _chapter1() -> void:
 
 	scene("c1_arrive", "apartment:search", [
 		["", "You are Detective Nadia Okonkwo of the Special Victims Division, 9th Precinct. Your partner, Detective Sam Reyes, got here four minutes before you did.", "door"],
-		["REYES", "The roommate called 911 around ten. Tessa Brandt, nineteen, a sophomore at Hollis University. She never came home from work and she isn't answering her phone."],
-		["REYES", "Normally a missing adult waits until morning. But patrol ran her name and it came back flagged: an open stalking complaint. That's why they called us."],
-		["OKONKWO", "I know. I took that complaint myself. Three weeks ago she sat across my desk and showed me dozens of texts from a number she didn't recognize."],
-		["OKONKWO", "There were no threats and no name. I told her there was nothing we could do yet, and to keep a record of everything."],
-		["REYES", "Then she'll have kept one. The roommate let us in, and a missing girl with a stalker on file is an emergency. Nobody is going to argue we shouldn't be standing here."],
-		["REYES", "Crime scene unit is a few minutes out. Once they tape this room off, we're reading their reports instead of looking for ourselves."],
+		["REYES", "Roommate called it in around ten. Tessa Brandt. Nineteen."],
+		["REYES", "Never came home from work. Phone's off."],
+		["OKONKWO", "A few hours late doesn't get us out of bed."],
+		["REYES", "It does when patrol runs her name. Open stalking complaint."],
+		["OKONKWO", "I know. I took it."],
+		["REYES", "You took it?"],
+		["OKONKWO", "Three weeks ago. Texts from a number she didn't know. No threats, no name."],
+		["OKONKWO", "I told her to keep a record."],
+		["REYES", "Then she kept one. Crime scene's a few minutes out. Once they tape this room, we're reading about it."],
 		["OKONKWO", "Then we look now."],
 	], "c1_inv")
 
@@ -78,9 +81,12 @@ func _chapter1() -> void:
 
 	scene("c1_priya", "apartment:hall", [
 		["", "The roommate, Priya Nair, is sitting on the hallway stairs with her knees pulled up, holding her phone in both hands in case it rings.", "wide"],
-		["PRIYA", "She texts me when she leaves work. Every time. Just one word: \"Leaving.\" Tonight there was nothing."],
-		["REYES", "Has anyone been bothering her? An ex, someone from class?"],
-		["PRIYA", "I... no. I don't know. She would have told me."],
+		["PRIYA", "She texts me when she leaves work. Every time. \"Leaving.\" That's it."],
+		["PRIYA", "Tonight, nothing."],
+		["REYES", "Anyone bothering her? An ex? Somebody from class?"],
+		["PRIYA", "No. I don't know."],
+		["REYES", "You don't know?"],
+		["PRIYA", "She would have told me."],
 	], "c1_priya_choice")
 
 	choice("c1_priya_choice", "Priya is staring at the floor. She knows something, and she thinks it isn't hers to tell.", 12, [
@@ -90,10 +96,16 @@ func _chapter1() -> void:
 	], {"next": "c1_priya_silent"})
 
 	scene("c1_priya_soft", "apartment:hall", [
-		["OKONKWO", "Priya. Whatever she asked you to keep quiet, she asked before tonight. She would want you to tell me now."],
-		["PRIYA", "Everyone thinks it's Evan — her ex. He texts her constantly. But Evan is just pathetic. He's not the one she was scared of."],
-		["PRIYA", "There's a maintenance man at the library. He shows up to fix things that aren't broken whenever she's on shift. She reported him in September, and Campus Safety said he hadn't actually done anything."],
-		["PRIYA", "Wade. His name is Wade."],
+		["OKONKWO", "Priya. She asked you to keep something quiet."],
+		["OKONKWO", "That was before tonight."],
+		["PRIYA", "Everybody thinks it's Evan. Her ex. He texts her all day."],
+		["REYES", "But?"],
+		["PRIYA", "Evan's just pathetic. He's not who she was scared of."],
+		["OKONKWO", "Who was she scared of?"],
+		["PRIYA", "There's a guy at the library. Maintenance. He's always fixing something when she's on."],
+		["PRIYA", "She reported him. They said he hadn't done anything."],
+		["OKONKWO", "Does he have a name?"],
+		["PRIYA", "Wade."],
 	], "c1_lead", func(s):
 		s.f.evanName = true
 		s.clue("name", "Roommate statement — \"Wade\", library maintenance")
@@ -101,15 +113,19 @@ func _chapter1() -> void:
 
 	scene("c1_priya_cards", "apartment:hall", [
 		["", "You lay the index cards on the stair beside her, one at a time."],
-		["PRIYA", "Oh my god. She told me he'd stopped."],
-		["PRIYA", "Wade. He does maintenance at the library, nights. She thought if she ignored him it would go away. She made me promise not to make a big deal of it."],
+		["PRIYA", "Oh my god."],
+		["PRIYA", "She said he stopped."],
+		["OKONKWO", "Who?"],
+		["PRIYA", "Wade. He does maintenance at the library. Nights."],
+		["PRIYA", "She thought if she ignored him, he'd go away. She made me promise."],
 	], "c1_lead", func(s): s.clue("name", "Roommate statement — \"Wade\", library maintenance"))
 
 	scene("c1_priya_hard", "apartment:hall", [
-		["OKONKWO", "Every minute you spend protecting her privacy is a minute she is out there alone. Give me a name."],
-		["PRIYA", "Evan! Okay? Her ex-boyfriend, Evan Kessler. She blocked him in August and he just got a new number. Is that what you want?"],
+		["OKONKWO", "Every minute you sit on this, she's out there alone. A name."],
+		["PRIYA", "Evan! Okay? Evan Kessler. Her ex."],
+		["PRIYA", "She blocked him, so he got a new number. Is that what you want?"],
 		["", "She is crying now. Reyes steps between the two of you without making it obvious."],
-		["REYES", "That helps. Thank you, Priya."],
+		["REYES", "That helps. Thank you."],
 	], "c1_lead", func(s):
 		s.f.evanName = true
 		s.say("LEAD — Evan Kessler, ex-boyfriend")
@@ -123,9 +139,9 @@ func _chapter1() -> void:
 	branch("c1_lead", func(s): return "c1_lead_talk" if (s.can_lib() or s.can_ex()) else "c1_lead_slow")
 
 	scene("c1_lead_talk", "apartment:hall", func(s): return [
-		["REYES", "An ex who won't let go. Nine times out of ten, Nadia, it's the boyfriend."] if s.can_ex() else null,
-		["OKONKWO", "Her whole night runs through that library. That's the last place anyone can put her."] if s.can_lib() else null,
-		["REYES", "We can only be in one place. Your call."],
+		["REYES", "An ex who won't let go. Nine times out of ten, it's the boyfriend."] if s.can_ex() else null,
+		["OKONKWO", "Her whole night runs through that library."] if s.can_lib() else null,
+		["REYES", "One car. Your call."],
 	], "c1_lead_choice")
 
 	choice("c1_lead_choice", "Two possible leads, one car. Whichever you choose, the other waits.", 14, [
@@ -135,20 +151,23 @@ func _chapter1() -> void:
 	branch("c1_lead_timeout", func(s): return "c1_lead_ex" if s.can_ex() else "c1_lead_good")
 
 	scene("c1_lead_good", "apartment:hall", [
-		["REYES", "Library it is. The night staff roster has three names on it."],
-		["REYES", "One of them has an old trespassing charge that was dropped. Wade Harlan, thirty-four. Maintenance."],
+		["REYES", "Library it is. Three names on the night roster."],
+		["REYES", "One's got a trespass charge. Dropped."],
+		["OKONKWO", "Who?"],
+		["REYES", "Wade Harlan. Thirty-four. Maintenance."],
 	], "c1_end")
 
 	scene("c1_lead_ex", "apartment:hall", [
-		["REYES", "The number that sent those texts is a prepaid phone, but the account email starts with \"ekessler.\""],
-		["REYES", "Evan Kessler, twenty-one. The ex-boyfriend. He rents a house off campus on Delancey Court."],
+		["REYES", "The number's a burner. But the account email starts with \"ekessler.\""],
+		["OKONKWO", "The ex."],
+		["REYES", "Evan Kessler. Twenty-one. Rents a place on Delancey Court."],
 		["OKONKWO", "Let's go wake him up."],
 	], "c1_end", func(s): s.f.wentEx = true)
 
 	scene("c1_lead_slow", "apartment:hall", [
 		["REYES", "We've got nothing that points anywhere."],
 		["", "It takes most of an hour on the phone before a tired Campus Safety dispatcher mentions a harassment report Tessa filed in September. That is an hour Tessa Brandt does not have."],
-		["REYES", "The report names Wade Harlan. Maintenance, night shift, Hollis library. Let's move."],
+		["REYES", "The report names a Wade Harlan. Night maintenance at the library. Let's move."],
 	], "c1_end", func(s): s.lost(1, "no lead from the apartment"))
 
 	N.c1_end = {"type": "chapterEnd", "chapter": 1, "next": "c1_out"}
@@ -194,11 +213,19 @@ func _chapter2_ex() -> void:
 
 	scene("c2e_int", "precinct:evan", [
 		["", "Interview Room 2. Evan Kessler, twenty-one. Since the arrest he has cried twice and asked for his mother once. He signed the rights form without reading it.", "wide"],
-		["EVAN", "She blocked my number, so I got a new one. I know how that sounds. I just wanted her to answer me one time."],
-		["OKONKWO", "\"You looked tired today.\" You were watching her tonight."],
-		["EVAN", "I went to the library to talk to her after her shift. Around nine she came out the service door, and a maintenance guy in a gray work shirt was carrying her bag. She got into his van."],
-		["EVAN", "I thought she was with him. So I went home."],
-		["REYES", "(to you, quietly) Convenient. Our stalker says he saw a different stalker."],
+		["EVAN", "She blocked me. So I got a new number. I know how that sounds."],
+		["EVAN", "I just wanted her to answer. One time."],
+		["OKONKWO", "\"You looked tired today.\" You saw her tonight."],
+		["EVAN", "I went to the library. To talk. That's all."],
+		["OKONKWO", "And?"],
+		["EVAN", "She came out the back with some guy. He had her bag."],
+		["REYES", "What guy?"],
+		["EVAN", "I don't know. He works there. A janitor or something."],
+		["OKONKWO", "What did he look like?"],
+		["EVAN", "I wasn't looking at him. He had a van. She got in."],
+		["REYES", "And you did what?"],
+		["EVAN", "I figured she was with him now. I went home."],
+		["REYES", "(to you, quietly) Convenient. Our stalker saw a different stalker."],
 	], "c2e_decide")
 
 	choice("c2e_decide", "He ran from police, he lied to get around being blocked, and he admits he was there. Reyes wants to book him.", 14, [
@@ -209,9 +236,10 @@ func _chapter2_ex() -> void:
 
 	scene("c2e_hand", "precinct:evan", [
 		["", "You hand him a pen and read the index cards aloud. He writes them out in a cramped, slanted script that looks nothing like the block capitals on the cards.", "table"],
-		["REYES", "He can't take the Fifth on his penmanship, and he didn't try to. ...Okay. He didn't write those. It's not him."],
-		["OKONKWO", "A gray work shirt and a van at the library. Who works maintenance there at night?"],
-		["REYES", "Wade Harlan, thirty-four. Let's go."],
+		["REYES", "That's not his handwriting. Not even close."],
+		["REYES", "He didn't write those."],
+		["OKONKWO", "A janitor with a van. Who works nights at that library?"],
+		["REYES", "Wade Harlan. Maintenance. Let's go."],
 	], "c2_card", func(s):
 		s.f.cleared = true
 		s.mark("evan_cleared")
@@ -220,8 +248,8 @@ func _chapter2_ex() -> void:
 
 	scene("c2e_believe", "precinct:evan", [
 		["", "It takes Reyes over an hour to get the library's outdoor camera footage. At 9:16 PM, Tessa Brandt climbs into a white maintenance van. Evan Kessler is at the edge of the frame, watching, then walking away.", "wide"],
-		["REYES", "The kid was telling the truth. The van belongs to Wade Harlan, night maintenance."],
-		["REYES", "We just lost two hours on the wrong guy."],
+		["REYES", "Kid was telling the truth. The van's signed out to a Wade Harlan. Night maintenance."],
+		["REYES", "Two hours. On the wrong guy."],
 	], "c2_card", func(s):
 		s.f.cleared = true
 		s.mark("evan_cleared")
@@ -231,8 +259,10 @@ func _chapter2_ex() -> void:
 	scene("c2e_book", "precinct:evan", [
 		["OKONKWO", "Evan Kessler, you are under arrest for the kidnapping of Tessa Brandt."],
 		["EVAN", "What? No — the van! Check the van! Please!"],
-		["DIAZ", "(from the doorway) A stalker ex with no alibi who ran from police. Good work, both of you. Go home. He'll tell us where she is in the morning.", "door"],
-		["REYES", "He ran. He lied. Seventy-three texts. So why don't I feel good about this?"],
+		["DIAZ", "(from the doorway) Stalker ex, no alibi, ran from police. Good work. Go home.", "door"],
+		["DIAZ", "He'll tell us where she is in the morning."],
+		["REYES", "He ran. He lied. Seventy-three texts."],
+		["REYES", "So why don't I feel good?"],
 		["", "Nobody checks the van.", "wide"],
 	], "c2_end", func(s):
 		s.f.wrong = true
