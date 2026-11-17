@@ -156,7 +156,7 @@ func _yards() -> void:
 func _people() -> void:
 	match stage:
 		"door":
-			actor("EVAN", "leonard", Vector3(0.5, 0.45, 0.25), 0.0, "idle", "terrified")
+			actor("EVAN", "leonard", Vector3(0.5, 0.45, 0.25), 0.0, "idle", "talk")
 			actor("REYES", "louise", Vector3(-0.2, 0.45, 1.25), PI - 0.35)
 			shot("wide", Vector3(4.0, 1.5, 8.5), Vector3(0.3, 1.9, 0), 50)
 			shot("EVAN", Vector3(1.0, 2.05, 1.75), Vector3(0.5, 2.0, 0.25), 40)
@@ -170,7 +170,7 @@ func _people() -> void:
 			]
 			shot("wide", Vector3(-5.8, 1.6, 3.0), Vector3(-5.8, 1.4, -8), 60)
 		"caught":
-			actor("EVAN", "leonard", Vector3(24, 0, -13.5), -1.9, clip("hands_up", "terrified"), clip("hands_up", "terrified"))
+			actor("EVAN", "leonard", Vector3(24, 0, -13.5), -1.9, clip("hands_up", "look_around"), clip("hands_up", "talk"))
 			actor("REYES", "louise", Vector3(22.7, 0, -14.2), 1.2)
 			strobe(Vector3(22, 2.5, -8.0))
 			shot("wide", Vector3(20.5, 1.7, -11.2), Vector3(23.6, 1.2, -13.8), 52)
