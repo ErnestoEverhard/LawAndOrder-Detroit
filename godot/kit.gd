@@ -8,7 +8,7 @@ const AMBER := Color(0.95, 0.71, 0.27)
 const INK := Color(0.10, 0.10, 0.12)
 # Detective Okonkwo, the player. Her model is used for nobody else, so she always reads as herself.
 const OKONKWO_MODEL := "elizabeth"
-const OKONKWO_LOOK := {"Shirt": Color(0.25, 0.25, 0.3), "Pants": Color(0.3, 0.3, 0.33)}
+const OKONKWO_LOOK := {"Shirt": Color(0.25, 0.25, 0.3), "Pants": Color(0.3, 0.3, 0.33), "Heels": Color(0.08, 0.08, 0.09)}
 const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
@@ -443,6 +443,20 @@ func _anim(skel_prefix: String, anim: String, k := 1.0) -> Animation:
 		if k != 1.0 and a.track_get_type(t) == Animation.TYPE_POSITION_3D:
 			for i in a.track_get_key_count(t):       # the hips travel in the units of the skeleton the clip was made on
 				a.track_set_key_value(t, i, a.track_get_key_value(t, i) / k)
+	# A clip that carries the body forward (a jump, a vault, a slide) is kept on the spot: the game moves the
+	# person itself, and a clip that also travelled would snap back when it ended.
+	for t in a.get_track_count():
+		if a.track_get_type(t) != Animation.TYPE_POSITION_3D or not str(a.track_get_path(t)).ends_with("Hips"):
+			continue
+		var n := a.track_get_key_count(t)
+		if n < 2:
+			continue
+		var first: Vector3 = a.track_get_key_value(t, 0)
+		var last: Vector3 = a.track_get_key_value(t, n - 1)
+		if Vector2(last.x - first.x, last.z - first.z).length() > absf(first.y) * 0.3:
+			for i in n:
+				var p: Vector3 = a.track_get_key_value(t, i)
+				a.track_set_key_value(t, i, Vector3(first.x, p.y, first.z))
 	a.loop_mode = Animation.LOOP_LINEAR
 	return a
 
@@ -477,6 +491,12 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 				(mi as MeshInstance3D).visible = false        # lashes pointing at the skin texture: drop them
 			elif not soft:
 				sm.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+			elif sm.resource_name.to_lower().contains("hair"):
+				# Hair is painted on thin cards. Drawn one-sided with a hard cut-off it looks sparse and the
+				# scalp shows; drawing both sides and keeping the faint strands fills it out.
+				sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+				sm.alpha_scissor_threshold = 0.12
+				sm.cull_mode = BaseMaterial3D.CULL_DISABLED
 	for part in look:
 		for mi in n.find_children("*", "MeshInstance3D", true, false):
 			if str(mi.name).contains(part):

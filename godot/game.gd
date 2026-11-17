@@ -39,7 +39,7 @@ const HERO_LOOK := Kit.OKONKWO_LOOK
 const FIRST_PERSON_TRACKS := ["closing"]
 # Word in a step's action label -> the animation that shows it succeeding.
 const ACT_CLIPS := [["VAULT", "vault"], ["OVER THE", "jump"], ["JUMP", "jump"], ["DODGE", "dodge"], ["SIDESTEP", "dodge"],
-	["DUCK", "dodge"], ["SLIDE", "slide"], ["GET LOW", "crouch_walk"], ["SHOULDER", "shove"], ["PUSH", "shove"],
+	["DUCK", "dodge"], ["SLIDE", "slide"], ["GET LOW", "crouch_walk"], ["SHOULDER", "tackle"],
 	["KICK", "kick"], ["CLIMB", "climb"], ["STAIRS", "stairs_up"], ["PIN", "tackle"], ["GRAB", "tackle"],
 	["TAKE HIM", "tackle"], ["DRIVE", "tackle"], ["CUT THE", "kneel"], ["LOWER", "kneel"], ["TURN THE", "idle"], ["PULL", "idle"]]
 var clock := 0.0                   # game time; stops while paused
@@ -215,7 +215,10 @@ func _hero_act(st: Dictionary, ok: bool) -> float:
 		return 0.0
 	loc.pose(hero, name, 0.12)
 	var ap: AnimationPlayer = hero.get_meta("ap")
-	return minf(ap.current_animation_length, 1.3)
+	var length := ap.current_animation_length
+	var shown := clampf(length, 0.6, 1.5)          # long clips are played faster so the chase keeps its pace
+	ap.play("mx/" + name, 0.12, length / shown)
+	return shown
 
 func _unhandled_input(e: InputEvent) -> void:
 	if e is InputEventKey and e.pressed and not e.echo and KEYS.has(e.physical_keycode):
@@ -790,11 +793,12 @@ func _qte(n: Dictionary) -> Dictionary:
 		qte_marks.text += "✓ " if ok else "✗ "
 		_blip(660 if ok else 140, 0.14 if ok else 0.3)
 		qte_key.get_parent().visible = false
+		if shots_dir != "" and third:                  # picture the move part-way through
+			await wait(act_time * 0.45)
+			await _snap("%s_qte-%s-%d" % [cur_bg.replace(":", "-"), n.get("track", "x"), i])
 		await wait(0.2 if auto else maxf(0.5, act_time))
 		if move and move.is_running():
 			await wait(0.3)
-		if shots_dir != "" and third:
-			await _snap("%s_qte-%s-%d" % [cur_bg.replace(":", "-"), n.get("track", "x"), i])
 	if shots_dir != "":
 		await _snap("%s_qte-%s" % [cur_bg.replace(":", "-"), n.get("track", "x")])
 	await wait(0.2 if auto else 0.7)
