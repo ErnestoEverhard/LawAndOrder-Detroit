@@ -277,9 +277,11 @@ func _chapter2() -> void:
 
 	scene("c2_call", "library:dock", [
 		["", "A white maintenance van is parked at the loading dock with its rear doors shut. The service door beside the roller shutter is propped open with a mop bucket, and there is a light on inside.", "wide"],
-		["DIAZ", "(on the phone) Okonkwo. I have ADA Cole on the other line and she's waking up Judge Feld. I can get you a search warrant for the van and his locker in thirty minutes. Do not go in there without it."],
+		["DIAZ", "(on the phone) Okonkwo. Cole's waking up a judge. Van and locker. Thirty minutes."],
+		["OKONKWO", "Thirty minutes?"],
+		["DIAZ", "Do not go in there without it."],
 		["REYES", "(quietly) Thirty minutes. If she is in that van, that is thirty more minutes.", "REYES"],
-		["REYES", "And if she isn't, and we open it anyway, some lawyer gets to argue about everything we find in there for the next year."],
+		["REYES", "And if she isn't, and we open it anyway? Some lawyer argues about everything in there for a year."],
 	], "c2_warrant")
 
 	choice("c2_warrant", "Captain Diaz is still on the line, waiting for your answer.", 14, [
@@ -290,7 +292,7 @@ func _chapter2() -> void:
 	scene("c2_wait", "library:dock", [
 		["OKONKWO", "Understood, Captain. We'll hold for the paper."],
 		["REYES", "For the record, I hate this."],
-		["OKONKWO", "The van needs a warrant. The dock doesn't. Anything out here in the open is ours to look at."],
+		["OKONKWO", "The van needs a warrant. The dock doesn't."],
 	], "c2_canvass", func(s):
 		s.f.warrant = true
 		s.late += 1)
@@ -313,7 +315,8 @@ func _chapter2() -> void:
 		["", "Thirty-one minutes after you hung up, the warrant arrives on your phone with a one-word text from Diaz: \"Now.\"", "REYES"],
 		["REYES", "Van and locker. Locker first, it's ten feet inside the door."],
 		["", "Locker 14, HARLAN. A spare gray shirt, a thermos, and a shoebox. In the shoebox: a small battery camera with zip-tie mounts, and two memory cards labelled in block capitals. \"WINDOW — SEPT.\" \"WINDOW — OCT.\"", "locker"],
-		["REYES", "He's been watching her bedroom for two months. And every bit of this is on paper a judge signed."],
+		["REYES", "Two months. He's been watching her bedroom for two months."],
+		["OKONKWO", "And a judge signed for every bit of it."],
 	], "c2_van", func(s):
 		s.add(8)
 		s.say("WARRANT SECURED — this search will hold up in court")
@@ -382,7 +385,8 @@ func _chapter2() -> void:
 		["", "Reyes climbs over after him and lands badly. You hear her hit the ground."] if s.num("chaseFails") >= 4 else null,
 		["REYES", "It's my ankle. I can still walk. Keep going."] if s.num("chaseFails") >= 4 else null,
 		["", "Something is caught on the top of the fence: a belt loop torn from his shorts, with a single old brass key clipped to it. The key is stamped \"C.R.\"", "key"],
-		["REYES", "C.R. — Calder Rail. That key opens one of the old signal towers in the yard. He wasn't running away from us, Nadia. He was running to her."],
+		["REYES", "C.R. Calder Rail. That's a signal tower key."],
+		["REYES", "He wasn't running from us. He was running to her."],
 	], "c2_end", func(s):
 		s.f.fled = true
 		s.late += 1
@@ -396,16 +400,18 @@ func _chapter2() -> void:
 
 	scene("c2_booking", "precinct:booking", [
 		["", "Booking. Reyes empties Harlan's pockets into a property tray and names each item for the desk sergeant.", "wide"],
-		["REYES", "Wallet. University ID. A phone with the SIM card taken out. His work keys, on a ring."],
-		["REYES", "And one more key, loose in his other pocket. Old brass, with a paper tag. The tag says \"C.R.\"", "tray"],
+		["REYES", "Wallet. University ID. Phone, no SIM card. Work keys."],
+		["REYES", "And one more. Loose, other pocket. Old brass. Tag says \"C.R.\"", "tray"],
 		["HARLAN", "That's nothing. It's for a shed."],
 		["", "It is the first thing he has said since the arrest. You take the key with you."],
 	], "c2_int", func(s): s.clue("key", "Brass key tagged \"C.R.\" from Harlan's pocket", 4))
 
 	scene("c2_int", "precinct:harlan", [
 		["", "Interview Room 2. The camera in the corner has a red light on. Harlan sits very still with both hands flat on the table.", "wide"],
-		["OKONKWO", "Before anything else, Wade. You have the right to remain silent. You have the right to a lawyer, and to have one here while we talk. If you can't afford one, one will be appointed. Do you understand?"],
-		["HARLAN", "I understand. I've got nothing to hide. I maintain the building. I see everybody who comes and goes. That's not a crime."],
+		["OKONKWO", "Before anything else, Wade. You have the right to remain silent. You have the right to a lawyer, here, while we talk."],
+		["OKONKWO", "If you can't afford one, you get one anyway. You understand?"],
+		["HARLAN", "I understand. I've got nothing to hide."],
+		["HARLAN", "I maintain the building. I see who comes and goes. That's not a crime."],
 		["REYES", "Where is Tessa Brandt, Wade?"],
 		["HARLAN", "At home, I'd think. It's late."],
 	], "c2_int1", func(s): s.f.pts = 0)
@@ -455,11 +461,11 @@ func _chapter2() -> void:
 		s.say("ADMISSION — \"I gave her a blanket\""))
 	scene("c2_int2_ver", "precinct:harlan", func(s): return [
 		["OKONKWO", "Forget how it looks. Tell me what happened, your way."],
-		["HARLAN", "She was going to quit the library. I heard her say so at the desk. If she quit, I would never see her again. I just needed more time with her. That's all it was."] if s.on("emp")
+		["HARLAN", "She was going to quit. I heard her say it at the desk. If she quit, I'd never see her again. I just needed more time. That's all it was."] if s.on("emp")
 			else ["HARLAN", "I would tell it to somebody who actually wanted to hear it. That isn't you."],
 	], "c2_int_gate", func(s): s.f.pts += 2 if s.on("emp") else 1)
 	scene("c2_int2_lie", "precinct:harlan", func(s): return [
-		["OKONKWO", "University vans have GPS, Wade. We already know where you took her. I'm giving you the chance to be the one who tells us."],
+		["OKONKWO", "University vans have GPS, Wade. We know where you took her. I'm letting you be the one who says it."],
 		["HARLAN", "If you knew where she was, you wouldn't be sitting here with me."] if s.on("hostile")
 			else ["HARLAN", "...Then you know she's warm. You know I left the heater on for her."],
 	], "c2_int_gate", func(s):
@@ -490,20 +496,23 @@ func _chapter2() -> void:
 
 	scene("c2_stop", "precinct:harlan", [
 		["", "You pick up the file and walk out, leaving him alone with the camera.", "wide"],
-		["REYES", "That brass key from booking. \"C.R.\" is Calder Rail — the yard office says it fits the old signal towers. There are nine of them."],
+		["REYES", "The brass key. \"C.R.\" is Calder Rail. Yard office says it fits the old signal towers."],
+		["OKONKWO", "How many towers?"],
+		["REYES", "Nine."],
 		["", "You start at tower one. It takes forty minutes to search the first five."],
 	], "c2_end", func(s):
 		s.lost(1, "searching the towers one by one")
 		s.partner(1, "knows what that cost you"))
 
 	scene("c2_clarify", "precinct:harlan", [
-		["OKONKWO", "I want to be sure I understand you, Wade. Are you telling me you want a lawyer before we go on?"],
+		["OKONKWO", "I need to be sure, Wade. You want a lawyer before we go on?"],
 		["HARLAN", "Yes. A lawyer."],
 		["OKONKWO", "Then we're done. Nobody is going to ask you anything else."],
 		["", "You stand. You have your hand on the door when he speaks again, to the table, not to you."],
 		["HARLAN", "She'll be all right till morning. The tank's good for four hours. Maybe five."],
 		["", "Nobody asked him. Reyes looks at the camera's red light, then at you. A man who has asked for a lawyer can't be questioned. He can still talk.", "REYES"],
-		["REYES", "A tank. He's got a heater running somewhere with no one watching it. \"C.R.\" is Calder Rail, and the yard has nine signal towers. Go."],
+		["REYES", "A tank. He left a heater running. Nobody's watching it."],
+		["REYES", "\"C.R.\" Calder Rail. Nine signal towers in that yard. Go."],
 	], "c2_end", func(s):
 		s.f.clarified = true
 		s.add(5)
@@ -512,7 +521,7 @@ func _chapter2() -> void:
 		s.partner(1, "that's how it's supposed to be done"))
 
 	scene("c2_push", "precinct:harlan", [
-		["OKONKWO", "Forget the lawyer. Forget the case. A nineteen-year-old girl is alone somewhere tonight. Where is she?"],
+		["OKONKWO", "Forget the lawyer. Forget the case. She's nineteen and she's alone. Where is she?"],
 		["HARLAN", "...The signal tower in the rail yard. Number six. The heater is on. She's fine."],
 		["REYES", "(in the hallway, quietly) Cole is going to pay for that in front of a judge.", "REYES"],
 		["OKONKWO", "I know."],
@@ -623,7 +632,8 @@ func _chapter3() -> void:
 
 	scene("c3_after_safe", "yard:dawn", [
 		["", "Tessa Brandt sits on the back step of an ambulance, wrapped in a foil blanket, holding a paper cup with both hands.", "TESSA"],
-		["TESSA", "I reported it. To the campus in September, and to you three weeks ago. I did everything you're supposed to do."],
+		["TESSA", "I reported it. To the campus. To you."],
+		["TESSA", "I did everything you're supposed to do."],
 	], "c3_bond")
 
 	choice("c3_bond", "She is watching to see how you answer. What do you say to her?", 14, [
@@ -666,7 +676,8 @@ func _chapter3() -> void:
 
 	scene("c3w_after", "yard:aftermath", [
 		["", "You arrested the wrong man. Evan Kessler is released at 7:15 AM, and his family hires a lawyer by noon.", "sunrise"],
-		["REYES", "Wade Harlan. Library maintenance. Kessler told us about the van, and we didn't check."],
+		["REYES", "Wade Harlan. Library maintenance. Kessler told us about the van."],
+		["REYES", "We didn't check."],
 		["", "Harlan's van is found empty at the library. His apartment has been cleared out. His photo goes to every police station, toll booth and bus terminal in the state."],
 	], "c3w_term_card")
 
@@ -698,7 +709,7 @@ func _chapter3() -> void:
 	scene("c3w_caught", "terminal:gate", [
 		["", "You pull him off the bottom step of the bus and put him on the floor.", "wide"],
 		["HARLAN", "She was fine. I left the heater on for her."],
-		["REYES", "That heater set the building on fire, Wade. She has been on oxygen for three days."],
+		["REYES", "That heater burned the place down, Wade. She's been on oxygen for three days."],
 	], "c3_end")
 
 	scene("c3w_gone", "terminal:gate", [
