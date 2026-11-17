@@ -47,7 +47,7 @@ func _chapter1() -> void:
 
 	scene("c1_arrive", "apartment:search", [
 		["", "You are Detective Nadia Okonkwo of the Special Victims Division, 9th Precinct. Your partner, Detective Sam Reyes, got here four minutes before you did.", "door"],
-		["REYES", "Roommate called it in around ten. Tessa Brandt. Nineteen."],
+		["REYES", "Roommate called it in around ten. Tessa Brandt, nineteen."],
 		["REYES", "Never came home from work. Phone's off."],
 		["OKONKWO", "A few hours late doesn't get us out of bed."],
 		["REYES", "It does when patrol runs her name. Open stalking complaint."],
@@ -116,7 +116,7 @@ func _chapter1() -> void:
 		["PRIYA", "Oh my god."],
 		["PRIYA", "She said he stopped."],
 		["OKONKWO", "Who?"],
-		["PRIYA", "Wade. He does maintenance at the library. Nights."],
+		["PRIYA", "Wade. He does maintenance at the library, nights."],
 		["PRIYA", "She thought if she ignored him, he'd go away. She made me promise."],
 	], "c1_lead", func(s): s.clue("name", "Roommate statement — \"Wade\", library maintenance"))
 
@@ -160,7 +160,7 @@ func _chapter1() -> void:
 	scene("c1_lead_ex", "apartment:hall", [
 		["REYES", "The number's a burner. But the account email starts with \"ekessler.\""],
 		["OKONKWO", "The ex."],
-		["REYES", "Evan Kessler. Twenty-one. Rents a place on Delancey Court."],
+		["REYES", "Evan Kessler, twenty-one. Rents a place on Delancey Court."],
 		["OKONKWO", "Let's go wake him up."],
 	], "c1_end", func(s): s.f.wentEx = true)
 
@@ -239,7 +239,7 @@ func _chapter2_ex() -> void:
 		["REYES", "That's not his handwriting. Not even close."],
 		["REYES", "He didn't write those."],
 		["OKONKWO", "A janitor with a van. Who works nights at that library?"],
-		["REYES", "Wade Harlan. Maintenance. Let's go."],
+		["REYES", "Wade Harlan, maintenance. Let's go."],
 	], "c2_card", func(s):
 		s.f.cleared = true
 		s.mark("evan_cleared")
@@ -261,7 +261,7 @@ func _chapter2_ex() -> void:
 		["EVAN", "What? No — the van! Check the van! Please!"],
 		["DIAZ", "(from the doorway) Stalker ex, no alibi, ran from police. Good work. Go home.", "door"],
 		["DIAZ", "He'll tell us where she is in the morning."],
-		["REYES", "He ran. He lied. Seventy-three texts. What more do you want?"],
+		["REYES", "He ran, he lied, he sent seventy-three texts. What more do you want?"],
 		["REYES", "So why don't I feel good about it?"],
 		["", "Nobody checks the van.", "wide"],
 	], "c2_end", func(s):
@@ -400,8 +400,8 @@ func _chapter2() -> void:
 
 	scene("c2_booking", "precinct:booking", [
 		["", "Booking. Reyes empties Harlan's pockets into a property tray and names each item for the desk sergeant.", "wide"],
-		["REYES", "Wallet. University ID. Phone, no SIM card. Work keys."],
-		["REYES", "And one more. Loose, other pocket. Old brass. Tag says \"C.R.\"", "tray"],
+		["REYES", "Wallet, university ID, work keys. A phone with no SIM card."],
+		["REYES", "And one more, loose in his other pocket. Old brass. Tag says \"C.R.\"", "tray"],
 		["REYES", "What's it open, Wade?"],
 		["HARLAN", "That's nothing. It's for a shed."],
 		["", "It is the first thing he has said since the arrest. You take the key with you."],
@@ -522,7 +522,7 @@ func _chapter2() -> void:
 		s.partner(1, "that's how it's supposed to be done"))
 
 	scene("c2_push", "precinct:harlan", [
-		["OKONKWO", "Forget the lawyer. Forget the case. She's nineteen and she's alone. Where is she?"],
+		["OKONKWO", "Forget the lawyer, forget the case. She's nineteen and she's alone. Where is she?"],
 		["HARLAN", "...The signal tower in the rail yard. Number six. The heater is on. She's fine."],
 		["REYES", "(in the hallway, quietly) Cole is going to pay for that in front of a judge.", "REYES"],
 		["OKONKWO", "I know."],
@@ -633,7 +633,7 @@ func _chapter3() -> void:
 
 	scene("c3_after_safe", "yard:dawn", [
 		["", "Tessa Brandt sits on the back step of an ambulance, wrapped in a foil blanket, holding a paper cup with both hands.", "TESSA"],
-		["TESSA", "I reported it. To the campus. To you."],
+		["TESSA", "I reported it. To the campus, and to you."],
 		["TESSA", "I did everything you're supposed to do."],
 	], "c3_bond")
 
@@ -757,7 +757,7 @@ func _chapter4() -> void:
 		["COLE", "And I can put the camera in his locker, with her window on the memory cards." if s.has("locker") else "And you found where it was mounted. Cut zip ties, a clean patch in the rust, aimed at her bed."],
 		["COLE", "So the jury meets him two months before the van. He watched her sleep. He doesn't get to say he only wanted to talk."],
 	] if (s.has("locker") or s.has("window")) else [
-		["COLE", "Which nobody found. No camera. No mount. I'm charging it on her word that she felt watched."],
+		["COLE", "Which nobody found. No camera, no mount. I'm charging it on her word that she felt watched."],
 		["", "It is the count Pruitt will spend the most time on. If they guessed about this, she'll say, what else did they guess about?"],
 	]), "c4_gate1", func(s):
 		s.f.chargedAll = true
@@ -783,7 +783,7 @@ func _chapter4() -> void:
 		["PRUITT", "Your Honor, a warrant was thirty minutes away. Their own captain told them to wait."],
 		["PRUITT", "Detective Okonkwo said \"bad signal\" and opened my client's van."],
 		["PRUITT", "The Fourth Amendment is not a suggestion. The sneaker, the tape, the blanket. All of it goes."],
-		["JUDGE", "Ms. Cole. Your burden. Why was that search lawful?"],
+		["JUDGE", "Ms. Cole, it's your burden. Why was that search lawful?"],
 	], "c4_supp_warrant_c")
 
 	choice("c4_supp_warrant_c", "The van was searched without a warrant. Which exception do you argue?", 20, [
@@ -841,7 +841,7 @@ func _chapter4() -> void:
 		["PRUITT", "She lied to him, Your Honor. She said a GPS had already found the girl. The confession came out of that lie."],
 		["COLE", "A lie about the evidence isn't coercion. No threat. No promise. Rights read, rights waived, all of it on tape."],
 		["JUDGE", "Police may lie about what they know. They may not break a man's will.", "bench"],
-		["JUDGE", "I watched the tape twice. Nobody broke Mr. Harlan. Denied."],
+		["JUDGE", "I watched the tape twice, and nobody broke Mr. Harlan. Denied."],
 	], "c4_plea", func(s): s.say("RULING — the confession stays in"))
 
 	scene("c4_clar", "courthouse:hearing", [
@@ -865,7 +865,7 @@ func _chapter4() -> void:
 
 	scene("c4_stmt_win", "courthouse:hearing", [
 		["COLE", "She wasn't building a case in that room, Your Honor. She asked one question."],
-		["COLE", "Where is she. Not why. Not how."],
+		["COLE", "Where is she. Not why, not how."],
 		["COLE", "A girl was tied up somewhere, and it was getting colder."],
 		["COLE", "These detectives stood outside a van for thirty minutes waiting on a signature. They don't cut corners."],
 		["JUDGE", "No, they don't. That's the only reason I'm listening.", "bench"],
@@ -935,7 +935,7 @@ func _chapter4() -> void:
 
 	scene("c4_front_yes", "courthouse:trial", func(s): return [
 		["COLE", "Detective, did you arrest someone else for this crime first?" if s.on("wrong") else ("Detective, did you have a warrant when you opened that van?" if not s.on("warrant") else "Detective, did Mr. Harlan ask for a lawyer before he told you where she was?")],
-		["OKONKWO", "Yes. Evan Kessler. He ran, and I was sure. I was wrong. She spent the night in that tower because of it." if s.on("wrong")
+		["OKONKWO", "Yes. Evan Kessler. He ran, and I was sure, and I was wrong. She spent the night in that tower because of it." if s.on("wrong")
 			else ("No. I had a judge thirty minutes away and a girl I couldn't find. I made the call. I'd want the jury to hear that from me." if not s.on("warrant")
 			else "Yes. And I asked him anyway. One question. I'd ask it again."), "OKONKWO"],
 		["", "By the time Pruitt stands up, there is nothing left for her to reveal.", "jury"],
@@ -1002,7 +1002,7 @@ func _chapter4() -> void:
 		s.add(4)
 		s.say("SUSTAINED"))
 	scene("c4_obj_bad_lead", "courthouse:trial", [
-		["JUDGE", "Overruled. It's cross, Ms. Cole. She can lead.", "bench"],
+		["JUDGE", "Overruled. It's cross, Ms. Cole, and she can lead.", "bench"],
 		["", "The witness has to answer. It takes her a long time."],
 	], "c4_obj2", func(s):
 		s.add(-2)

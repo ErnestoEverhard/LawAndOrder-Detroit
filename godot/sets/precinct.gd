@@ -58,7 +58,7 @@ func _interview() -> void:
 		box(Vector3(-1.73, 0.35, 0.62 + i * 0.11), Vector3(0.03, 0.56, 0.015), Color(0.6, 0.6, 0.57), false)
 	box(Vector3(-1.6, 0.16, -1.4), Vector3(0.26, 0.32, 0.26), Color(0.25, 0.26, 0.28), false)             # waste bin
 	tube(Vector3(0, 2.56, -0.2), 1.2, true, Color(0.86, 0.95, 0.9), 3.2, 7.0, true)
-	omni(Vector3(0, 1.4, 1.2), Color(0.7, 0.75, 0.8), 0.25, 4.0)
+	omni(Vector3(0, 1.4, 1.2), Color(1.0, 0.88, 0.76), 0.6, 4.5)      # warm fill so faces are not grey under the tubes
 	# people
 	if stage == "evan":
 		actor("EVAN", "leonard", Vector3(0, -0.03, -1.0), 0.0, "sit_idle", "sit_talk")

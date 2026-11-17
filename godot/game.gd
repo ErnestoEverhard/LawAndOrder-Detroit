@@ -195,7 +195,13 @@ func _hero_frame(delta: float) -> void:
 		hero_dir = hero_dir.slerp(flat.normalized(), minf(1.0, delta * 8.0)).normalized()
 	hero.position = hero_pos
 	hero.rotation.y = lerp_angle(hero.rotation.y, atan2(hero_dir.x, hero_dir.z), minf(1.0, delta * 10.0))
-	cam.position = cam.position.lerp(_hero_cam(), 1.0 - exp(-6.0 * delta))
+	var safe := _hero_cam()
+	var next := cam.position.lerp(safe, 1.0 - exp(-6.0 * delta))
+	var chest := hero_pos + Vector3(0, 1.3, 0)
+	# Gliding to the new spot can pass through a wall or fence; if anything is between her and the camera, jump there.
+	if not loc.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(chest, next, 1)).is_empty():
+		next = safe
+	cam.position = next
 	var aim := (hero_pos + Vector3(0, 0.7, 0)).lerp(hero_aim, 0.3)      # aimed low so she sits above the prompt
 	if aim.distance_to(cam.position) > 0.2:
 		cam.look_at(aim)
