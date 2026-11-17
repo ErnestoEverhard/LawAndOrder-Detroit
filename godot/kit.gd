@@ -8,7 +8,7 @@ const AMBER := Color(0.95, 0.71, 0.27)
 const INK := Color(0.10, 0.10, 0.12)
 # Detective Okonkwo, the player. Her model is used for nobody else, so she always reads as herself.
 const OKONKWO_MODEL := "elizabeth"
-const OKONKWO_LOOK := {"Shirt": Color(0.25, 0.25, 0.3), "Pants": Color(0.3, 0.3, 0.33), "Heels": Color(0.08, 0.08, 0.09)}
+const OKONKWO_LOOK := {"Shirt!": Color(0.1, 0.11, 0.13), "Pants!": Color(0.12, 0.12, 0.14), "Heels": Color(0.08, 0.08, 0.09)}
 const HEIGHT := {"remy": 0.47}             # a file in different units from the others gets its scale here
 static var _cache := {}                    # loaded scenes, kept so a location change is quick
 
@@ -497,13 +497,16 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 				sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 				sm.alpha_scissor_threshold = 0.12
 				sm.cull_mode = BaseMaterial3D.CULL_DISABLED
-	for part in look:
+	for key in look:
+		var part: String = (key as String).trim_suffix("!")       # "Shirt!" also drops the printed pattern: a plain garment
 		for mi in n.find_children("*", "MeshInstance3D", true, false):
 			if str(mi.name).contains(part):
 				var m := (mi as MeshInstance3D).mesh
 				for i in m.get_surface_count():
 					var d: StandardMaterial3D = m.surface_get_material(i).duplicate()
-					d.albedo_color = look[part]
+					d.albedo_color = look[key]
+					if (key as String).ends_with("!"):
+						d.albedo_texture = null
 					(mi as MeshInstance3D).set_surface_override_material(i, d)
 	var skel: Skeleton3D = n.find_child("Skeleton3D", true, false)
 	var prefix := ""
@@ -520,6 +523,8 @@ func actor(who: String, model_id: String, pos: Vector3, rot_y := 0.0, idle := "i
 		cast[who] = {"node": n, "idle": idle, "talk": talk_anim}
 	pose(n, idle)
 	ap.seek(randf() * 2.0)
+	if who in ["REYES", "OKONKWO"]:
+		badge(n)
 	return n
 
 func robe(n: Node3D, color := Color(0.03, 0.03, 0.035)) -> void:
@@ -551,6 +556,29 @@ func robe(n: Node3D, color := Color(0.03, 0.03, 0.035)) -> void:
 		mi.material_override = cloth
 		mi.position = Vector3(0, part[4], 0.015 if (part[0] as String).begins_with("Spine") else 0.0) * k
 		mi.scale = (part[5] as Vector3) * k
+		at.add_child(mi)
+
+func badge(n: Node3D) -> void:
+	# A detective's shield clipped to the belt, left of the buckle.
+	if n == null:
+		return
+	var skel: Skeleton3D = n.find_child("Skeleton3D", true, false)
+	var k := 1.0 / skel.global_transform.basis.get_scale().x
+	var at := BoneAttachment3D.new()
+	skel.add_child(at)
+	at.bone_name = str(n.get_meta("prefix")) + "Hips"
+	var gold := StandardMaterial3D.new()
+	gold.albedo_color = Color(0.85, 0.68, 0.25)
+	gold.metallic = 0.9
+	gold.roughness = 0.3
+	for piece in [[Vector3(0.09, 0.045, 0.118), Vector3(0.05, 0.065, 0.012), Color(0.05, 0.05, 0.05)], [Vector3(0.09, 0.045, 0.126), Vector3(0.036, 0.046, 0.008), Color.WHITE]]:
+		var mi := MeshInstance3D.new()
+		var bm := BoxMesh.new()
+		bm.size = piece[1]
+		mi.mesh = bm
+		mi.material_override = gold if piece[2] == Color.WHITE else mat(piece[2])
+		mi.position = (piece[0] as Vector3) * k
+		mi.scale = Vector3.ONE * k
 		at.add_child(mi)
 
 func pose(n: Node3D, anim: String, blend := 0.3) -> void:

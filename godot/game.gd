@@ -763,6 +763,7 @@ func _qte(n: Dictionary) -> Dictionary:
 		hero_dir = Vector3(d0.x, 0, d0.z).normalized()
 		var h := loc.actor("", HERO_MODEL, hero_pos, atan2(hero_dir.x, hero_dir.z), "run", "run", HERO_LOOK)
 		hero = h
+		loc.badge(h)
 		cam.position = _hero_cam()
 	loc.on_step(n.get("track", ""), 0)
 	await wait(0.4 if auto else 1.4)
