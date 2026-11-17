@@ -29,6 +29,19 @@ var cur_bg := ""
 var cam: Camera3D
 var drift := Vector3.ZERO          # slow push-in on the current shot
 var drifted := 0.0
+# Action sequences are shown in third person: the detective runs the camera track and the camera follows her.
+var hero: Node3D
+var hero_pos := Vector3.ZERO
+var hero_dir := Vector3.FORWARD
+var hero_aim := Vector3.ZERO
+const HERO_MODEL := "roth"
+const HERO_LOOK := {"Shirt": Color(0.32, 0.34, 0.4)}
+const FIRST_PERSON_TRACKS := ["closing"]
+# Word in a step's action label -> the animation that shows it succeeding.
+const ACT_CLIPS := [["VAULT", "vault"], ["OVER THE", "jump"], ["JUMP", "jump"], ["DODGE", "dodge"], ["SIDESTEP", "dodge"],
+	["DUCK", "dodge"], ["SLIDE", "slide"], ["GET LOW", "crouch_walk"], ["SHOULDER", "shove"], ["PUSH", "shove"],
+	["KICK", "kick"], ["CLIMB", "climb"], ["STAIRS", "stairs_up"], ["PIN", "tackle"], ["GRAB", "tackle"],
+	["TAKE HIM", "tackle"], ["DRIVE", "tackle"], ["CUT THE", "kneel"], ["LOWER", "kneel"], ["TURN THE", "idle"], ["PULL", "idle"]]
 var clock := 0.0                   # game time; stops while paused
 var events: Array[String] = []     # key presses waiting to be read
 var auto := false
@@ -164,9 +177,45 @@ func _process(delta: float) -> void:
 					events.append(qte_key.text)
 			else:
 				events.append(["SPACE", "1", "SPACE", "2", "SPACE", "3"][robot_i % 6])
+	if hero != null:
+		_hero_frame(delta)
 	if drift != Vector3.ZERO and drifted < 0.3 and cam.current:
 		cam.position += drift * delta * 0.018
 		drifted += delta * 0.018
+
+func _hero_frame(delta: float) -> void:
+	# Move the detective to her place on the track, turn her the way she is going, and keep the camera behind her.
+	var step := hero_pos - hero.position
+	var flat := Vector3(step.x, 0, step.z)
+	if flat.length() > 0.002:
+		hero_dir = hero_dir.slerp(flat.normalized(), minf(1.0, delta * 8.0)).normalized()
+	hero.position = hero_pos
+	hero.rotation.y = lerp_angle(hero.rotation.y, atan2(hero_dir.x, hero_dir.z), minf(1.0, delta * 10.0))
+	cam.position = cam.position.lerp(_hero_cam(), 1.0 - exp(-6.0 * delta))
+	var aim := (hero_pos + Vector3(0, 0.95, 0)).lerp(hero_aim, 0.3)      # aimed low so she sits above the prompt
+	if aim.distance_to(cam.position) > 0.2:
+		cam.look_at(aim)
+
+func _hero_cam() -> Vector3:
+	# Behind her, above her shoulder; in front of any wall that would come between.
+	var chest := hero_pos + Vector3(0, 1.3, 0)
+	var want := hero_pos + Vector3(0, 2.05, 0) - hero_dir * 3.1 + hero_dir.cross(Vector3.UP) * 0.55
+	var hit := loc.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(chest, want, 1))
+	return want if hit.is_empty() else chest.lerp(hit.position, 0.85)
+
+func _hero_act(st: Dictionary, ok: bool) -> float:
+	# Show the result of a step on the detective. Returns how long the move takes.
+	var name := "stumble" if not ok else ""
+	if ok:
+		for pair in ACT_CLIPS:
+			if (st.act as String).contains(pair[0]):
+				name = pair[1]
+				break
+	if name == "" or not ResourceLoader.exists("res://assets/mixamo/animations/%s.fbx" % name):
+		return 0.0
+	loc.pose(hero, name, 0.12)
+	var ap: AnimationPlayer = hero.get_meta("ap")
+	return minf(ap.current_animation_length, 1.3)
 
 func _unhandled_input(e: InputEvent) -> void:
 	if e is InputEventKey and e.pressed and not e.echo and KEYS.has(e.physical_keycode):
@@ -698,11 +747,20 @@ func _qte(n: Dictionary) -> Dictionary:
 	qte_text.text = "GET READY"
 	var chase: bool = n.get("track", "") in CHASE_TRACKS
 	_tension(true, "footsteps_run" if chase else "heartbeat", 8.0 if chase else -8.0)
+	var third: bool = track.size() > 1 and not (n.get("track", "") in FIRST_PERSON_TRACKS) and Kit.have_people()
 	if not track.is_empty():
 		cam.position = track[0][0]
 		cam.look_at(track[0][1])
 		cam.fov = 62
 		drift = Vector3.ZERO
+	if third:
+		hero_pos = track[0][0] - Vector3(0, 1.6, 0)
+		hero_aim = track[0][1]
+		var d0: Vector3 = track[0][1] - track[0][0]
+		hero_dir = Vector3(d0.x, 0, d0.z).normalized()
+		var h := loc.actor("", HERO_MODEL, hero_pos, atan2(hero_dir.x, hero_dir.z), "run", "run", HERO_LOOK)
+		hero = h
+		cam.position = _hero_cam()
 	loc.on_step(n.get("track", ""), 0)
 	await wait(0.4 if auto else 1.4)
 	for i in n.steps.size():
@@ -713,26 +771,38 @@ func _qte(n: Dictionary) -> Dictionary:
 		if track.size() > i + 1:
 			loc.on_step(n.get("track", ""), i + 1)
 			move = create_tween().set_parallel()
-			move.tween_property(cam, "position", track[i + 1][0], total).set_trans(Tween.TRANS_SINE)
-			move.tween_method(func(t: float): cam.look_at((track[i][1] as Vector3).lerp(track[i + 1][1], t)), 0.0, 1.0, total)
+			if third:
+				var still: bool = (track[i + 1][0] as Vector3).distance_to(track[i][0]) < 0.4
+				loc.pose(hero, "idle" if still else "run", 0.2)
+				move.tween_property(self, "hero_pos", track[i + 1][0] - Vector3(0, 1.6, 0), total)
+				move.tween_property(self, "hero_aim", track[i + 1][1], total)
+			else:
+				move.tween_property(cam, "position", track[i + 1][0], total).set_trans(Tween.TRANS_SINE)
+				move.tween_method(func(t: float): cam.look_at((track[i][1] as Vector3).lerp(track[i + 1][1], t)), 0.0, 1.0, total)
 		await wait(0.15 if auto else 0.6)
 		var ok: bool = await _qte_step(st, scale)
+		var act_time := _hero_act(st, ok) if third else 0.0
 		if move and move.is_running():
-			move.set_speed_scale(6.0)          # finish the move quickly once the step is decided
+			move.set_speed_scale(2.5 if third else 6.0)          # finish the move quickly once the step is decided
 		if not ok:
 			fails += 1
 			_shake()
 		qte_marks.text += "✓ " if ok else "✗ "
 		_blip(660 if ok else 140, 0.14 if ok else 0.3)
 		qte_key.get_parent().visible = false
-		await wait(0.2 if auto else 0.5)
+		await wait(0.2 if auto else maxf(0.5, act_time))
 		if move and move.is_running():
 			await wait(0.3)
+		if shots_dir != "" and third:
+			await _snap("%s_qte-%s-%d" % [cur_bg.replace(":", "-"), n.get("track", "x"), i])
 	if shots_dir != "":
 		await _snap("%s_qte-%s" % [cur_bg.replace(":", "-"), n.get("track", "x")])
 	await wait(0.2 if auto else 0.7)
 	_tension(false)
 	qte.visible = false
+	if hero != null:
+		hero.queue_free()
+		hero = null
 	return {"fails": fails}
 
 func _qte_step(st: Dictionary, scale: float) -> bool:
@@ -1032,9 +1102,10 @@ func _build_ui() -> void:
 	qte = _full(Control.new())
 	ui.add_child(qte)
 	var qv := VBoxContainer.new()
-	qv.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	qv.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)      # low on screen, clear of the detective
 	qv.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	qv.grow_vertical = Control.GROW_DIRECTION_BOTH
+	qv.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	qv.offset_bottom = -36
 	qv.custom_minimum_size.x = 620
 	qv.add_theme_constant_override("separation", 10)
 	qte.add_child(qv)

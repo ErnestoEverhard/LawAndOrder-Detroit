@@ -34,3 +34,6 @@ Story state that changes a scene can be preset: `godot --path godot -- --stage l
 - Run `godot --headless --path godot --import` after adding assets, before rendering.
 - Don't use `pkill -f` with a pattern that also appears later in the same command line; it kills the shell.
 - Chained foreground `sleep` and `rm $VAR/*` are blocked.
+- If renders fail with `Can't create buffer ... VkResult error -2`, the graphics card is out of memory:
+  the owner probably has the game open (`pgrep -a godot`). Do not close it; use `--headless` checks and
+  render later.
