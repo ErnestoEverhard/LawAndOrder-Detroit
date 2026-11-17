@@ -71,8 +71,9 @@ git-ignored: Mixamo files may be used in a game but not redistributed raw. Recor
   `stumble` plays on failure.
 
 ## Known faults
-- **Thin, see-through hair:** hair cards drawn one-sided. `actor()` now draws hair two-sided with a low alpha
-  cut-off; do not set hair back to depth pre-pass.
+- **Thin, see-through hair:** hair cards drawn one-sided. `actor()` draws hair two-sided with a soft edge
+  (depth pre-pass, culling off). A hard alpha cut-off fills the hair too but leaves a jagged, wig-like hairline.
+  Check with `godot --path godot -s tools/head.gd -- out.png louise -0.75` (front and three-quarter close-up).
 - **Bulging eyes, dark rings round the eyes:** the file marks skin as see-through. `actor()` already
   forces non-hair materials opaque and hides lashes that point at the skin texture. If a new model still
   shows it, inspect its materials' `transparency` and albedo texture names before blaming the model.
