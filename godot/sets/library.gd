@@ -229,12 +229,12 @@ func _people() -> void:
 			close("REYES", 1.5, 0.5, 1.6, 42, 0.45)      # from a little above, so the street lights are not behind her head
 			shot("locker", Vector3(4.3, 1.5, -1.0), Vector3(5.8, 1.25, -1.55), 45)
 		"van":
-			actor("REYES", "louise", Vector3(-1.9, 0, 7.6), 1.9)
+			actor("REYES", "louise", Vector3(-2.3, 0, 7.2), 1.9)
 			actor("HARLAN", "brian", Vector3(3, 0, -0.35), 0.15, "idle", "talk", gray)
 			shot("wide", Vector3(-6.0, 1.9, 11.5), Vector3(1.5, 1.3, 3.5), 55)
 			shot("van", Vector3(-3.6, 1.5, 9.4), Vector3(0, 0.9, 8.7), 45)
 			shot("HARLAN", Vector3(1.9, 1.55, 4.2), Vector3(3, 1.5, -0.35), 30)
-			close("REYES", 1.5, 0.5, 1.6, 42, 0.45)      # from a little above, so the street lights are not behind her head
+			shot("REYES", Vector3(-1.0, 1.7, 6.2), Vector3(-2.3, 1.58, 7.2), 40)        # from in front of her, clear of the open van door
 		"chase":
 			runner = actor("HARLAN", "brian", path[0], PI, "run", "run", gray)
 			tracks["chase"] = [
@@ -252,6 +252,7 @@ func _people() -> void:
 			shot("wide", Vector3(20.0, LOW + 1.7, -13.5), Vector3(24.2, LOW + 1.3, -9.8), 52)
 			close("HARLAN", 1.5, 0.4, 1.1 if clip("kneel", "") != "" and not fled else 1.58, 40)
 			close("REYES", 1.4, -0.4, 1.6, 42)
+			omni(Vector3(23.4, LOW + 2.4, -12.2), Color(1.0, 0.85, 0.65), 1.6, 6.0)      # a yard lamp, so faces read at the fence
 			shot("key", Vector3(24.0, LOW + 2.0, -10.2), Vector3(24.4, LOW + 2.3, -9.2), 40)
 
 func _reyes(left: int, _budget: int) -> String:

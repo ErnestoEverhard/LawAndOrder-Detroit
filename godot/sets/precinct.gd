@@ -124,6 +124,6 @@ func _booking() -> void:
 	actor("REYES", "louise", Vector3(-1.3, 0, -0.5), PI - 0.5)
 	actor("", "alex", Vector3(2.6, 0, 1.6), PI + 0.9, "idle", "idle")                                    # the desk officer
 	shot("wide", Vector3(1.6, 1.7, 2.2), Vector3(-0.8, 1.1, -1.2), 55)
-	shot("tray", Vector3(-1.2, 1.62, -0.55), Vector3(-0.85, 1.16, -1.03), 48)
+	shot("tray", Vector3(-0.55, 1.75, -0.45), Vector3(-0.85, 1.16, -1.03), 48)      # over the desk, clear of Reyes
 	close("HARLAN", 1.3, 0.4, 1.58, 40)
 	close("REYES", 1.3, -0.4, 1.6, 42)
