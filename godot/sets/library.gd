@@ -96,9 +96,15 @@ func _outside() -> void:
 	van(Vector3(1.6, 0, 8.6), 0.12, Color(0.86, 0.86, 0.84), open_van, "HOLLIS UNIVERSITY\nFACILITIES  ·  UNIT 7")
 	box(Vector3(0.9, 2.17, 8.7), Vector3(2.6, 0.05, 1.3), Color(0.3, 0.3, 0.32), false, 0.0, 0.12)   # ladder rack
 	if open_van:
-		box(Vector3(0.4, 0.5, 8.75), Vector3(1.5, 0.1, 1.2), Color(0.25, 0.28, 0.4), false, 0.0, 0.3)   # moving blanket
-		cyl(Vector3(-0.2, 0.5, 8.2), 0.06, 0.05, Color(0.5, 0.5, 0.52), 0.4)                           # duct tape
-		box(Vector3(-0.35, 0.5, 8.95), Vector3(0.26, 0.09, 0.1), Color(0.95, 0.95, 0.93), false, 0.0, 0.7)   # one white sneaker
+		# what is in the back: a work van's clutter up front, and nearer the doors the three things that matter
+		var fl := 0.48                                                                                # load floor height
+		prop("metal_toolbox", Vector3(2.0, fl, 8.2), 0.3, 0.3)
+		prop("plastic_crate_01", Vector3(2.15, fl, 9.1), -0.2, 0.34)
+		prop("cardboard_box_01", Vector3(1.45, fl, 9.2), 0.5, 0.36)
+		blanket(Vector3(0.45, fl, 8.72), Vector2(1.55, 1.25), Color(0.2, 0.24, 0.38), 0.3, 0.14)      # moving blanket, heaped
+		tape_roll(Vector3(-0.35, fl, 8.2))                                                            # duct tape
+		box(Vector3(-0.2, fl + 0.004, 8.32), Vector3(0.3, 0.004, 0.05), Color(0.56, 0.57, 0.6), false, 0.0, 0.6)   # a torn strip of it
+		sneaker(Vector3(-0.45, fl, 8.95), 0.8, Color(0.93, 0.93, 0.9), true)                          # one white sneaker, on its side
 		omni(Vector3(-0.4, 1.2, 8.8), Color(0.9, 0.95, 1.0), 0.8, 2.5)                                 # Reyes's flashlight
 
 func _vestibule() -> void:

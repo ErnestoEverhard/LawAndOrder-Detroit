@@ -267,7 +267,7 @@ func _morning() -> void:
 	van(Vector3(9.0, 0, 8.2), 0.06, Color(0.9, 0.9, 0.88), true, "CALDER COUNTY EMS", Color(0.85, 0.3, 0.1), true)
 	box(Vector3(6.35, 0.35, 8.05), Vector3(0.5, 0.1, 1.5), Color(0.3, 0.3, 0.32), false)                    # the back step
 	strobe(Vector3(10.5, 2.3, 8.2), Color(1.0, 0.15, 0.1), Color(1.0, 0.9, 0.8), 1.5, 9.0)
-	van(Vector3(-9.5, 0, 9.5), -0.3, Color(0.1, 0.13, 0.25), false, "POLICE", Color(0.9, 0.9, 0.9), true)
+	van(Vector3(-9.5, 0, 9.5), -0.3, Color(0.1, 0.13, 0.25), false, "POLICE", Color(0.9, 0.9, 0.9), true, "car")
 	# tape between stakes
 	for seg in [[Vector3(-5, 1.0, 6.5), Vector3(5, 1.0, 6.2)], [Vector3(5, 1.0, 6.2), Vector3(5.5, 1.0, -3)]]:
 		var a: Vector3 = seg[0]
@@ -295,7 +295,7 @@ func _morning() -> void:
 			actor("TESSA", "kate", Vector3(7.6, 0.0, 8.2), PI / 2, clip("lie", "sit_idle"), clip("lie", "sit_idle"))
 		actor("", "alex", Vector3(4.4, 0, 6.0), 0.5, "idle", "idle")
 		if stage == "aftermath":
-			van(Vector3(-2.5, 0, 10.5), PI - 0.15, Color(0.6, 0.08, 0.06), false, "CALDER FIRE  ·  ENGINE 9", Color(0.9, 0.85, 0.3), true)
+			van(Vector3(-2.5, 0, 10.5), PI - 0.15, Color(0.6, 0.08, 0.06), false, "CALDER FIRE  ·  ENGINE 9", Color(0.9, 0.85, 0.3), true, "truck")
 			box(Vector3(0, 0.04, 6.5), Vector3(0.09, 0.07, 7.0), Color(0.6, 0.55, 0.3), false, 0.0, 0.25)     # hose
 			actor("", "leonard", Vector3(1.0, 0, 5.2), PI + 0.4, "idle", "talk", {"Sweater": Color(2.4, 2.0, 0.6), "Pants": Color(2.0, 1.7, 0.5)})
 	if st != null and st.on("harlanDead"):

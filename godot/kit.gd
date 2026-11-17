@@ -658,74 +658,294 @@ func _into(parent: Node3D, n: Node3D) -> Node3D:
 	parent.add_child(n)
 	return n
 
-func van(pos: Vector3, rot_y: float, body_c := Color(0.86, 0.86, 0.84), open := false, side_text := "", stripe: Variant = null, lightbar := false) -> Node3D:
-	# A panel van built from boxes: nose toward +X before turning, rear doors at -X. `open` swings the rear doors.
+# ── vehicles ─────────────────────────────────────────────────────
+# Each vehicle is a side outline pulled across its width, with wheel arches cut in, glass, lamps, bumpers,
+# mirrors and door lines added. Nose toward +X before turning, rear at -X.
+#   top: the outline from the rear bumper over the roof to the front bumper     arches: wheel positions along X
+#   glass: which outline edges are windows      windows: side-window shapes     seams: door lines along X
+const VEHICLES := {
+	"van": {"w": 1.95, "wheel": 0.36, "arches": [-1.45, 1.85], "glass": [5], "seams": [-0.9, 0.95, 1.9], "shoulder": 1.25,
+		"top": [Vector2(-2.4, 0.42), Vector2(-2.42, 0.62), Vector2(-2.4, 2.0), Vector2(-2.28, 2.1), Vector2(1.0, 2.1), Vector2(1.4, 2.04),
+			Vector2(2.1, 1.3), Vector2(2.72, 1.1), Vector2(2.9, 0.86), Vector2(2.92, 0.46)],
+		"windows": [[Vector2(1.08, 1.34), Vector2(1.12, 1.92), Vector2(1.42, 1.9), Vector2(1.95, 1.34)]]},
+	"car": {"w": 1.84, "wheel": 0.33, "arches": [-1.42, 1.45], "glass": [3, 5], "seams": [-0.62, 0.42], "shoulder": 0.98,
+		"top": [Vector2(-2.38, 0.42), Vector2(-2.42, 0.72), Vector2(-2.32, 0.95), Vector2(-1.55, 1.02), Vector2(-0.95, 1.43), Vector2(0.4, 1.45),
+			Vector2(1.12, 1.02), Vector2(2.18, 0.9), Vector2(2.4, 0.72), Vector2(2.42, 0.42)],
+		"windows": [[Vector2(-1.4, 1.03), Vector2(-0.92, 1.37), Vector2(-0.66, 1.37), Vector2(-0.66, 1.03)],
+			[Vector2(-0.58, 1.03), Vector2(-0.58, 1.37), Vector2(0.36, 1.39), Vector2(0.95, 1.03)]]},
+	"truck": {"w": 2.4, "wheel": 0.5, "arches": [-2.2, 2.35], "glass": [5], "seams": [0.6, 1.25, 2.2], "shoulder": 1.7,
+		"top": [Vector2(-3.6, 0.6), Vector2(-3.62, 0.8), Vector2(-3.6, 2.55), Vector2(1.2, 2.55), Vector2(1.25, 2.8), Vector2(3.0, 2.8),
+			Vector2(3.4, 1.75), Vector2(3.46, 1.5), Vector2(3.48, 0.62)],
+		"windows": [[Vector2(1.4, 1.8), Vector2(1.4, 2.6), Vector2(2.95, 2.6), Vector2(3.2, 1.8)]]},
+}
+
+func van(pos: Vector3, rot_y: float, body_c := Color(0.86, 0.86, 0.84), open := false, side_text := "", stripe: Variant = null, lightbar := false, kind := "van") -> Node3D:
+	var spec: Dictionary = VEHICLES[kind]
+	var hw: float = spec.w / 2.0
+	var wr: float = spec.wheel
+	var top: Array = spec.top
+	var rear_x: float = top[0].x
+	var nose_x: float = top[-1].x
+	var roof_y := 0.0
+	for p in top:
+		roof_y = maxf(roof_y, p.y)
 	var v := Node3D.new()
 	v.position = pos
 	v.rotation.y = rot_y
 	add_child(v)
-	var dark := Color(0.05, 0.06, 0.07)
-	var parts := [
-		[Vector3(-0.55, 1.22, 0), Vector3(3.5, 1.75, 1.9), body_c],             # cargo box
-		[Vector3(1.75, 1.0, 0), Vector3(1.1, 1.3, 1.9), body_c],                # cab
-		[Vector3(2.55, 0.72, 0), Vector3(0.6, 0.72, 1.86), body_c],             # hood
-		[Vector3(2.32, 1.38, 0), Vector3(0.06, 0.55, 1.7), dark],               # windshield
-		[Vector3(1.8, 1.32, 0.955), Vector3(0.8, 0.5, 0.02), dark],             # side windows
-		[Vector3(1.8, 1.32, -0.955), Vector3(0.8, 0.5, 0.02), dark],
-		[Vector3(2.88, 0.42, 0), Vector3(0.08, 0.2, 1.9), Color(0.2, 0.2, 0.21)],   # bumpers
-		[Vector3(-2.33, 0.42, 0), Vector3(0.08, 0.2, 1.9), Color(0.2, 0.2, 0.21)],
-		[Vector3(0, 0.3, 0), Vector3(5.0, 0.12, 1.7), Color(0.1, 0.1, 0.1)],    # underside
-	]
-	if stripe != null:
-		parts.append([Vector3(-0.55, 1.1, 0.96), Vector3(3.5, 0.22, 0.01), stripe])
-		parts.append([Vector3(-0.55, 1.1, -0.96), Vector3(3.5, 0.22, 0.01), stripe])
-	if open:
-		parts[0] = [Vector3(-0.55, 2.07, 0), Vector3(3.5, 0.06, 1.9), body_c]   # roof, sides and floor instead of a solid block
-		parts.append([Vector3(-0.55, 1.22, 0.93), Vector3(3.5, 1.75, 0.05), body_c])
-		parts.append([Vector3(-0.55, 1.22, -0.93), Vector3(3.5, 1.75, 0.05), body_c])
-		parts.append([Vector3(-0.55, 0.4, 0), Vector3(3.5, 0.08, 1.9), Color(0.25, 0.25, 0.26)])
-		parts.append([Vector3(1.18, 1.22, 0), Vector3(0.05, 1.75, 1.9), Color(0.3, 0.3, 0.31)])
-	for p in parts:
-		_into(v, box(p[0], p[1], p[2], false))
-	for wx in [-1.5, 1.9]:
-		for wz in [-0.9, 0.9]:
-			_into(v, cyl(Vector3(wx, 0.36, wz), 0.36, 0.24, Color(0.06, 0.06, 0.06), 0.9)).rotation.x = PI / 2
-			_into(v, cyl(Vector3(wx, 0.36, wz * 1.14), 0.17, 0.02, Color(0.6, 0.6, 0.62), 0.4)).rotation.x = PI / 2
-	for hz in [-0.7, 0.7]:
-		_into(v, box(Vector3(2.86, 0.82, hz), Vector3(0.03, 0.14, 0.26), Color(0.9, 0.9, 0.8), false))
-		_into(v, box(Vector3(-2.31, 1.0, hz * 1.25), Vector3(0.02, 0.3, 0.1), Color(0.5, 0.05, 0.05), false))
-	for side in [-1, 1]:                                                        # rear doors
-		var hinge := Node3D.new()
-		hinge.position = Vector3(-2.32, 1.22, side * 0.95)
-		v.add_child(hinge)
-		var d := _into(hinge, box(Vector3(0, 0, -side * 0.465), Vector3(0.05, 1.6, 0.93), body_c, false))
-		_into(d, box(Vector3(-0.03, 0.4, 0), Vector3(0.02, 0.4, 0.6), dark, false))
-		if open:
-			hinge.rotation.y = side * 1.9
+	# the outline: the top as given, then the sill running back from the nose with an arch over each wheel
+	var outline := PackedVector2Array(top)
+	var first_top := top.size()
+	var sill: float = top[-1].y - 0.06
+	outline.append(Vector2(nose_x - 0.08, sill))
+	var arches: Array = spec.arches.duplicate()
+	arches.sort()
+	arches.reverse()
+	for ax in arches:
+		var ar := wr + 0.07
+		for i in 9:
+			var ang := PI * i / 8.0
+			outline.append(Vector2(ax + ar * cos(ang), maxf(sill, wr + ar * sin(ang))))
+	outline.append(Vector2(rear_x + 0.08, sill))
+	var paint := StandardMaterial3D.new()
+	paint.albedo_color = body_c
+	paint.metallic = 0.12
+	paint.roughness = 0.5
+	paint.clearcoat_enabled = true
+	paint.clearcoat = 0.2
+	paint.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var glass := StandardMaterial3D.new()
+	glass.albedo_color = Color(0.04, 0.055, 0.07)
+	glass.metallic = 0.7
+	glass.roughness = 0.08
+	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var half := func(y: float) -> float:          # the body leans in above the shoulder line
+		return hw - 0.09 * smoothstep(spec.shoulder, roof_y, y)
+	var body := SurfaceTool.new()
+	body.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var panes := SurfaceTool.new()
+	panes.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var tri := func(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, n: Vector3) -> void:
+		if (b - a).cross(c - a).dot(n) > 0.0:       # Godot's front face winds clockwise
+			var t := b
+			b = c
+			c = t
+		for p in [a, b, c]:
+			st.set_normal(n)
+			st.add_vertex(p)
+	var idx := Geometry2D.triangulate_polygon(outline)
+	for side in [-1.0, 1.0]:
+		for i in range(0, idx.size(), 3):
+			var q := [outline[idx[i]], outline[idx[i + 1]], outline[idx[i + 2]]]
+			tri.call(body, Vector3(q[0].x, q[0].y, side * half.call(q[0].y)), Vector3(q[1].x, q[1].y, side * half.call(q[1].y)),
+				Vector3(q[2].x, q[2].y, side * half.call(q[2].y)), Vector3(0, 0, side))
+		for win in spec.windows:                    # side windows, a hair proud of the paint
+			var w2 := PackedVector2Array(win)
+			var wi := Geometry2D.triangulate_polygon(w2)
+			for i in range(0, wi.size(), 3):
+				var pts := []
+				for j in 3:
+					var p2: Vector2 = w2[wi[i + j]]
+					pts.append(Vector3(p2.x, p2.y, side * (half.call(p2.y) + 0.006)))
+				tri.call(panes, pts[0], pts[1], pts[2], Vector3(0, 0, side))
+	var clockwise := Geometry2D.is_polygon_clockwise(outline)
+	for i in outline.size():
+		var p: Vector2 = outline[i]
+		var q: Vector2 = outline[(i + 1) % outline.size()]
+		var is_rear := i < first_top - 1 and p.x < rear_x + 0.2 and q.x < rear_x + 0.2
+		if open and is_rear:
+			continue                                # the rear is the doors, built below
+		var along := (q - p).normalized()
+		var n2 := Vector2(along.y, -along.x) * (-1.0 if clockwise else 1.0)
+		var n := Vector3(n2.x, n2.y, 0)
+		var a := Vector3(p.x, p.y, half.call(p.y))
+		var b := Vector3(q.x, q.y, half.call(q.y))
+		var c := Vector3(q.x, q.y, -half.call(q.y))
+		var d := Vector3(p.x, p.y, -half.call(p.y))
+		if i >= first_top and p.y > sill + 0.001 or (i >= first_top and q.y > sill + 0.001):
+			# a wheel arch: only a well at each side, so the load floor runs flat between them
+			for side in [-1.0, 1.0]:
+				var inner := Vector3(0, 0, side * 0.34)
+				var a2 := Vector3(a.x, a.y, side * a.z)
+				var b2 := Vector3(b.x, b.y, side * b.z)
+				tri.call(body, a2, b2, b2 - inner, n)
+				tri.call(body, a2, b2 - inner, a2 - inner, n)
+			continue
+		tri.call(body, a, b, c, n)
+		tri.call(body, a, c, d, n)
+		if i in spec.glass:                         # windscreen or rear window: inset from the pillars
+			var g := []
+			for corner in [[0.1, 1.0], [0.92, 1.0], [0.92, -1.0], [0.1, -1.0]]:
+				var e := p.lerp(q, corner[0])
+				g.append(Vector3(e.x, e.y, corner[1] * (half.call(e.y) - 0.1)) + n * 0.012)
+			tri.call(panes, g[0], g[1], g[2], n)
+			tri.call(panes, g[0], g[2], g[3], n)
+	var shell := MeshInstance3D.new()
+	shell.mesh = body.commit()
+	shell.material_override = paint
+	v.add_child(shell)
+	var win_mesh := MeshInstance3D.new()
+	win_mesh.mesh = panes.commit()
+	win_mesh.material_override = glass
+	v.add_child(win_mesh)
+	var dark := Color(0.05, 0.055, 0.06)
+	var trim := Color(0.13, 0.13, 0.14)
+	# wheels, with a dark well behind each pair so the arches do not show daylight
+	for ax in arches:
+		for side in [-1.0, 1.0]:
+			_into(v, box(Vector3(ax, (sill + wr * 2.0 + 0.07) / 2.0, side * (hw - 0.34)), Vector3(wr * 2.0 + 0.16, wr * 2.0 + 0.07 - sill, 0.02), dark, false))
+			_into(v, cyl(Vector3(ax, wr, side * (hw - 0.13)), wr, 0.24, Color(0.045, 0.045, 0.05), 0.95)).rotation.x = PI / 2
+			_into(v, cyl(Vector3(ax, wr, side * (hw - 0.005)), wr * 0.6, 0.02, Color(0.55, 0.56, 0.58), 0.35)).rotation.x = PI / 2
+			_into(v, cyl(Vector3(ax, wr, side * (hw + 0.006)), wr * 0.2, 0.02, Color(0.2, 0.2, 0.21), 0.5)).rotation.x = PI / 2
+	_into(v, box(Vector3((rear_x + nose_x) / 2.0, sill - 0.06, 0), Vector3(nose_x - rear_x - 0.3, 0.1, spec.w - 0.3), dark, false))   # underside
+	# bumpers, grille, plates and lamps
+	var by: float = top[-1].y + 0.04
+	_into(v, box(Vector3(nose_x + 0.03, by, 0), Vector3(0.14, 0.2, spec.w + 0.02), trim, false))
+	_into(v, box(Vector3(rear_x - 0.03, by, 0), Vector3(0.14, 0.2, spec.w + 0.02), trim, false))
+	_into(v, box(Vector3(nose_x + 0.005, by + 0.3, 0), Vector3(0.03, 0.22, spec.w * 0.5), dark, false))
+	_into(v, box(Vector3(nose_x + 0.105, by, 0), Vector3(0.01, 0.12, 0.34), Color(0.9, 0.9, 0.86), false))
+	_into(v, box(Vector3(rear_x - 0.105, by + 0.02, 0), Vector3(0.01, 0.12, 0.34), Color(0.9, 0.9, 0.86), false))
+	for side in [-1.0, 1.0]:
+		_into(v, box(Vector3(nose_x - 0.01, by + 0.32, side * (hw - 0.28)), Vector3(0.05, 0.16, 0.36), Color(0.95, 0.94, 0.85), false, 0.6))
+		_into(v, box(Vector3(nose_x - 0.01, by + 0.32, side * (hw - 0.07)), Vector3(0.05, 0.1, 0.1), Color(0.95, 0.55, 0.1), false, 0.3))
+		var tail_y: float = by + (0.75 if kind != "car" else 0.38)
+		_into(v, box(Vector3(rear_x + 0.0, tail_y, side * (hw - 0.07)), Vector3(0.05, 0.42 if kind != "car" else 0.14, 0.12 if kind != "car" else 0.4), Color(0.55, 0.04, 0.04), false, 0.4))
+		# mirror on a stalk, door handles, door lines, dirt along the sill
+		var mx: float = top[spec.glass[-1]].x - 0.12
+		var my: float = spec.shoulder + 0.14
+		_into(v, box(Vector3(mx, my, side * (hw + 0.1)), Vector3(0.05, 0.2 if kind != "car" else 0.1, 0.16), trim, false))
+		_into(v, box(Vector3(mx, my - 0.04, side * (hw + 0.02)), Vector3(0.03, 0.03, 0.1), trim, false))
+		for sx in spec.seams:
+			_into(v, box(Vector3(sx, (spec.shoulder + sill) / 2.0 + 0.1, side * (hw + 0.002)), Vector3(0.012, spec.shoulder - sill - 0.1, 0.004), Color(0.0, 0.0, 0.0, 0.55), false))
+			_into(v, box(Vector3(sx - 0.14, spec.shoulder - 0.16, side * (hw + 0.012)), Vector3(0.13, 0.03, 0.02), trim, false))
+		_into(v, box(Vector3((rear_x + nose_x) / 2.0, sill + 0.09, side * (hw + 0.003)), Vector3(nose_x - rear_x - 0.2, 0.2, 0.004), Color(0.2, 0.17, 0.13, 0.35), false))
+		if stripe != null:
+			_into(v, box(Vector3((rear_x + top[spec.glass[-1]].x) / 2.0 - 0.1, spec.shoulder - 0.3, side * (hw + 0.004)), Vector3(top[spec.glass[-1]].x - rear_x - 0.4, 0.2, 0.004), stripe, false))
+	# rear doors on vans and trucks
+	if kind != "car":
+		var door_h: float = roof_y - sill - 0.16
+		for side in [-1.0, 1.0]:
+			var hinge := Node3D.new()
+			hinge.position = Vector3(rear_x, sill + 0.06 + door_h / 2.0, side * (hw - 0.03))
+			v.add_child(hinge)
+			if open or kind == "van":
+				var leaf := _into(hinge, box(Vector3(0, 0, -side * (hw - 0.04) / 2.0), Vector3(0.05, door_h, hw - 0.05), body_c, false))
+				_into(leaf, box(Vector3(-0.03, door_h * 0.22, 0), Vector3(0.012, door_h * 0.3, (hw - 0.05) * 0.7), dark, false))
+				_into(leaf, box(Vector3(-0.035, -door_h * 0.1, side * (hw - 0.05) * 0.38), Vector3(0.03, 0.14, 0.03), trim, false))
+			if open:
+				hinge.rotation.y = side * 1.9
+		if open:                                    # load floor, wall lining and the bulkhead behind the seats
+			var cab_x: float = top[spec.glass[-1]].x - 0.25
+			_into(v, box(Vector3((rear_x + cab_x) / 2.0, sill + 0.05, 0), Vector3(cab_x - rear_x, 0.05, spec.w - 0.08), Color(0.2, 0.2, 0.21), false))
+			_into(v, box(Vector3(cab_x, (sill + roof_y) / 2.0, 0), Vector3(0.05, roof_y - sill - 0.1, spec.w - 0.12), Color(0.3, 0.3, 0.31), false))
+			for side in [-1.0, 1.0]:
+				_into(v, box(Vector3((rear_x + cab_x) / 2.0, sill + 0.5, side * (hw - 0.05)), Vector3(cab_x - rear_x - 0.1, 0.85, 0.02), Color(0.42, 0.36, 0.28), false))
+				for rib in 4:
+					_into(v, box(Vector3(rear_x + 0.4 + rib * (cab_x - rear_x - 0.6) / 3.0, sill + 1.3, side * (hw - 0.06)), Vector3(0.05, 0.75, 0.03), Color(0.6, 0.6, 0.6), false))
 	if side_text != "":
 		for side in [-1, 1]:
 			var l := Label3D.new()
 			l.text = side_text
 			l.font_size = 40
-			l.pixel_size = 0.004
-			l.modulate = Color(0.12, 0.2, 0.4)
+			l.pixel_size = 0.004 if kind != "car" else 0.003
+			l.modulate = Color(0.12, 0.2, 0.4) if body_c.get_luminance() > 0.4 else Color(0.92, 0.92, 0.9)
 			l.outline_size = 0
 			l.shaded = true
-			l.position = Vector3(-0.55, 1.55, side * 0.957)
+			l.position = Vector3((rear_x + top[spec.glass[-1]].x) / 2.0 - 0.1, spec.shoulder + (0.3 if kind != "car" else -0.42), side * (half.call(spec.shoulder + 0.3) + 0.012))
 			l.rotation.y = 0.0 if side == 1 else PI
 			v.add_child(l)
 	if lightbar:
+		var lx: float = top[spec.glass[-1]].x - 0.5
+		_into(v, box(Vector3(lx, roof_y + 0.03, 0), Vector3(0.3, 0.05, 1.2), trim, false))
 		for i in 2:
-			_into(v, box(Vector3(1.6, 1.72, -0.4 + i * 0.8), Vector3(0.25, 0.12, 0.5), Color(1.0, 0.1, 0.1) if i == 0 else Color(0.15, 0.3, 1.0), false, 2.5))
-	var body := StaticBody3D.new()
+			_into(v, box(Vector3(lx, roof_y + 0.1, -0.3 + i * 0.6), Vector3(0.26, 0.11, 0.56), Color(1.0, 0.1, 0.1) if i == 0 else Color(0.15, 0.3, 1.0), false, 2.5))
+	var solid := StaticBody3D.new()
 	var cs := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(5.3, 2.1, 2.0)
+	shape.size = Vector3(nose_x - rear_x, roof_y, spec.w)
 	cs.shape = shape
-	cs.position = Vector3(0.25, 1.05, 0)
-	body.add_child(cs)
-	v.add_child(body)
+	cs.position = Vector3((nose_x + rear_x) / 2.0, roof_y / 2.0, 0)
+	solid.add_child(cs)
+	v.add_child(solid)
 	return v
+
+func blanket(pos: Vector3, size: Vector2, color: Color, rot_y := 0.0, lump := 0.1, seed_n := 7) -> MeshInstance3D:
+	# A quilted moving blanket thrown down in a heap: a cloth sheet with folds, flat at its edges.
+	var noise := FastNoiseLite.new()
+	noise.seed = seed_n
+	noise.frequency = 2.2
+	var nx := 28
+	var nz := 20
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var h := func(i: int, j: int) -> float:
+		var edge := minf(minf(i, nx - i), minf(j, nz - j)) / 4.0
+		return lump * clampf(edge, 0.0, 1.0) * (0.55 + 0.45 * noise.get_noise_2d(i * 0.09, j * 0.09)) + 0.012
+	for i in nx:
+		for j in nz:
+			for c in [[0, 0], [0, 1], [1, 0], [1, 0], [0, 1], [1, 1]]:
+				var a: int = i + c[0]
+				var b: int = j + c[1]
+				st.set_uv(Vector2(a, b) / 4.0)
+				st.add_vertex(Vector3((float(a) / nx - 0.5) * size.x, h.call(a, b), (float(b) / nz - 0.5) * size.y))
+	st.generate_normals()
+	var mi := MeshInstance3D.new()
+	mi.mesh = st.commit()
+	var m := StandardMaterial3D.new()
+	m.albedo_color = color
+	m.roughness = 1.0
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var img := Image.create(32, 32, true, Image.FORMAT_RGB8)      # quilting: a grid of stitch lines
+	img.fill(Color.WHITE)
+	for i in 32:
+		img.set_pixel(i, 0, Color(0.55, 0.55, 0.55))
+		img.set_pixel(0, i, Color(0.55, 0.55, 0.55))
+		img.set_pixel(i, i, Color(0.8, 0.8, 0.8))
+	img.generate_mipmaps()
+	m.albedo_texture = ImageTexture.create_from_image(img)
+	mi.material_override = m
+	mi.position = pos
+	mi.rotation.y = rot_y
+	add_child(mi)
+	return mi
+
+func tape_roll(pos: Vector3, color := Color(0.56, 0.57, 0.6), flat := true) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var t := TorusMesh.new()
+	t.inner_radius = 0.038
+	t.outer_radius = 0.062
+	mi.mesh = t
+	var m := StandardMaterial3D.new()
+	m.albedo_color = color
+	m.metallic = 0.5
+	m.roughness = 0.35
+	mi.material_override = m
+	mi.scale = Vector3(1, 2.0, 1)                 # a roll is taller than a ring
+	mi.position = pos + Vector3(0, 0.025, 0)
+	if not flat:
+		mi.rotation.x = PI / 2
+	add_child(mi)
+	return mi
+
+func sneaker(pos: Vector3, rot_y := 0.0, color := Color(0.93, 0.93, 0.9), on_side := false) -> Node3D:
+	# A low canvas sneaker, about a women's size seven: sole, toe cap, upper, collar, laces.
+	var s := Node3D.new()
+	s.position = pos
+	s.rotation.y = rot_y
+	if on_side:
+		s.rotation.x = PI / 2 - 0.15
+		s.position.y += 0.045
+	add_child(s)
+	var rubber := Color(0.82, 0.82, 0.8)
+	_into(s, ball(Vector3(0, 0.014, 0), 0.5, rubber, 0.0, Vector3(0.25, 0.028, 0.092)))          # sole
+	_into(s, ball(Vector3(0.012, 0.045, 0), 0.5, color, 0.0, Vector3(0.215, 0.075, 0.082)))      # upper
+	_into(s, ball(Vector3(0.085, 0.034, 0), 0.5, rubber, 0.0, Vector3(0.075, 0.05, 0.086)))      # toe cap
+	_into(s, cyl(Vector3(-0.065, 0.07, 0), 0.036, 0.05, color))                                   # ankle collar
+	_into(s, cyl(Vector3(-0.065, 0.097, 0), 0.03, 0.006, Color(0.12, 0.12, 0.13)))                # the dark inside
+	for i in 4:
+		_into(s, box(Vector3(0.0 + i * 0.022, 0.078 - i * 0.006, 0), Vector3(0.006, 0.004, 0.05), Color(0.98, 0.98, 0.96), false))
+	_into(s, box(Vector3(0.0, 0.03, 0.0), Vector3(0.2, 0.006, 0.094), Color(0.75, 0.1, 0.1), false))   # a red stripe round the sole
+	return s
 
 func strobe(pos: Vector3, a := Color(1.0, 0.15, 0.1), b := Color(0.15, 0.3, 1.0), energy := 2.5, rng := 14.0) -> void:
 	# Emergency lights: two colours taking turns.

@@ -249,9 +249,9 @@ func _courtroom() -> void:
 		# Jurors never reuse a model that plays a named character, so nobody's double sits in the box.
 		var tints := [{}, {}, {"Shirt": Color(0.5, 0.62, 0.52)}, {},
 			{"Suit": Color(0.9, 0.65, 0.45), "Tie": Color(0.2, 0.45, 0.3), "Hair": Color(0.5, 0.35, 0.25)},
-			{"Shirt": Color(0.75, 0.45, 0.45), "Hair": Color(2.2, 2.2, 2.2)},
-			{"Suit": Color(1.5, 1.3, 1.0), "Shirt": Color(0.9, 0.7, 0.6), "Hair": Color(2.2, 2.0, 1.8)},
-			{"Shirt": Color(0.55, 0.6, 1.0), "Pants": Color(0.5, 0.5, 0.5)}]
+			{"Shirt": Color(0.75, 0.45, 0.45), "Hair": Color(2.2, 2.2, 2.2), "Body": Color(0.8, 0.7, 0.62)},
+			{"Suit": Color(1.5, 1.3, 1.0), "Shirt": Color(0.9, 0.7, 0.6), "Hair": Color(2.2, 2.0, 1.8), "Body": Color(0.72, 0.62, 0.56)},
+			{"Shirt": Color(0.55, 0.6, 1.0), "Pants": Color(0.5, 0.5, 0.5), "Hair": Color(2.0, 1.2, 0.6), "Body": Color(1.3, 1.2, 1.15)}]
 		var who := ["jody", "josh", "roth", "remy", "joe", "roth", "josh", "jody"]
 		for i in 8:
 			actor("", who[i], Vector3(4.9 if i < 4 else 6.2, -0.03 if i < 4 else 0.27, -5.2 + [0, 1, 3, 4, 1, 2, 4, 5][i] * 1.08), -PI / 2, "sit_idle", "sit_idle", tints[i])
